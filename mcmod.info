@@ -1,0 +1,16 @@
+[
+{
+  "modid": "hmage_anni",
+  "name": "HMage",
+  "description": "Better minecraft pvp life for HMage players",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["onimen"],
+  "credits": "The Forge and FML guys, for making this example",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
