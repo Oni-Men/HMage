@@ -1,4 +1,4 @@
-package onimen.anni.hmage.gui;
+package onimen.anni.hmage.gui.hud;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -11,11 +11,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHandSide;
 import onimen.anni.hmage.Preferences;
 
-public class GuiItemRemainingArrows extends Gui implements IGuiItem {
+public class ArrowCounterHUD extends Gui implements InterfaceHUD {
+
+	@Override
+	public String getPrefKey() {
+		return "arrowCounterHUD";
+	}
 
 	@Override
 	public boolean isEnabled() {
-		return Preferences.arrowCounter;
+		return Preferences.arrowCounterOption.isEnabled();
 	}
 
 	private int countArrows(InventoryPlayer inventory) {

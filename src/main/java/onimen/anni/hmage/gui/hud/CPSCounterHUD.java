@@ -2,7 +2,7 @@
  * Referenced https://github.com/GitFyu/KeystrokesBase
  */
 
-package onimen.anni.hmage.gui;
+package onimen.anni.hmage.gui.hud;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -11,14 +11,20 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import onimen.anni.hmage.Preferences;
+import onimen.anni.hmage.gui.AttackKeyListener;
+import onimen.anni.hmage.util.PositionHelper;
+import onimen.anni.hmage.util.PositionHelper.Position;
 
-public class GuiItemCPS extends Gui implements IGuiItem, AttackKeyListener {
+public class CPSCounterHUD extends Gui implements InterfaceHUD, AttackKeyListener {
+
+	private final static int SPACE = 1;
 
 	private Queue<Long> clicks = new LinkedList<Long>();
 
-	public GuiItemCPS() {
+	public CPSCounterHUD() {
 		this.clicks = new LinkedList<>();
 	}
 
@@ -35,8 +41,13 @@ public class GuiItemCPS extends Gui implements IGuiItem, AttackKeyListener {
 	}
 
 	@Override
+	public String getPrefKey() {
+		return "cpsCounterHUD";
+	}
+
+	@Override
 	public boolean isEnabled() {
-		return Preferences.cpsHUD;
+		return Preferences.cpsCounterOption.isEnabled();
 	}
 
 	@Override
@@ -44,14 +55,31 @@ public class GuiItemCPS extends Gui implements IGuiItem, AttackKeyListener {
 
 		String text = String.format("%d CPS", this.calculateCPS());
 
+		ScaledResolution sr = new ScaledResolution(mc);
+
 		int width = mc.fontRenderer.getStringWidth("00 CPS") + 4;
 		int height = mc.fontRenderer.FONT_HEIGHT;
 
-		int x = width / 2 + 2;
-		int y = height / 2;
+		Position position = new PositionHelper.Position(Preferences.cpsCounterOption.getPosition());
 
-		if (Preferences.armorDurabilityHUD) {
-			x += mc.fontRenderer.getStringWidth("000") + 20 + 1;
+		int x = Preferences.cpsCounterOption.getTranslateX();
+		int y = Preferences.cpsCounterOption.getTranslateY();
+
+		if (position.centerx) {
+			x += sr.getScaledWidth() / 2 - width / 2;
+		} else if (position.right) {
+			x += sr.getScaledWidth() - width - SPACE;
+		} else {
+			x += SPACE;
+		}
+
+		if (position.centery) {
+			y += sr.getScaledHeight() / 2 - height / 2;
+		}
+		if (position.bottom) {
+			y += sr.getScaledHeight() - height - SPACE;
+		} else {
+			y += SPACE;
 		}
 
 		GlStateManager.disableTexture2D();
@@ -59,7 +87,7 @@ public class GuiItemCPS extends Gui implements IGuiItem, AttackKeyListener {
 
 		GlStateManager.pushMatrix();
 		GlStateManager.color(0, 0, 0, 0.3f);
-		GlStateManager.translate(x - width / 2, y - 1, 0);
+		GlStateManager.translate(x, y - 1, 0);
 		GlStateManager.glBegin(GL11.GL_QUADS);
 		GlStateManager.glVertex3f(0, height + 2, 0);
 		GlStateManager.glVertex3f(width, height + 2, 0);
@@ -71,7 +99,7 @@ public class GuiItemCPS extends Gui implements IGuiItem, AttackKeyListener {
 		GlStateManager.disableBlend();
 		GlStateManager.enableTexture2D();
 
-		this.drawCenteredString(mc.fontRenderer, text, x, y, 0xffffff);
+		this.drawCenteredString(mc.fontRenderer, text, x + width / 2, y + 1, 0xffffff);
 
 	}
 

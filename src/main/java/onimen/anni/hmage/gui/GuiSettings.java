@@ -11,10 +11,11 @@ import onimen.anni.hmage.Preferences;
 public class GuiSettings extends GuiScreen {
 
 	private GuiButton modStateButton;
-	private GuiButton potionEffectHUD;
+	private GuiButton statusEffectHUD;
 	private GuiButton armorDurability;
 	private GuiButton arrowRemaining;
-	private GuiButton cpsHUD;
+	private GuiButton cpsCounterHUD;
+	private GuiButton toggleSneak;
 
 	private String getButtonText(boolean b) {
 		return b ? "Enabled" : "Disabled";
@@ -35,23 +36,37 @@ public class GuiSettings extends GuiScreen {
 		modStateButton = new GuiButton(0, baseX, baseY, width, height,
 				getButtonText(Preferences.enabled));
 
-		potionEffectHUD = new GuiButton(1, baseX, baseY + 25, width, height,
-				getButtonText(Preferences.potionEffectsHUD));
+		baseY += 25;
 
-		armorDurability = new GuiButton(2, baseX, baseY + 50, width, height,
-				getButtonText(Preferences.armorDurabilityHUD));
+		statusEffectHUD = new GuiButton(1, baseX, baseY, width, height,
+				getButtonText(Preferences.statusEffectOption.isEnabled()));
 
-		arrowRemaining = new GuiButton(3, baseX, baseY + 75, width, height,
-				getButtonText(Preferences.arrowCounter));
+		baseY += 25;
 
-		cpsHUD = new GuiButton(4, baseX, baseY + 100, width, height,
-				getButtonText(Preferences.cpsHUD));
+		armorDurability = new GuiButton(2, baseX, baseY, width, height,
+				getButtonText(Preferences.statusArmorOption.isEnabled()));
+
+		baseY += 25;
+
+		arrowRemaining = new GuiButton(3, baseX, baseY, width, height,
+				getButtonText(Preferences.arrowCounterOption.isEnabled()));
+
+		baseY += 25;
+
+		cpsCounterHUD = new GuiButton(4, baseX, baseY, width, height,
+				getButtonText(Preferences.cpsCounterOption.isEnabled()));
+
+		baseY += 25;
+
+		toggleSneak = new GuiButton(5, baseX, baseY, width, height,
+				getButtonText(Preferences.toggleSneak));
 
 		this.buttonList.add(modStateButton);
-		this.buttonList.add(potionEffectHUD);
+		this.buttonList.add(statusEffectHUD);
 		this.buttonList.add(armorDurability);
 		this.buttonList.add(arrowRemaining);
-		this.buttonList.add(cpsHUD);
+		this.buttonList.add(cpsCounterHUD);
+		this.buttonList.add(toggleSneak);
 	}
 
 	protected void actionPerformed(GuiButton button) {
@@ -61,21 +76,24 @@ public class GuiSettings extends GuiScreen {
 			button.displayString = getButtonText(Preferences.enabled);
 			break;
 		case 1:
-			Preferences.potionEffectsHUD = !Preferences.potionEffectsHUD;
-			button.displayString = getButtonText(Preferences.potionEffectsHUD);
+			Preferences.statusEffectOption.toggleEnabled();
+			button.displayString = getButtonText(Preferences.statusEffectOption.isEnabled());
 			break;
 		case 2:
-			Preferences.armorDurabilityHUD = !Preferences.armorDurabilityHUD;
-			button.displayString = getButtonText(Preferences.armorDurabilityHUD);
+			Preferences.statusArmorOption.toggleEnabled();
+			button.displayString = getButtonText(Preferences.statusArmorOption.isEnabled());
 			break;
 		case 3:
-			Preferences.arrowCounter = !Preferences.arrowCounter;
-			button.displayString = getButtonText(Preferences.arrowCounter);
+			Preferences.arrowCounterOption.toggleEnabled();
+			button.displayString = getButtonText(Preferences.arrowCounterOption.isEnabled());
 			break;
 		case 4:
-			Preferences.cpsHUD = !Preferences.cpsHUD;
-			button.displayString = getButtonText(Preferences.cpsHUD);
+			Preferences.cpsCounterOption.toggleEnabled();
+			button.displayString = getButtonText(Preferences.cpsCounterOption.isEnabled());
 			break;
+		case 5:
+			Preferences.toggleSneak = !Preferences.toggleSneak;
+			button.displayString = getButtonText(Preferences.toggleSneak);
 		}
 	}
 
@@ -102,11 +120,19 @@ public class GuiSettings extends GuiScreen {
 
 		int offset = this.fontRenderer.FONT_HEIGHT / 2 - 12;
 
-		this.drawString(this.fontRenderer, "Mod", baseX, baseY - offset, 0xffffff);
-		this.drawString(this.fontRenderer, "Potion Effect HUD", baseX, baseY + 25 - offset, 0xffffff);
-		this.drawString(this.fontRenderer, "Armor Durability HUD", baseX, baseY + 50 - offset, 0xffffff);
-		this.drawString(this.fontRenderer, "Arrow Counter", baseX, baseY + 75 - offset, 0xffffff);
-		this.drawString(this.fontRenderer, "CPS HUD", baseX, baseY + 100 - offset, 0xffffff);
+		baseY -= offset;
+
+		this.drawString(this.fontRenderer, "Mod", baseX, baseY, 0xffffff);
+		baseY += 25;
+		this.drawString(this.fontRenderer, "Status Effect HUD", baseX, baseY, 0xffffff);
+		baseY += 25;
+		this.drawString(this.fontRenderer, "Status Armor HUD", baseX, baseY, 0xffffff);
+		baseY += 25;
+		this.drawString(this.fontRenderer, "Arrow Counter HUD", baseX, baseY, 0xffffff);
+		baseY += 25;
+		this.drawString(this.fontRenderer, "CPS HUD", baseX, baseY, 0xffffff);
+		baseY += 25;
+		this.drawString(this.fontRenderer, "Toggle Sneak", baseX, baseY, 0xffffff);
 
 	}
 

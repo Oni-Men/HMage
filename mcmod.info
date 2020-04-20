@@ -1,6 +1,6 @@
 [
 {
-  "modid": "hmage_anni",
+  "modid": "hmage",
   "name": "HMage",
   "description": "Better minecraft pvp life for HMage players",
   "version": "${version}",

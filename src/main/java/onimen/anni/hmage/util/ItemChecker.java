@@ -1,4 +1,4 @@
-package onimen.anni.hmage.misc;
+package onimen.anni.hmage.util;
 
 import java.util.Iterator;
 

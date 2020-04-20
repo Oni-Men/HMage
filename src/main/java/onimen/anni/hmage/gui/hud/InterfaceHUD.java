@@ -1,10 +1,12 @@
-package onimen.anni.hmage.gui;
+package onimen.anni.hmage.gui.hud;
 
 import net.minecraft.client.Minecraft;
 
-public interface IGuiItem {
+public interface InterfaceHUD {
 
 	public boolean isEnabled();
+
+	public String getPrefKey();
 
 	public void drawItem(Minecraft mc);
 
