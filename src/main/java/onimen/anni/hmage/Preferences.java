@@ -32,6 +32,9 @@ public class Preferences {
 	public static boolean toggleSneak = true;
 	public static int toggleSneakThreshold = 300;
 
+	public static boolean toggleSprint = true;
+	public static int toggleSprintThreshold = 300;
+
 	//TODO
 	public static boolean redTintArmor = false;
 
@@ -72,8 +75,11 @@ public class Preferences {
 		arrowCounterOption.read();
 		cpsCounterOption.read();
 
-		toggleSneak = getBoolean("toggleSneak", true);
+		toggleSneak = getBoolean("toggleSneak.enabled", true);
 		toggleSneakThreshold = getInt("toggleSneak.threshold", 300);
+
+		toggleSprint = getBoolean("toggleSprint.enabled", true);
+		toggleSprintThreshold = getInt("toggleSprint.threshold", 300);
 
 		redTintArmor = getBoolean("redTintArmor.enabled", true);
 	}
@@ -91,6 +97,9 @@ public class Preferences {
 
 		setBoolean("toggleSneak", toggleSneak);
 		setInt("toggleSneak.threshold", toggleSneakThreshold);
+
+		setBoolean("toggleSprint.enabled", toggleSprint);
+		setInt("toggleSprint.threshold", toggleSprintThreshold);
 
 		setBoolean("redTintArmor.enabled", redTintArmor);
 

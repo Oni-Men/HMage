@@ -59,6 +59,7 @@ public class CustomMovementInput extends MovementInput {
 		this.jump = this.gameSettings.keyBindJump.isKeyDown();
 
 		KeyBinding keyBindSneak = this.gameSettings.keyBindSneak;
+		KeyBinding keyBindSprint = this.gameSettings.keyBindSprint;
 
 		if (Preferences.toggleSneak) {
 
@@ -87,6 +88,15 @@ public class CustomMovementInput extends MovementInput {
 		if (this.sneak) {
 			this.moveStrafe = (float) ((double) this.moveStrafe * 0.3D);
 			this.moveForward = (float) ((double) this.moveForward * 0.3D);
+		}
+
+		if (Preferences.toggleSprint) {
+			if (keyBindSprint.isKeyDown()) {
+
+				if (keyBindSprint.isPressed()) {
+				}
+
+			}
 		}
 	}
 }

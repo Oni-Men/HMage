@@ -75,3 +75,12 @@ processResources {
         exclude 'mcmod.info'
     }
 }
+
+jar {
+    manifest {
+        //coremodのパスを指定する。
+        attributes FMLCorePlugin: 'onimen.anni.hmage.transformer.HMageCoreLoader'
+        //今回はAluminiummodが別で入っているためそれも読み込む。
+        attributes FMLCorePluginContainsFMLMod : 'true'
+    }
+}

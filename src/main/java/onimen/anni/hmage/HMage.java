@@ -10,9 +10,12 @@ import org.lwjgl.input.Mouse;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.MovementInputFromOptions;
 import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
@@ -45,6 +48,8 @@ public class HMage {
 	public static Path config;
 	public static HMage INSTANCE;
 
+	private Minecraft mc;
+
 	public KeyBinding openSettingsKey = new KeyBinding("hmage.key.settings", Keyboard.KEY_P, "key.categories.misc");
 
 	private Map<String, InterfaceHUD> hudMap = new HashMap<String, InterfaceHUD>();
@@ -61,6 +66,8 @@ public class HMage {
 	public HMage() {
 		INSTANCE = this;
 		MinecraftForge.EVENT_BUS.register(this);
+
+		this.mc = Minecraft.getMinecraft();
 
 		//Register HUD Items
 		this.registerItem(new ArrowCounterHUD());
@@ -83,7 +90,6 @@ public class HMage {
 
 	@SubscribeEvent
 	public void onClientTick(ClientTickEvent event) {
-		Minecraft mc = Minecraft.getMinecraft();
 
 		if (mc.player == null)
 			return;
@@ -96,7 +102,6 @@ public class HMage {
 	@SubscribeEvent
 	public void onKeyInput(KeyInputEvent event) {
 
-		Minecraft mc = Minecraft.getMinecraft();
 		if (openSettingsKey.isPressed()) {
 			if (mc.currentScreen == null) {
 				mc.displayGuiScreen(new GuiSettings());
@@ -113,7 +118,6 @@ public class HMage {
 		if (!Preferences.enabled)
 			return;
 
-		Minecraft mc = Minecraft.getMinecraft();
 		ElementType type = event.getType();
 
 		if (mc.gameSettings.showDebugInfo)
@@ -155,18 +159,17 @@ public class HMage {
 
 	}
 
-	//	@SubscribeEvent
-	//	public void onRenderPlayer(EntityConstructing event) {
-	//		if (!(event.getEntity() instanceof EntityPlayer)) {
-	//			return;
-	//		}
-	//
-	//		Minecraft mc = Minecraft.getMinecraft();
-	//		Collection<RenderPlayer> rendererValues = mc.getRenderManager().getSkinMap().values();
-	//
-	//		for (RenderPlayer renderer : rendererValues) {
-	//			renderer.addLayer(new RedTintArmor(renderer));
-	//		}
-	//	}
+	@SubscribeEvent
+	public void onEntityViewRender(EntityViewRenderEvent event) {
+
+		Entity entity = event.getEntity();
+
+		GlStateManager.pushMatrix();
+		GlStateManager.disableDepth();
+
+		GlStateManager.enableDepth();
+		GlStateManager.popMatrix();
+
+	}
 
 }

@@ -1,1 +1,1 @@
-./gradlew runClient
+./gradlew runClient -Dfml.coreMods.load=onimen.anni.hmage.transformer.HMageCoreLoader
