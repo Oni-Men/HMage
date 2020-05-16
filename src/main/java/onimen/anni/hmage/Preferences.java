@@ -35,8 +35,12 @@ public class Preferences {
 	public static boolean toggleSprint = true;
 	public static int toggleSprintThreshold = 300;
 
+  public static String fontFamily;
+
 	//TODO
-	public static boolean redTintArmor = false;
+  public static boolean redTintArmor = true;
+
+  public static boolean blockingAttack = true;
 
 	public static boolean checkIsConfigExisting() {
 		if (Files.notExists(HMage.config)) {
@@ -80,6 +84,7 @@ public class Preferences {
 
 		toggleSprint = getBoolean("toggleSprint.enabled", true);
 		toggleSprintThreshold = getInt("toggleSprint.threshold", 300);
+
 
 		redTintArmor = getBoolean("redTintArmor.enabled", true);
 	}

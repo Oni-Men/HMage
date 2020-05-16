@@ -9,15 +9,20 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovementInputFromOptions;
 import net.minecraftforge.client.ClientCommandHandler;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.client.event.RenderSpecificHandEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -27,15 +32,20 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.MouseInputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.command.PrefCommand;
 import onimen.anni.hmage.gui.AttackKeyListener;
 import onimen.anni.hmage.gui.GuiSettings;
+import onimen.anni.hmage.gui.PlayerTickListener;
 import onimen.anni.hmage.gui.hud.ArrowCounterHUD;
 import onimen.anni.hmage.gui.hud.CPSCounterHUD;
 import onimen.anni.hmage.gui.hud.InterfaceHUD;
 import onimen.anni.hmage.gui.hud.StatusArmorHUD;
 import onimen.anni.hmage.gui.hud.StatusEffectHUD;
+import onimen.anni.hmage.transformer.HurtingArmorInjector;
 import onimen.anni.hmage.util.CustomMovementInput;
 
 @Mod(modid = HMage.MODID, name = HMage.NAME, version = HMage.VERSION)
@@ -54,6 +64,8 @@ public class HMage {
 
 	private Map<String, InterfaceHUD> hudMap = new HashMap<String, InterfaceHUD>();
 	private CustomMovementInput customMovementInput = new CustomMovementInput(Minecraft.getMinecraft().gameSettings);
+
+  private boolean prevAllowFlying = false;
 
 	public void registerItem(InterfaceHUD item) {
 		hudMap.put(item.getPrefKey(), item);
@@ -74,6 +86,7 @@ public class HMage {
 		this.registerItem(new StatusEffectHUD());
 		this.registerItem(new StatusArmorHUD());
 		this.registerItem(new CPSCounterHUD());
+    //this.registerItem(new AcroJumpHUD());
 	}
 
 	@EventHandler
@@ -82,21 +95,27 @@ public class HMage {
 		Preferences.load(event);
 	}
 
-	@EventHandler
+  @EventHandler
 	public void init(FMLInitializationEvent event) {
 		ClientCommandHandler.instance.registerCommand(new PrefCommand());
 		ClientRegistry.registerKeyBinding(openSettingsKey);
+
+    RenderManager renderManager = this.mc.getRenderManager();
+    HurtingArmorInjector.replaceSkinMap(renderManager);
 	}
 
 	@SubscribeEvent
 	public void onClientTick(ClientTickEvent event) {
 
-		if (mc.player == null)
-			return;
+	  if (mc == null)
+	    return;
 
-		//If player uses vanilla MovementInput. use togglesneak input
-		if (mc.player.movementInput instanceof MovementInputFromOptions)
-			mc.player.movementInput = customMovementInput;
+	  if (mc.player != null) {
+	    //If player uses vanilla MovementInput. use togglesneak input
+	    if (mc.player.movementInput instanceof MovementInputFromOptions)
+	      mc.player.movementInput = customMovementInput;
+	  }
+
 	}
 
 	@SubscribeEvent
@@ -152,6 +171,25 @@ public class HMage {
 		if (Mouse.getEventButton() != 0)
 			return;
 
+    if (mc != null && mc.player != null) {
+      EntityPlayerSP player = mc.player;
+
+      ItemStack heldStack = player.getHeldItemMainhand();
+
+      if (heldStack != null) {
+        switch (Item.getIdFromItem(heldStack.getItem())) {
+          case 267:
+          case 268:
+          case 272:
+          case 276:
+          case 283:
+            player.setSneaking(true);
+        }
+
+      }
+
+    }
+
 		for (InterfaceHUD item : this.hudMap.values()) {
 			if (item.isEnabled() && item instanceof AttackKeyListener)
 				((AttackKeyListener) item).onAttackKeyClick();
@@ -159,17 +197,55 @@ public class HMage {
 
 	}
 
-	@SubscribeEvent
-	public void onEntityViewRender(EntityViewRenderEvent event) {
+  @SubscribeEvent
+  public void onEntityViewRender(RenderWorldLastEvent event) {
 
-		Entity entity = event.getEntity();
+    Entity entity = mc.getRenderViewEntity();
+    String str = entity.getDisplayName().getFormattedText();
 
-		GlStateManager.pushMatrix();
-		GlStateManager.disableDepth();
+    int thirdPersonView = mc.gameSettings.thirdPersonView;
 
-		GlStateManager.enableDepth();
-		GlStateManager.popMatrix();
+    if (thirdPersonView == 0) {
+      return;
+    }
 
-	}
+    boolean isThirdPersonFrontal = thirdPersonView == 2;
+    double partialTicks = event.getPartialTicks();
+    FontRenderer fontRenderer = mc.fontRenderer;
+
+    //double dx = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
+    //double dy = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
+    //double dz = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
+    float dyaw = (float) (entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks);
+    float dpitch = (float) (entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks);
+    float height = entity.height + 0.5F - (entity.isSneaking() ? 0.25F : 0F);
+
+    //EntityRenderer.drawNameplate(fontRenderer, str, 0, height, 0, 0, dyaw, dpitch, isThirdPersonFrontal, entity.isSneaking());
+  }
+
+  @SideOnly(Side.CLIENT)
+  @SubscribeEvent
+  public void onPlayerTickEvent(TickEvent.PlayerTickEvent event) {
+
+    boolean allowFlying = event.player.capabilities.allowFlying;
+
+    if (allowFlying != prevAllowFlying) {
+      for (InterfaceHUD item : this.hudMap.values()) {
+        if (item.isEnabled() && item instanceof PlayerTickListener)
+          ((PlayerTickListener) item).onPlayerTick(event.player);
+      }
+    }
+
+    prevAllowFlying = allowFlying;
+  }
+
+  @SubscribeEvent
+  public void onRenderSpecificHand(RenderSpecificHandEvent event) {
+    if (!Preferences.blockingAttack)
+      return;
+
+    //    event.setCanceled(true);
+
+  }
 
 }

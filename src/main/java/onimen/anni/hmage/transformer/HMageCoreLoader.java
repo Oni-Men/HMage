@@ -3,12 +3,14 @@ package onimen.anni.hmage.transformer;
 import java.util.Map;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 
+@MCVersion("1.12.2")
 public class HMageCoreLoader implements IFMLLoadingPlugin {
 
 	@Override
 	public String[] getASMTransformerClass() {
-		return new String[] { "onimen.anni.hmage.transformer.RedTintTransformer" };
+    return new String[0];//new String[] { "onimen.anni.hmage.transformer.HMageClassTransformer" };
 	}
 
 	@Override
