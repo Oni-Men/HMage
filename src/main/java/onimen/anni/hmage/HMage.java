@@ -36,6 +36,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import onimen.anni.hmage.cape.CapeManager;
+import onimen.anni.hmage.command.DebugCommand;
 import onimen.anni.hmage.command.PrefCommand;
 import onimen.anni.hmage.gui.AttackKeyListener;
 import onimen.anni.hmage.gui.GuiSettings;
@@ -87,6 +89,7 @@ public class HMage {
     this.registerItem(new StatusArmorHUD());
     this.registerItem(new CPSCounterHUD());
     //this.registerItem(new AcroJumpHUD());
+
   }
 
   @EventHandler
@@ -98,10 +101,13 @@ public class HMage {
   @EventHandler
   public void init(FMLInitializationEvent event) {
     ClientCommandHandler.instance.registerCommand(new PrefCommand());
+    ClientCommandHandler.instance.registerCommand(new DebugCommand());
     ClientRegistry.registerKeyBinding(openSettingsKey);
 
     RenderManager renderManager = this.mc.getRenderManager();
     HurtingArmorInjector.replaceSkinMap(renderManager);
+    //Capeをロード
+    CapeManager.loadCape();
   }
 
   @SubscribeEvent
