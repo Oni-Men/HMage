@@ -4,6 +4,8 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
@@ -15,16 +17,17 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import onimen.anni.hmage.Preferences;
 
 public class HMageLayerBipedArmor extends LayerArmorBase<ModelBiped> {
 
   private static final DynamicTexture TEXTURE_BRIGHTNESS = new DynamicTexture(16, 16);
 
   private final RenderLivingBase<?> renderer;
-  private float colorR = 1F;
-  private float colorG = 1F;
-  private float colorB = 1F;
-  private float alpha = 1F;
+  private float alpha = 1.0F;
+  private float colorR = 1.0F;
+  private float colorG = 1.0F;
+  private float colorB = 1.0F;
   private boolean skipRenderGlint;
 
   private FloatBuffer brightnessBuffer = GLAllocation.createDirectFloatBuffer(4);
@@ -44,6 +47,11 @@ public class HMageLayerBipedArmor extends LayerArmorBase<ModelBiped> {
   @Override
   public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount,
       float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+    if (!Preferences.hurtingArmor) {
+      super.doRenderLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw,
+          headPitch, scale);
+      return;
+    }
     this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw,
         headPitch, scale, EntityEquipmentSlot.CHEST);
     this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw,
@@ -70,7 +78,7 @@ public class HMageLayerBipedArmor extends LayerArmorBase<ModelBiped> {
         this.setModelSlotVisible(t, slotIn);
         this.renderer.bindTexture(this.getArmorResource(entityLivingBaseIn, itemstack, slotIn, null));
 
-        boolean isHurt = entityLivingBaseIn.hurtTime > 0 || entityLivingBaseIn.deathTime > 0;
+        boolean shouldBeHurt = shouldBeHurting(entityLivingBaseIn);
 
         {
           if (itemarmor.hasOverlay(itemstack)) // Allow this for anything, not only cloth
@@ -79,21 +87,25 @@ public class HMageLayerBipedArmor extends LayerArmorBase<ModelBiped> {
             float f = (float) (i >> 16 & 255) / 255.0F;
             float f1 = (float) (i >> 8 & 255) / 255.0F;
             float f2 = (float) (i & 255) / 255.0F;
-            if (isHurt) {
+            if (shouldBeHurt) {
               setGLParamForHurt();
             }
             GlStateManager.color(this.colorR * f, this.colorG * f1, this.colorB * f2, this.alpha);
             t.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-            unsetGLParam();
+            if (shouldBeHurt) {
+              unsetGLParam();
+            }
             this.renderer.bindTexture(this.getArmorResource(entityLivingBaseIn, itemstack, slotIn, "overlay"));
           }
           { // Non-colored
-            if (isHurt) {
+            if (shouldBeHurt) {
               setGLParamForHurt();
             }
             GlStateManager.color(this.colorR, this.colorG, this.colorB, this.alpha);
             t.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-            unsetGLParam();
+            if (shouldBeHurt) {
+              unsetGLParam();
+            }
           } // Default
           if (!this.skipRenderGlint && itemstack.hasEffect()) {
             renderEnchantedGlint(this.renderer, entityLivingBaseIn, t, limbSwing, limbSwingAmount, partialTicks,
@@ -102,6 +114,31 @@ public class HMageLayerBipedArmor extends LayerArmorBase<ModelBiped> {
         }
       }
     }
+  }
+
+  private boolean shouldBeHurting(EntityLivingBase entityLivingBaseIn) {
+    Minecraft mc = Minecraft.getMinecraft();
+
+    if (mc == null)
+      return false;
+
+    EntityPlayerSP player = mc.player;
+
+    if (player == null)
+      return false;
+
+
+    EntityLivingBase attackingEntity = player.getLastAttackedEntity();
+
+    if (!entityLivingBaseIn.isEntityEqual(attackingEntity))
+      return false;
+
+    int maxHurtTime = entityLivingBaseIn.maxHurtTime;
+
+    if (maxHurtTime < player.ticksExisted - player.getLastAttackedEntityTime())
+      return false;
+
+    return (entityLivingBaseIn.hurtTime > 0 || entityLivingBaseIn.deathTime > 0);
   }
 
   private void setGLParamForHurt() {
@@ -227,6 +264,17 @@ public class HMageLayerBipedArmor extends LayerArmorBase<ModelBiped> {
   protected ModelBiped getArmorModelHook(net.minecraft.entity.EntityLivingBase entity,
       net.minecraft.item.ItemStack itemStack, EntityEquipmentSlot slot, ModelBiped model) {
     return net.minecraftforge.client.ForgeHooksClient.getArmorModel(entity, itemStack, slot, model);
+  }
+
+  static {
+
+    int[] aint = TEXTURE_BRIGHTNESS.getTextureData();
+
+    for (int i = 0; i < 256; ++i) {
+      aint[i] = -1;
+    }
+
+    TEXTURE_BRIGHTNESS.updateDynamicTexture();
   }
 
 }
