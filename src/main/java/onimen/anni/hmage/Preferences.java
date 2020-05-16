@@ -37,8 +37,7 @@ public class Preferences {
 
   public static String fontFamily;
 
-  //TODO
-  public static boolean redTintArmor = true;
+  public static boolean hurtingArmor = true;
 
   public static boolean blockingAttack = true;
 
@@ -85,7 +84,7 @@ public class Preferences {
     toggleSprint = getBoolean("toggleSprint.enabled", true);
     toggleSprintThreshold = getInt("toggleSprint.threshold", 300);
 
-    redTintArmor = getBoolean("redTintArmor.enabled", true);
+    hurtingArmor = getBoolean("hurtingArmor.enabled", true);
   }
 
   public static void save() {
@@ -105,7 +104,7 @@ public class Preferences {
     setBoolean("toggleSprint.enabled", toggleSprint);
     setInt("toggleSprint.threshold", toggleSprintThreshold);
 
-    setBoolean("redTintArmor.enabled", redTintArmor);
+    setBoolean("hurtingArmor.enabled", hurtingArmor);
 
     try {
       cfg.store(Files.newBufferedWriter(HMage.config, StandardCharsets.UTF_8), "Created by HMage");
