@@ -30,5 +30,4 @@ public class HMageRenderPlayer extends RenderPlayer {
     this.addLayer(new HMageLayerBipedArmor(this));
   }
 
-
 }

@@ -50,126 +50,126 @@ import onimen.anni.hmage.util.CustomMovementInput;
 
 @Mod(modid = HMage.MODID, name = HMage.NAME, version = HMage.VERSION)
 public class HMage {
-	public static final String MODID = "hmage";
-	public static final String NAME = "HMage";
-	public static final String VERSION = "1.0.1";
-	public static Logger logger;
+  public static final String MODID = "hmage";
+  public static final String NAME = "HMage";
+  public static final String VERSION = "1.0.1";
+  public static Logger logger;
 
-	public static Path config;
-	public static HMage INSTANCE;
+  public static Path config;
+  public static HMage INSTANCE;
 
-	private Minecraft mc;
+  private Minecraft mc;
 
-	public KeyBinding openSettingsKey = new KeyBinding("hmage.key.settings", Keyboard.KEY_P, "key.categories.misc");
+  public KeyBinding openSettingsKey = new KeyBinding("hmage.key.settings", Keyboard.KEY_P, "key.categories.misc");
 
-	private Map<String, InterfaceHUD> hudMap = new HashMap<String, InterfaceHUD>();
-	private CustomMovementInput customMovementInput = new CustomMovementInput(Minecraft.getMinecraft().gameSettings);
+  private Map<String, InterfaceHUD> hudMap = new HashMap<String, InterfaceHUD>();
+  private CustomMovementInput customMovementInput = new CustomMovementInput(Minecraft.getMinecraft().gameSettings);
 
   private boolean prevAllowFlying = false;
 
-	public void registerItem(InterfaceHUD item) {
-		hudMap.put(item.getPrefKey(), item);
-	}
+  public void registerItem(InterfaceHUD item) {
+    hudMap.put(item.getPrefKey(), item);
+  }
 
-	public Map<String, InterfaceHUD> getHUDMap() {
-		return this.hudMap;
-	}
+  public Map<String, InterfaceHUD> getHUDMap() {
+    return this.hudMap;
+  }
 
-	public HMage() {
-		INSTANCE = this;
-		MinecraftForge.EVENT_BUS.register(this);
+  public HMage() {
+    INSTANCE = this;
+    MinecraftForge.EVENT_BUS.register(this);
 
-		this.mc = Minecraft.getMinecraft();
+    this.mc = Minecraft.getMinecraft();
 
-		//Register HUD Items
-		this.registerItem(new ArrowCounterHUD());
-		this.registerItem(new StatusEffectHUD());
-		this.registerItem(new StatusArmorHUD());
-		this.registerItem(new CPSCounterHUD());
+    //Register HUD Items
+    this.registerItem(new ArrowCounterHUD());
+    this.registerItem(new StatusEffectHUD());
+    this.registerItem(new StatusArmorHUD());
+    this.registerItem(new CPSCounterHUD());
     //this.registerItem(new AcroJumpHUD());
-	}
-
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
-		logger = event.getModLog();
-		Preferences.load(event);
-	}
+  }
 
   @EventHandler
-	public void init(FMLInitializationEvent event) {
-		ClientCommandHandler.instance.registerCommand(new PrefCommand());
-		ClientRegistry.registerKeyBinding(openSettingsKey);
+  public void preInit(FMLPreInitializationEvent event) {
+    logger = event.getModLog();
+    Preferences.load(event);
+  }
+
+  @EventHandler
+  public void init(FMLInitializationEvent event) {
+    ClientCommandHandler.instance.registerCommand(new PrefCommand());
+    ClientRegistry.registerKeyBinding(openSettingsKey);
 
     RenderManager renderManager = this.mc.getRenderManager();
     HurtingArmorInjector.replaceSkinMap(renderManager);
-	}
+  }
 
-	@SubscribeEvent
-	public void onClientTick(ClientTickEvent event) {
+  @SubscribeEvent
+  public void onClientTick(ClientTickEvent event) {
 
-	  if (mc == null)
-	    return;
+    if (mc == null)
+      return;
 
-	  if (mc.player != null) {
-	    //If player uses vanilla MovementInput. use togglesneak input
-	    if (mc.player.movementInput instanceof MovementInputFromOptions)
-	      mc.player.movementInput = customMovementInput;
-	  }
+    if (mc.player != null) {
+      //If player uses vanilla MovementInput. use togglesneak input
+      if (mc.player.movementInput instanceof MovementInputFromOptions)
+        mc.player.movementInput = customMovementInput;
+    }
 
-	}
+  }
 
-	@SubscribeEvent
-	public void onKeyInput(KeyInputEvent event) {
+  @SubscribeEvent
+  public void onKeyInput(KeyInputEvent event) {
 
-		if (openSettingsKey.isPressed()) {
-			if (mc.currentScreen == null) {
-				mc.displayGuiScreen(new GuiSettings());
-			} else if (mc.currentScreen instanceof GuiSettings) {
-				mc.displayGuiScreen((GuiScreen) null);
-			}
-		}
+    if (openSettingsKey.isPressed()) {
+      if (mc.currentScreen == null) {
+        mc.displayGuiScreen(new GuiSettings());
+      } else if (mc.currentScreen instanceof GuiSettings) {
+        mc.displayGuiScreen((GuiScreen) null);
+      }
+    }
 
-	}
+  }
 
-	@SubscribeEvent
-	public void onRenderGameOverlay(RenderGameOverlayEvent event) {
+  @SubscribeEvent
+  public void onRenderGameOverlay(RenderGameOverlayEvent event) {
 
-		if (!Preferences.enabled)
-			return;
+    if (!Preferences.enabled)
+      return;
 
-		ElementType type = event.getType();
+    ElementType type = event.getType();
 
-		if (mc.gameSettings.showDebugInfo)
-			return;
+    if (mc.gameSettings.showDebugInfo)
+      return;
 
-		if (type == ElementType.TEXT) {
+    if (type == ElementType.TEXT) {
 
-			if (mc.currentScreen == null) {
+      if (mc.currentScreen == null) {
 
-				for (InterfaceHUD item : this.hudMap.values()) {
-					if (item.isEnabled())
-						item.drawItem(mc);
-				}
+        for (InterfaceHUD item : this.hudMap.values()) {
+          if (item.isEnabled())
+            item.drawItem(mc);
+        }
 
-			}
+      }
 
-		} else if (type == ElementType.POTION_ICONS) {
-			if (event.isCancelable() && Preferences.statusEffectOption.isEnabled())
-				event.setCanceled(true);
-		}
-	}
+    } else if (type == ElementType.POTION_ICONS) {
+      if (event.isCancelable() && Preferences.statusEffectOption.isEnabled())
+        event.setCanceled(true);
+    }
+  }
 
-	@SubscribeEvent
-	public void onLeftClick(MouseInputEvent event) {
+  @SubscribeEvent
+  public void onLeftClick(MouseInputEvent event) {
 
-		if (!Preferences.enabled)
-			return;
+    if (!Preferences.enabled)
+      return;
 
-		if (!Mouse.getEventButtonState())
-			return;
+    if (!Mouse.getEventButtonState())
+      return;
 
-		if (Mouse.getEventButton() != 0)
-			return;
+    if (Mouse.getEventButton() != 0)
+      return;
 
     if (mc != null && mc.player != null) {
       EntityPlayerSP player = mc.player;
@@ -178,24 +178,24 @@ public class HMage {
 
       if (heldStack != null) {
         switch (Item.getIdFromItem(heldStack.getItem())) {
-          case 267:
-          case 268:
-          case 272:
-          case 276:
-          case 283:
-            player.setSneaking(true);
+        case 267:
+        case 268:
+        case 272:
+        case 276:
+        case 283:
+          player.setSneaking(true);
         }
 
       }
 
     }
 
-		for (InterfaceHUD item : this.hudMap.values()) {
-			if (item.isEnabled() && item instanceof AttackKeyListener)
-				((AttackKeyListener) item).onAttackKeyClick();
-		}
+    for (InterfaceHUD item : this.hudMap.values()) {
+      if (item.isEnabled() && item instanceof AttackKeyListener)
+        ((AttackKeyListener) item).onAttackKeyClick();
+    }
 
-	}
+  }
 
   @SubscribeEvent
   public void onEntityViewRender(RenderWorldLastEvent event) {
@@ -205,9 +205,7 @@ public class HMage {
 
     int thirdPersonView = mc.gameSettings.thirdPersonView;
 
-    if (thirdPersonView == 0) {
-      return;
-    }
+    if (thirdPersonView == 0) { return; }
 
     boolean isThirdPersonFrontal = thirdPersonView == 2;
     double partialTicks = event.getPartialTicks();
@@ -217,7 +215,8 @@ public class HMage {
     //double dy = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
     //double dz = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
     float dyaw = (float) (entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks);
-    float dpitch = (float) (entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks);
+    float dpitch = (float) (entity.prevRotationPitch
+        + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks);
     float height = entity.height + 0.5F - (entity.isSneaking() ? 0.25F : 0F);
 
     //EntityRenderer.drawNameplate(fontRenderer, str, 0, height, 0, 0, dyaw, dpitch, isThirdPersonFrontal, entity.isSneaking());

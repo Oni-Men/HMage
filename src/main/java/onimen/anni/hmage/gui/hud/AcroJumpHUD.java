@@ -27,9 +27,7 @@ public class AcroJumpHUD extends Gui implements InterfaceHUD, PlayerTickListener
   @Override
   public void drawItem(Minecraft mc) {
 
-    if (!isAcrobat || isFlyableVampire(mc.player)) {
-      return;
-    }
+    if (!isAcrobat || isFlyableVampire(mc.player)) { return; }
 
     ScaledResolution sr = new ScaledResolution(mc);
 
@@ -66,9 +64,7 @@ public class AcroJumpHUD extends Gui implements InterfaceHUD, PlayerTickListener
 
   private String getCooldownText() {
     float elapsedSec = (float) (System.currentTimeMillis() - allowFlightChanged) / 1000f;
-    if (elapsedSec < 10) {
-      return String.format("Jump %.2fsec", 10 - elapsedSec);
-    }
+    if (elapsedSec < 10) { return String.format("Jump %.2fsec", 10 - elapsedSec); }
     return "Jump Ready";
   }
 }

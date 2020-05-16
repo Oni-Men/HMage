@@ -4,10 +4,10 @@ import net.minecraft.client.Minecraft;
 
 public interface InterfaceHUD {
 
-	public boolean isEnabled();
+  public boolean isEnabled();
 
-	public String getPrefKey();
+  public String getPrefKey();
 
-	public void drawItem(Minecraft mc);
+  public void drawItem(Minecraft mc);
 
 }

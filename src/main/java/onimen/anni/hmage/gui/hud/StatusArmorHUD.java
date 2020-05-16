@@ -21,121 +21,119 @@ import onimen.anni.hmage.util.PositionHelper.Position;
 
 public class StatusArmorHUD extends Gui implements InterfaceHUD {
 
-	private static final int SPACE = 1;
+  private static final int SPACE = 1;
 
-	@Override
-	public String getPrefKey() {
-		return "statusArmorHUD";
-	}
+  @Override
+  public String getPrefKey() {
+    return "statusArmorHUD";
+  }
 
-	@Override
-	public boolean isEnabled() {
-		return Preferences.statusArmorOption.isEnabled();
-	}
+  @Override
+  public boolean isEnabled() {
+    return Preferences.statusArmorOption.isEnabled();
+  }
 
-	public String getDurabilityTextFromItemStack(ItemStack stack) {
-		return String.valueOf(stack.getMaxDamage() - stack.getItemDamage());
-	}
+  public String getDurabilityTextFromItemStack(ItemStack stack) {
+    return String.valueOf(stack.getMaxDamage() - stack.getItemDamage());
+  }
 
-	public int calculateWidth(FontRenderer fontRenderer, List<ItemStack> armorList, boolean isHorizontal) {
-		int width = 0;
+  public int calculateWidth(FontRenderer fontRenderer, List<ItemStack> armorList, boolean isHorizontal) {
+    int width = 0;
 
-		for (ItemStack armor : armorList) {
-			if (Item.getIdFromItem(armor.getItem()) == 0)
-				continue;
+    for (ItemStack armor : armorList) {
+      if (Item.getIdFromItem(armor.getItem()) == 0)
+        continue;
 
-			int durabilityTextWidth = fontRenderer.getStringWidth(getDurabilityTextFromItemStack(armor));
-			if (isHorizontal) {
-				width += 20 + durabilityTextWidth + SPACE;
-			} else {
-				width = Math.max(width, 20 + durabilityTextWidth);
-			}
-		}
+      int durabilityTextWidth = fontRenderer.getStringWidth(getDurabilityTextFromItemStack(armor));
+      if (isHorizontal) {
+        width += 20 + durabilityTextWidth + SPACE;
+      } else {
+        width = Math.max(width, 20 + durabilityTextWidth);
+      }
+    }
 
-		return width;
-	}
+    return width;
+  }
 
-	public int calculateHeight(List<ItemStack> armorList, boolean isHorizontal) {
+  public int calculateHeight(List<ItemStack> armorList, boolean isHorizontal) {
 
-		if (isHorizontal) {
-			return 20;
-		}
+    if (isHorizontal) { return 20; }
 
-		return armorList.stream()
-				.filter(armor -> Item.getIdFromItem(armor.getItem()) != 0)
-				.collect(Collectors.toList())
-				.size() * (20 + SPACE);
+    return armorList.stream()
+        .filter(armor -> Item.getIdFromItem(armor.getItem()) != 0)
+        .collect(Collectors.toList())
+        .size() * (20 + SPACE);
 
-	}
+  }
 
-	public int getDurabilityColor(ItemStack stack) {
-		int durability = (int) (255 - 255 * ((float) stack.getItemDamage() / (float) stack.getMaxDamage()));
-		int red = 0xff;
-		int green = durability;
-		int blue = (int) (durability * ((float) durability / 256));
+  public int getDurabilityColor(ItemStack stack) {
+    int durability = (int) (255 - 255 * ((float) stack.getItemDamage() / (float) stack.getMaxDamage()));
+    int red = 0xff;
+    int green = durability;
+    int blue = (int) (durability * ((float) durability / 256));
 
-		return (red << 16) | (green << 8) | blue;
-	}
+    return (red << 16) | (green << 8) | blue;
+  }
 
-	@Override
-	public void drawItem(Minecraft mc) {
+  @Override
+  public void drawItem(Minecraft mc) {
 
-		ScaledResolution sr = new ScaledResolution(mc);
-		EntityPlayerSP player = mc.player;
-		FontRenderer fontRenderer = mc.fontRenderer;
+    ScaledResolution sr = new ScaledResolution(mc);
+    EntityPlayerSP player = mc.player;
+    FontRenderer fontRenderer = mc.fontRenderer;
 
-		List<ItemStack> armorList = new ArrayList<>();
-		Iterator<ItemStack> iterator = player.getArmorInventoryList().iterator();
-		while (iterator.hasNext()) {
-			armorList.add(iterator.next());
-		}
-		Collections.reverse(armorList);
+    List<ItemStack> armorList = new ArrayList<>();
+    Iterator<ItemStack> iterator = player.getArmorInventoryList().iterator();
+    while (iterator.hasNext()) {
+      armorList.add(iterator.next());
+    }
+    Collections.reverse(armorList);
 
-		Position position = new PositionHelper.Position(Preferences.statusArmorOption.getPosition());
+    Position position = new PositionHelper.Position(Preferences.statusArmorOption.getPosition());
 
-		int x = Preferences.statusArmorOption.getTranslateX();
-		int y = Preferences.statusArmorOption.getTranslateY();
+    int x = Preferences.statusArmorOption.getTranslateX();
+    int y = Preferences.statusArmorOption.getTranslateY();
 
-		if (position.right) {
-			x += sr.getScaledWidth() - calculateWidth(fontRenderer, armorList, position.isHorizontal()) - SPACE;
-		} else {
-			x += SPACE;
-		}
+    if (position.right) {
+      x += sr.getScaledWidth() - calculateWidth(fontRenderer, armorList, position.isHorizontal()) - SPACE;
+    } else {
+      x += SPACE;
+    }
 
-		if (position.bottom) {
-			y += sr.getScaledHeight() - calculateHeight(armorList, position.isHorizontal()) - SPACE;
-		} else {
-			y += SPACE;
-		}
+    if (position.bottom) {
+      y += sr.getScaledHeight() - calculateHeight(armorList, position.isHorizontal()) - SPACE;
+    } else {
+      y += SPACE;
+    }
 
-		for (ItemStack armor : armorList) {
+    for (ItemStack armor : armorList) {
 
-			if (Item.getIdFromItem(armor.getItem()) == 0)
-				continue;
+      if (Item.getIdFromItem(armor.getItem()) == 0)
+        continue;
 
-			int color = getDurabilityColor(armor);
-			String text = getDurabilityTextFromItemStack(armor);
-			int stringWidth = fontRenderer.getStringWidth(text);
+      int color = getDurabilityColor(armor);
+      String text = getDurabilityTextFromItemStack(armor);
+      int stringWidth = fontRenderer.getStringWidth(text);
 
-			if (position.right && !position.isHorizontal()) {
-				mc.getRenderItem().renderItemIntoGUI(armor, x + stringWidth + 2, y + 2);
-				this.drawString(mc.fontRenderer, text, x, y + 10 - mc.fontRenderer.FONT_HEIGHT / 2, color);
-			} else {
-				mc.getRenderItem().renderItemIntoGUI(armor, x + 2, y + 2);
-				this.drawString(mc.fontRenderer, text, x + 20, y + 10 - mc.fontRenderer.FONT_HEIGHT / 2, color);
-			}
+      if (position.right && !position.isHorizontal()) {
+        mc.getRenderItem().renderItemIntoGUI(armor, x + stringWidth + 2, y + 2);
+        this.drawString(mc.fontRenderer, text, x, y + 10 - mc.fontRenderer.FONT_HEIGHT / 2, color);
+      } else {
+        mc.getRenderItem().renderItemIntoGUI(armor, x + 2, y + 2);
+        this.drawString(mc.fontRenderer, text, x + 20, y + 10 - mc.fontRenderer.FONT_HEIGHT / 2, color);
+      }
 
-			if (position.isHorizontal()) {
-				x += 20 + stringWidth + SPACE;
-			} else {
-				y += 20 + SPACE;
-			}
+      if (position.isHorizontal()) {
+        x += 20 + stringWidth + SPACE;
+      } else {
+        y += 20 + SPACE;
+      }
 
-		}
+    }
 
-		RenderHelper.disableStandardItemLighting();
-		GlStateManager.disableRescaleNormal();
-		GlStateManager.disableBlend();
+    RenderHelper.disableStandardItemLighting();
+    GlStateManager.disableRescaleNormal();
+    GlStateManager.disableBlend();
 
-	}
+  }
 }

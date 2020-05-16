@@ -42,14 +42,21 @@ public class HMageLayerBipedArmor extends LayerArmorBase<ModelBiped> {
   }
 
   @Override
-  public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-    this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, EntityEquipmentSlot.CHEST);
-    this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, EntityEquipmentSlot.LEGS);
-    this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, EntityEquipmentSlot.FEET);
-    this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, EntityEquipmentSlot.HEAD);
+  public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount,
+      float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+    this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw,
+        headPitch, scale, EntityEquipmentSlot.CHEST);
+    this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw,
+        headPitch, scale, EntityEquipmentSlot.LEGS);
+    this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw,
+        headPitch, scale, EntityEquipmentSlot.FEET);
+    this.renderArmorLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw,
+        headPitch, scale, EntityEquipmentSlot.HEAD);
   }
 
-  private void renderArmorLayer(EntityLivingBase entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, EntityEquipmentSlot slotIn) {
+  private void renderArmorLayer(EntityLivingBase entityLivingBaseIn, float limbSwing, float limbSwingAmount,
+      float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale,
+      EntityEquipmentSlot slotIn) {
     ItemStack itemstack = entityLivingBaseIn.getItemStackFromSlot(slotIn);
 
     if (itemstack.getItem() instanceof ItemArmor) {
@@ -89,7 +96,8 @@ public class HMageLayerBipedArmor extends LayerArmorBase<ModelBiped> {
             unsetGLParam();
           } // Default
           if (!this.skipRenderGlint && itemstack.hasEffect()) {
-            renderEnchantedGlint(this.renderer, entityLivingBaseIn, t, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
+            renderEnchantedGlint(this.renderer, entityLivingBaseIn, t, limbSwing, limbSwingAmount, partialTicks,
+                ageInTicks, netHeadYaw, headPitch, scale);
           }
         }
       }
@@ -216,7 +224,8 @@ public class HMageLayerBipedArmor extends LayerArmorBase<ModelBiped> {
   }
 
   @Override
-  protected ModelBiped getArmorModelHook(net.minecraft.entity.EntityLivingBase entity, net.minecraft.item.ItemStack itemStack, EntityEquipmentSlot slot, ModelBiped model) {
+  protected ModelBiped getArmorModelHook(net.minecraft.entity.EntityLivingBase entity,
+      net.minecraft.item.ItemStack itemStack, EntityEquipmentSlot slot, ModelBiped model) {
     return net.minecraftforge.client.ForgeHooksClient.getArmorModel(entity, itemStack, slot, model);
   }
 

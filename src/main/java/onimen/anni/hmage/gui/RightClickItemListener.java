@@ -4,5 +4,5 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 public interface RightClickItemListener {
 
-	public void onRightClickItem(PlayerInteractEvent.RightClickItem event);
+  public void onRightClickItem(PlayerInteractEvent.RightClickItem event);
 }

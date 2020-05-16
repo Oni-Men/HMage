@@ -11,7 +11,6 @@ import onimen.anni.hmage.renderer.HMageRenderPlayer;
 
 public class HurtingArmorInjector {
 
-
   public static void replaceSkinMap(RenderManager renderManager) {
 
     Class<? extends RenderManager> c1ass = renderManager.getClass();

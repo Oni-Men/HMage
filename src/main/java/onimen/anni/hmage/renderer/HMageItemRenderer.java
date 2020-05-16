@@ -4,8 +4,6 @@ public class HMageItemRenderer {
 
   public static void renderItemInFirstPerson() {
 
-
-
   }
 
 }
