@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.util.PositionHelper;
 import onimen.anni.hmage.util.PositionHelper.Position;
@@ -34,7 +35,12 @@ public class StatusArmorHUD extends Gui implements InterfaceHUD {
   }
 
   public String getDurabilityTextFromItemStack(ItemStack stack) {
-    return String.valueOf(stack.getMaxDamage() - stack.getItemDamage());
+    boolean itemStackDamageable = stack.isItemStackDamageable();
+    if (itemStackDamageable) {
+      return String.valueOf(stack.getMaxDamage() - stack.getItemDamage());
+    } else {
+      return "";
+    }
   }
 
   public int calculateWidth(FontRenderer fontRenderer, List<ItemStack> armorList, boolean isHorizontal) {
@@ -83,10 +89,15 @@ public class StatusArmorHUD extends Gui implements InterfaceHUD {
     FontRenderer fontRenderer = mc.fontRenderer;
 
     List<ItemStack> armorList = new ArrayList<>();
+    //手持ちのアイテム
+    armorList.add(player.getHeldItem(EnumHand.OFF_HAND));
+    armorList.add(player.getHeldItem(EnumHand.MAIN_HAND));
+    //装備
     Iterator<ItemStack> iterator = player.getArmorInventoryList().iterator();
     while (iterator.hasNext()) {
       armorList.add(iterator.next());
     }
+
     Collections.reverse(armorList);
 
     Position position = new PositionHelper.Position(Preferences.statusArmorOption.getPosition());
