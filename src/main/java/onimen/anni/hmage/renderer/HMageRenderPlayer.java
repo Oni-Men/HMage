@@ -4,7 +4,8 @@ import java.util.Iterator;
 
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
-import net.minecraft.client.renderer.entity.layers.LayerArmorBase;
+import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
+import net.minecraft.client.renderer.entity.layers.LayerCape;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import onimen.anni.hmage.renderer.layer.HMageLayerCape;
 
@@ -20,10 +21,10 @@ public class HMageRenderPlayer extends RenderPlayer {
 
     for (Iterator iterator = layerRenderers.iterator(); iterator.hasNext();) {
       LayerRenderer<?> layerRenderer = (LayerRenderer<?>) iterator.next();
-      if (layerRenderer instanceof LayerArmorBase) {
+      if (layerRenderer instanceof LayerBipedArmor) {
         iterator.remove();
         System.out.println("------------------REMOVE DEFAULT RENDERER----------:" + layerRenderer.getClass());
-      } else if (layerRenderer instanceof LayerRenderer) {
+      } else if (layerRenderer instanceof LayerCape) {
         iterator.remove();
         System.out.println("------------------REMOVE DEFAULT RENDERER----------:" + layerRenderer.getClass());
       }
