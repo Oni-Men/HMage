@@ -20,8 +20,6 @@ public class HurtingArmorInjector {
     for (Field field : fields) {
       int modifiers = field.getModifiers();
 
-      System.out.println(field.getType());
-
       if (!Modifier.isFinal(modifiers)) {
         continue;
       }
