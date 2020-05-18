@@ -19,9 +19,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovementInputFromOptions;
 import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -34,6 +34,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.MouseInputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.cape.CapeManager;
@@ -47,8 +48,10 @@ import onimen.anni.hmage.gui.hud.CPSCounterHUD;
 import onimen.anni.hmage.gui.hud.InterfaceHUD;
 import onimen.anni.hmage.gui.hud.StatusArmorHUD;
 import onimen.anni.hmage.gui.hud.StatusEffectHUD;
+import onimen.anni.hmage.observer.AnniObserver;
 import onimen.anni.hmage.transformer.HurtingArmorInjector;
 import onimen.anni.hmage.util.CustomMovementInput;
+import onimen.anni.hmage.util.ShotbowUtils;
 
 @Mod(modid = HMage.MODID, name = HMage.NAME, version = HMage.VERSION)
 public class HMage {
@@ -68,6 +71,8 @@ public class HMage {
   private CustomMovementInput customMovementInput = new CustomMovementInput(Minecraft.getMinecraft().gameSettings);
 
   private boolean prevAllowFlying = false;
+
+  public static AnniObserver anniObserver;
 
   public void registerItem(InterfaceHUD item) {
     hudMap.put(item.getPrefKey(), item);
@@ -90,6 +95,10 @@ public class HMage {
     this.registerItem(new CPSCounterHUD());
     //this.registerItem(new AcroJumpHUD());
 
+    /* TODO
+     *  add Acrobat Jump HUD
+     *  add Kill Counter HUD
+     */
   }
 
   @EventHandler
@@ -228,6 +237,20 @@ public class HMage {
     //EntityRenderer.drawNameplate(fontRenderer, str, 0, height, 0, 0, dyaw, dpitch, isThirdPersonFrontal, entity.isSneaking());
   }
 
+  @SubscribeEvent
+  public void onClientConnectToServer(ClientConnectedToServerEvent event) {
+    if (ShotbowUtils.isShotbow(mc)) {
+      anniObserver = new AnniObserver(mc);
+    }
+  }
+
+  @SubscribeEvent
+  public void onRecieveChat(ClientChatReceivedEvent event) {
+    if (anniObserver != null) {
+      anniObserver.onRecieveChat(event);
+    }
+  }
+
   @SideOnly(Side.CLIENT)
   @SubscribeEvent
   public void onPlayerTickEvent(TickEvent.PlayerTickEvent event) {
@@ -242,15 +265,6 @@ public class HMage {
     }
 
     prevAllowFlying = allowFlying;
-  }
-
-  @SubscribeEvent
-  public void onRenderSpecificHand(RenderSpecificHandEvent event) {
-    if (!Preferences.blockingAttack)
-      return;
-
-    //    event.setCanceled(true);
-
   }
 
 }
