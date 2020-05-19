@@ -34,10 +34,13 @@ public class StatusArmorHUD extends Gui implements InterfaceHUD {
     return Preferences.statusArmorOption.isEnabled();
   }
 
-  public String getDurabilityTextFromItemStack(ItemStack stack) {
+  public String getTextForItemStack(ItemStack stack) {
     boolean itemStackDamageable = stack.isItemStackDamageable();
     if (itemStackDamageable) {
       return String.valueOf(stack.getMaxDamage() - stack.getItemDamage());
+
+    } else if (stack.isStackable()) {
+      return String.valueOf(stack.getCount());
     } else {
       return "";
     }
@@ -50,7 +53,7 @@ public class StatusArmorHUD extends Gui implements InterfaceHUD {
       if (Item.getIdFromItem(armor.getItem()) == 0)
         continue;
 
-      int durabilityTextWidth = fontRenderer.getStringWidth(getDurabilityTextFromItemStack(armor));
+      int durabilityTextWidth = fontRenderer.getStringWidth(getTextForItemStack(armor));
       if (isHorizontal) {
         width += 20 + durabilityTextWidth + SPACE;
       } else {
@@ -123,16 +126,20 @@ public class StatusArmorHUD extends Gui implements InterfaceHUD {
         continue;
 
       int color = getDurabilityColor(armor);
-      String text = getDurabilityTextFromItemStack(armor);
+      String text = getTextForItemStack(armor);
       int stringWidth = fontRenderer.getStringWidth(text);
 
+      RenderHelper.enableGUIStandardItemLighting();
+
       if (position.right && !position.isHorizontal()) {
-        mc.getRenderItem().renderItemIntoGUI(armor, x + stringWidth + 2, y + 2);
+        mc.getRenderItem().renderItemAndEffectIntoGUI(armor, x + stringWidth + 2, y + 2);
         this.drawString(mc.fontRenderer, text, x, y + 10 - mc.fontRenderer.FONT_HEIGHT / 2, color);
       } else {
-        mc.getRenderItem().renderItemIntoGUI(armor, x + 2, y + 2);
+        mc.getRenderItem().renderItemAndEffectIntoGUI(armor, x + 2, y + 2);
         this.drawString(mc.fontRenderer, text, x + 20, y + 10 - mc.fontRenderer.FONT_HEIGHT / 2, color);
       }
+
+      RenderHelper.disableStandardItemLighting();
 
       if (position.isHorizontal()) {
         x += 20 + stringWidth + SPACE;
