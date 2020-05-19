@@ -76,6 +76,10 @@ public class StatusArmorHUD extends Gui implements InterfaceHUD {
   }
 
   public int getDurabilityColor(ItemStack stack) {
+
+    if (!stack.isItemStackDamageable())
+      return 0xffffff;
+
     int durability = (int) (255 - 255 * ((float) stack.getItemDamage() / (float) stack.getMaxDamage()));
     int red = 0xff;
     int green = durability;
@@ -129,17 +133,13 @@ public class StatusArmorHUD extends Gui implements InterfaceHUD {
       String text = getTextForItemStack(armor);
       int stringWidth = fontRenderer.getStringWidth(text);
 
-      RenderHelper.enableGUIStandardItemLighting();
-
       if (position.right && !position.isHorizontal()) {
-        mc.getRenderItem().renderItemAndEffectIntoGUI(armor, x + stringWidth + 2, y + 2);
+        drawLightedItem(mc, armor, x + stringWidth + 2, y + 2);
         this.drawString(mc.fontRenderer, text, x, y + 10 - mc.fontRenderer.FONT_HEIGHT / 2, color);
       } else {
-        mc.getRenderItem().renderItemAndEffectIntoGUI(armor, x + 2, y + 2);
+        drawLightedItem(mc, armor, x + 2, y + 2);
         this.drawString(mc.fontRenderer, text, x + 20, y + 10 - mc.fontRenderer.FONT_HEIGHT / 2, color);
       }
-
-      RenderHelper.disableStandardItemLighting();
 
       if (position.isHorizontal()) {
         x += 20 + stringWidth + SPACE;
@@ -149,9 +149,14 @@ public class StatusArmorHUD extends Gui implements InterfaceHUD {
 
     }
 
-    RenderHelper.disableStandardItemLighting();
     GlStateManager.disableRescaleNormal();
     GlStateManager.disableBlend();
 
+  }
+
+  private void drawLightedItem(Minecraft mc, ItemStack stack, int x, int y) {
+    RenderHelper.enableGUIStandardItemLighting();
+    mc.getRenderItem().renderItemAndEffectIntoGUI(stack, x, y);
+    RenderHelper.disableStandardItemLighting();
   }
 }
