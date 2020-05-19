@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
-import net.minecraft.client.renderer.entity.layers.LayerArmorBase;
+import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -19,7 +19,7 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import onimen.anni.hmage.Preferences;
 
-public class HMageLayerBipedArmor extends LayerArmorBase<ModelBiped> {
+public class HMageLayerBipedArmor extends LayerBipedArmor {
 
   private static final DynamicTexture TEXTURE_BRIGHTNESS = new DynamicTexture(16, 16);
 
@@ -39,15 +39,9 @@ public class HMageLayerBipedArmor extends LayerArmorBase<ModelBiped> {
   }
 
   @Override
-  protected void initArmor() {
-    this.modelLeggings = new ModelBiped(0.5F);
-    this.modelArmor = new ModelBiped(1.0F);
-  }
-
-  @Override
   public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float limbSwing, float limbSwingAmount,
       float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-    if (!Preferences.hurtingArmor) {
+    if (!Preferences.hurtingArmor || !Preferences.enabled) {
       super.doRenderLayer(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw,
           headPitch, scale);
       return;
@@ -228,42 +222,6 @@ public class HMageLayerBipedArmor extends LayerArmorBase<ModelBiped> {
     GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA);
     GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, GL11.GL_TEXTURE);
     GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
-  }
-
-  @SuppressWarnings("incomplete-switch")
-  @Override
-  protected void setModelSlotVisible(ModelBiped modelBiped, EntityEquipmentSlot slotIn) {
-    this.setModelVisible(modelBiped);
-
-    switch (slotIn) {
-    case HEAD:
-      modelBiped.bipedHead.showModel = true;
-      modelBiped.bipedHeadwear.showModel = true;
-      break;
-    case CHEST:
-      modelBiped.bipedBody.showModel = true;
-      modelBiped.bipedRightArm.showModel = true;
-      modelBiped.bipedLeftArm.showModel = true;
-      break;
-    case LEGS:
-      modelBiped.bipedBody.showModel = true;
-      modelBiped.bipedRightLeg.showModel = true;
-      modelBiped.bipedLeftLeg.showModel = true;
-      break;
-    case FEET:
-      modelBiped.bipedRightLeg.showModel = true;
-      modelBiped.bipedLeftLeg.showModel = true;
-    }
-  }
-
-  protected void setModelVisible(ModelBiped model) {
-    model.setVisible(false);
-  }
-
-  @Override
-  protected ModelBiped getArmorModelHook(net.minecraft.entity.EntityLivingBase entity,
-      net.minecraft.item.ItemStack itemStack, EntityEquipmentSlot slot, ModelBiped model) {
-    return net.minecraftforge.client.ForgeHooksClient.getArmorModel(entity, itemStack, slot, model);
   }
 
   static {
