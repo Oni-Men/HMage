@@ -1,4 +1,4 @@
-package onimen.anni.hmage.gui.hud;
+package onimen.anni.hmage.module.hud;
 
 import java.util.List;
 import java.util.stream.Collectors;

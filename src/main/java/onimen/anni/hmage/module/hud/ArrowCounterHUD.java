@@ -1,4 +1,4 @@
-package onimen.anni.hmage.gui.hud;
+package onimen.anni.hmage.module.hud;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;

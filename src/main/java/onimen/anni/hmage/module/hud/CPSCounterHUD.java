@@ -2,23 +2,25 @@
  * Referenced https://github.com/GitFyu/KeystrokesBase
  */
 
-package onimen.anni.hmage.gui.hud;
+package onimen.anni.hmage.module.hud;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent.MouseInputEvent;
 import onimen.anni.hmage.Preferences;
-import onimen.anni.hmage.gui.AttackKeyListener;
 import onimen.anni.hmage.util.PositionHelper;
 import onimen.anni.hmage.util.PositionHelper.Position;
 
-public class CPSCounterHUD extends Gui implements InterfaceHUD, AttackKeyListener {
+public class CPSCounterHUD extends Gui implements InterfaceHUD {
 
   private final static int SPACE = 1;
 
@@ -103,8 +105,17 @@ public class CPSCounterHUD extends Gui implements InterfaceHUD, AttackKeyListene
 
   }
 
-  @Override
-  public void onAttackKeyClick() {
+  @SubscribeEvent
+  public void onAttackKeyClick(MouseInputEvent event) {
+    if (!Preferences.enabled)
+      return;
+
+    if (!Mouse.getEventButtonState())
+      return;
+
+    if (Mouse.getEventButton() != 0)
+      return;
+
     this.clicks.add(System.currentTimeMillis() + 1000L);
   }
 
