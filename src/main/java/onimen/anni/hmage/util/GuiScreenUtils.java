@@ -18,7 +18,7 @@ public class GuiScreenUtils {
   public static final String SELEC_SERVER = MessageFormat.format("{0}|{1}Select Server{0}", GRAY, BLACK);
 
 
-  public static ITextComponent getChestDisplayName(GuiChest chest) {
+  public static IInventory getChestInventory(GuiChest chest) {
 
     for (Field field : chest.getClass().getDeclaredFields()) {
       try {
@@ -40,15 +40,17 @@ public class GuiScreenUtils {
           continue;
         }
 
-        System.out.println(inv.getDisplayName().getUnformattedText());
-
-        return inv.getDisplayName();
+        return inv;
       } catch (IllegalArgumentException | IllegalAccessException e) {
         e.printStackTrace();
       }
     }
 
     return null;
+  }
+
+  public static ITextComponent getChestDisplayName(GuiChest chest) {
+    return getChestInventory(chest).getDisplayName();
   }
 
 }
