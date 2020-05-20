@@ -1,28 +1,23 @@
 package onimen.anni.hmage;
 
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
+
+import com.google.common.collect.Maps;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovementInputFromOptions;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -31,27 +26,23 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent.MouseInputEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.cape.CapeManager;
 import onimen.anni.hmage.command.DebugCommand;
 import onimen.anni.hmage.command.PrefCommand;
-import onimen.anni.hmage.gui.AttackKeyListener;
 import onimen.anni.hmage.gui.GuiSettings;
-import onimen.anni.hmage.gui.PlayerTickListener;
-import onimen.anni.hmage.gui.hud.ArrowCounterHUD;
-import onimen.anni.hmage.gui.hud.CPSCounterHUD;
-import onimen.anni.hmage.gui.hud.InterfaceHUD;
-import onimen.anni.hmage.gui.hud.StatusArmorHUD;
-import onimen.anni.hmage.gui.hud.StatusEffectHUD;
+import onimen.anni.hmage.module.InterfaceModule;
+import onimen.anni.hmage.module.hud.AcroJumpHUD;
+import onimen.anni.hmage.module.hud.ArrowCounterHUD;
+import onimen.anni.hmage.module.hud.CPSCounterHUD;
+import onimen.anni.hmage.module.hud.InterfaceHUD;
+import onimen.anni.hmage.module.hud.KillCounterHUD;
+import onimen.anni.hmage.module.hud.StatusArmorHUD;
+import onimen.anni.hmage.module.hud.StatusEffectHUD;
 import onimen.anni.hmage.observer.AnniObserver;
 import onimen.anni.hmage.transformer.HurtingArmorInjector;
 import onimen.anni.hmage.util.CustomMovementInput;
-import onimen.anni.hmage.util.ShotbowUtils;
+import onimen.anni.hmage.util.GuiScreenUtils;
 
 @Mod(modid = HMage.MODID, name = HMage.NAME, version = HMage.VERSION)
 public class HMage {
@@ -60,22 +51,28 @@ public class HMage {
   public static final String VERSION = "1.0.1";
   public static Logger logger;
 
-  public static Path config;
   public static HMage INSTANCE;
-
   private Minecraft mc;
 
-  public KeyBinding openSettingsKey = new KeyBinding("hmage.key.settings", Keyboard.KEY_P, "key.categories.misc");
-
+  private Map<String, InterfaceModule> moduleMap = new HashMap<>();
   private Map<String, InterfaceHUD> hudMap = new HashMap<String, InterfaceHUD>();
   private CustomMovementInput customMovementInput = new CustomMovementInput(Minecraft.getMinecraft().gameSettings);
 
-  private boolean prevAllowFlying = false;
+  public static Map<String, AnniObserver> anniObserverMap;
 
-  public static AnniObserver anniObserver;
+  public void registerModule(InterfaceModule module) {
+    if (module == null) { return; }
 
-  public void registerItem(InterfaceHUD item) {
-    hudMap.put(item.getPrefKey(), item);
+    MinecraftForge.EVENT_BUS.register(module);
+
+    moduleMap.put(module.getPrefKey(), module);
+    if (module instanceof InterfaceHUD) {
+      hudMap.put(module.getPrefKey(), (InterfaceHUD) module);
+    }
+  }
+
+  public Map<String, InterfaceModule> getModuleMap() {
+    return this.moduleMap;
   }
 
   public Map<String, InterfaceHUD> getHUDMap() {
@@ -87,18 +84,15 @@ public class HMage {
     MinecraftForge.EVENT_BUS.register(this);
 
     this.mc = Minecraft.getMinecraft();
+    anniObserverMap = Maps.newHashMap();
 
-    //Register HUD Items
-    this.registerItem(new ArrowCounterHUD());
-    this.registerItem(new StatusEffectHUD());
-    this.registerItem(new StatusArmorHUD());
-    this.registerItem(new CPSCounterHUD());
-    //this.registerItem(new AcroJumpHUD());
-
-    /* TODO
-     *  add Acrobat Jump HUD
-     *  add Kill Counter HUD
-     */
+    //Register Modules
+    this.registerModule(new ArrowCounterHUD());
+    this.registerModule(new StatusEffectHUD());
+    this.registerModule(new StatusArmorHUD());
+    this.registerModule(new CPSCounterHUD());
+    this.registerModule(new AcroJumpHUD());
+    this.registerModule(new KillCounterHUD());
   }
 
   @EventHandler
@@ -111,7 +105,7 @@ public class HMage {
   public void init(FMLInitializationEvent event) {
     ClientCommandHandler.instance.registerCommand(new PrefCommand());
     ClientCommandHandler.instance.registerCommand(new DebugCommand());
-    ClientRegistry.registerKeyBinding(openSettingsKey);
+    ClientRegistry.registerKeyBinding(Preferences.openSettingsKey);
 
     RenderManager renderManager = this.mc.getRenderManager();
     HurtingArmorInjector.replaceSkinMap(renderManager);
@@ -131,12 +125,15 @@ public class HMage {
         mc.player.movementInput = customMovementInput;
     }
 
+    //    if (anniObserver != null) {
+    //      anniObserver.onClientTick(event);
+    //    }
   }
 
   @SubscribeEvent
   public void onKeyInput(KeyInputEvent event) {
 
-    if (openSettingsKey.isPressed()) {
+    if (Preferences.openSettingsKey.isPressed()) {
       if (mc.currentScreen == null) {
         mc.displayGuiScreen(new GuiSettings());
       } else if (mc.currentScreen instanceof GuiSettings) {
@@ -175,96 +172,22 @@ public class HMage {
   }
 
   @SubscribeEvent
-  public void onLeftClick(MouseInputEvent event) {
+  public void onInitGuiEvent(InitGuiEvent event) {
+    if (!(event.getGui() instanceof GuiChest)) { return; }
+    GuiChest gui = (GuiChest) event.getGui();
 
-    if (!Preferences.enabled)
-      return;
+    ITextComponent chestDisplayName = GuiScreenUtils.getChestDisplayName(gui);
 
-    if (!Mouse.getEventButtonState())
-      return;
-
-    if (Mouse.getEventButton() != 0)
-      return;
-
-    if (mc != null && mc.player != null) {
-      EntityPlayerSP player = mc.player;
-
-      ItemStack heldStack = player.getHeldItemMainhand();
-
-      if (heldStack != null) {
-        switch (Item.getIdFromItem(heldStack.getItem())) {
-        case 267:
-        case 268:
-        case 272:
-        case 276:
-        case 283:
-          player.setSneaking(true);
-        }
-
-      }
-
-    }
-
-    for (InterfaceHUD item : this.hudMap.values()) {
-      if (item.isEnabled() && item instanceof AttackKeyListener)
-        ((AttackKeyListener) item).onAttackKeyClick();
-    }
-
-  }
-
-  @SubscribeEvent
-  public void onEntityViewRender(RenderWorldLastEvent event) {
-
-    Entity entity = mc.getRenderViewEntity();
-    String str = entity.getDisplayName().getFormattedText();
-
-    int thirdPersonView = mc.gameSettings.thirdPersonView;
-
-    if (thirdPersonView == 0) { return; }
-
-    boolean isThirdPersonFrontal = thirdPersonView == 2;
-    double partialTicks = event.getPartialTicks();
-    FontRenderer fontRenderer = mc.fontRenderer;
-
-    //double dx = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
-    //double dy = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
-    //double dz = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
-    float dyaw = (float) (entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks);
-    float dpitch = (float) (entity.prevRotationPitch
-        + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks);
-    float height = entity.height + 0.5F - (entity.isSneaking() ? 0.25F : 0F);
-
-    //EntityRenderer.drawNameplate(fontRenderer, str, 0, height, 0, 0, dyaw, dpitch, isThirdPersonFrontal, entity.isSneaking());
-  }
-
-  @SubscribeEvent
-  public void onClientConnectToServer(ClientConnectedToServerEvent event) {
-    if (ShotbowUtils.isShotbow(mc)) {
-      anniObserver = new AnniObserver(mc);
+    if (chestDisplayName.getFormattedText().startsWith(GuiScreenUtils.SELEC_SERVER)) {
+      //mc.displayGuiScreen(new GuiSettings());
     }
   }
 
   @SubscribeEvent
   public void onRecieveChat(ClientChatReceivedEvent event) {
-    if (anniObserver != null) {
-      anniObserver.onRecieveChat(event);
-    }
-  }
-
-  @SideOnly(Side.CLIENT)
-  @SubscribeEvent
-  public void onPlayerTickEvent(TickEvent.PlayerTickEvent event) {
-
-    boolean allowFlying = event.player.capabilities.allowFlying;
-
-    if (allowFlying != prevAllowFlying) {
-      for (InterfaceHUD item : this.hudMap.values()) {
-        if (item.isEnabled() && item instanceof PlayerTickListener)
-          ((PlayerTickListener) item).onPlayerTick(event.player);
-      }
-    }
-
-    prevAllowFlying = allowFlying;
+    //    if (anniObserver != null) {
+    //      anniObserver.onRecieveChat(event);
+    //    }
   }
 
 }

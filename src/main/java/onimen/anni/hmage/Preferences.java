@@ -3,18 +3,22 @@ package onimen.anni.hmage;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import org.lwjgl.input.Keyboard;
+
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class Preferences {
 
+  public static Path configPath;
   public static Properties cfg;
-  public static final String GENERAL = "General";
 
   public static boolean enabled = true;
 
@@ -28,23 +32,19 @@ public class Preferences {
     statusArmorOption = new HUDOptionData("statusArmorHUD", true, 0, 0, 0);
     cpsCounterOption = new HUDOptionData("cpsCounterHUD", true, 0, 45, 5);
   }
-
   public static boolean toggleSneak = true;
   public static int toggleSneakThreshold = 300;
-
   public static boolean toggleSprint = true;
   public static int toggleSprintThreshold = 300;
-
-  public static String fontFamily;
-
   public static boolean hurtingArmor = true;
-
-  public static boolean blockingAttack = true;
+  public static boolean recipeBookRemover = true;
+  public static KeyBinding openSettingsKey = new KeyBinding("hmage.key.settings", Keyboard.KEY_P,
+      "key.categories.misc");
 
   public static boolean checkIsConfigExisting() {
-    if (Files.notExists(HMage.config)) {
+    if (Files.notExists(configPath)) {
       try {
-        Files.createFile(HMage.config);
+        Files.createFile(configPath);
       } catch (IOException e) {
         e.printStackTrace();
         return false;
@@ -58,10 +58,10 @@ public class Preferences {
 
     cfg = new Properties();
 
-    HMage.config = Paths.get(event.getModConfigurationDirectory() + "/" + HMage.MODID + ".properties");
+    configPath = Paths.get(event.getModConfigurationDirectory() + "/" + HMage.MODID + ".properties");
 
     try {
-      cfg.load(Files.newBufferedReader(HMage.config, StandardCharsets.UTF_8));
+      cfg.load(Files.newBufferedReader(configPath, StandardCharsets.UTF_8));
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -88,7 +88,7 @@ public class Preferences {
   }
 
   public static void save() {
-    if (HMage.config == null)
+    if (configPath == null)
       return;
 
     setBoolean("enabled", enabled);
@@ -107,7 +107,7 @@ public class Preferences {
     setBoolean("hurtingArmor.enabled", hurtingArmor);
 
     try {
-      cfg.store(Files.newBufferedWriter(HMage.config, StandardCharsets.UTF_8), "Created by HMage");
+      cfg.store(Files.newBufferedWriter(configPath, StandardCharsets.UTF_8), "Created by HMage");
     } catch (IOException e) {
       e.printStackTrace();
     }
