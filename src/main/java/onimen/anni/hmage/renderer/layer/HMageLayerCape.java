@@ -75,6 +75,7 @@ public class HMageLayerCape implements LayerRenderer<AbstractClientPlayer> {
 
         if (entitylivingbaseIn.isSneaking()) {
           f1 += 25.0F;
+          GlStateManager.translate(0F, 0F, -0.0625F);
         }
 
         GlStateManager.rotate(6.0F + f2 / 2.0F + f1, 1.0F, 0.0F, 0.0F);
