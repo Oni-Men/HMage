@@ -27,9 +27,13 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.cape.CapeManager;
 import onimen.anni.hmage.command.DebugCommand;
+import onimen.anni.hmage.command.NameCommand;
 import onimen.anni.hmage.command.PrefCommand;
 import onimen.anni.hmage.gui.GuiAnniServers;
 import onimen.anni.hmage.gui.GuiSettings;
@@ -45,6 +49,7 @@ import onimen.anni.hmage.observer.AnniObserver;
 import onimen.anni.hmage.transformer.HurtingArmorInjector;
 import onimen.anni.hmage.util.CustomMovementInput;
 import onimen.anni.hmage.util.GuiScreenUtils;
+import onimen.anni.hmage.util.scheduler.SyncTaskQueue;
 
 @Mod(modid = HMage.MODID, name = HMage.NAME, version = HMage.VERSION)
 public class HMage {
@@ -127,6 +132,7 @@ public class HMage {
   public void init(FMLInitializationEvent event) {
     ClientCommandHandler.instance.registerCommand(new PrefCommand());
     ClientCommandHandler.instance.registerCommand(new DebugCommand());
+    ClientCommandHandler.instance.registerCommand(new NameCommand());
     ClientRegistry.registerKeyBinding(Preferences.openSettingsKey);
 
     RenderManager renderManager = this.mc.getRenderManager();
@@ -215,4 +221,12 @@ public class HMage {
     }
   }
 
+  @SideOnly(Side.CLIENT)
+  @SubscribeEvent
+  public void onClientTickEvent(TickEvent.ClientTickEvent event) {
+    Runnable nextTask;
+    while ((nextTask = SyncTaskQueue.getNextTask()) != null) {
+      nextTask.run();
+    }
+  }
 }
