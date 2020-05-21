@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.util.MovementInputFromOptions;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -30,6 +31,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import onimen.anni.hmage.cape.CapeManager;
 import onimen.anni.hmage.command.DebugCommand;
 import onimen.anni.hmage.command.PrefCommand;
+import onimen.anni.hmage.gui.GuiAnniServers;
 import onimen.anni.hmage.gui.GuiSettings;
 import onimen.anni.hmage.module.InterfaceModule;
 import onimen.anni.hmage.module.hud.AcroJumpHUD;
@@ -58,7 +60,27 @@ public class HMage {
   private Map<String, InterfaceHUD> hudMap = new HashMap<String, InterfaceHUD>();
   private CustomMovementInput customMovementInput = new CustomMovementInput(Minecraft.getMinecraft().gameSettings);
 
+  public static String playingServerName;
   public static Map<String, AnniObserver> anniObserverMap;
+
+  public static void setAnniObserver(String serverName) {
+    setAnniObserver(serverName, false);
+  }
+
+  public static void setAnniObserver(String serverName, boolean force) {
+    playingServerName = serverName;
+    if (!anniObserverMap.containsKey(serverName)) {
+      anniObserverMap.put(serverName, new AnniObserver(Minecraft.getMinecraft()));
+
+      logger.info("New Annihilation Observer created");
+    }
+
+    logger.info("Playing server name: " + playingServerName);
+  }
+
+  public static AnniObserver getAnniObserver() {
+    return anniObserverMap.get(playingServerName);
+  }
 
   public void registerModule(InterfaceModule module) {
     if (module == null) { return; }
@@ -125,9 +147,9 @@ public class HMage {
         mc.player.movementInput = customMovementInput;
     }
 
-    //    if (anniObserver != null) {
-    //      anniObserver.onClientTick(event);
-    //    }
+    if (getAnniObserver() != null) {
+      getAnniObserver().onClientTick(event);
+    }
   }
 
   @SubscribeEvent
@@ -175,19 +197,22 @@ public class HMage {
   public void onInitGuiEvent(InitGuiEvent event) {
     if (!(event.getGui() instanceof GuiChest)) { return; }
     GuiChest gui = (GuiChest) event.getGui();
+    IInventory chestInventory = GuiScreenUtils.getChestInventory(gui);
 
-    ITextComponent chestDisplayName = GuiScreenUtils.getChestDisplayName(gui);
+    if (chestInventory == null) { return; }
+
+    ITextComponent chestDisplayName = chestInventory.getDisplayName();
 
     if (chestDisplayName.getFormattedText().startsWith(GuiScreenUtils.SELEC_SERVER)) {
-      //mc.displayGuiScreen(new GuiSettings());
+      mc.displayGuiScreen(new GuiAnniServers(mc.player.inventory, chestInventory));
     }
   }
 
   @SubscribeEvent
   public void onRecieveChat(ClientChatReceivedEvent event) {
-    //    if (anniObserver != null) {
-    //      anniObserver.onRecieveChat(event);
-    //    }
+    if (getAnniObserver() != null) {
+      getAnniObserver().onRecieveChat(event);
+    }
   }
 
 }
