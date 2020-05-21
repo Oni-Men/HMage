@@ -62,7 +62,7 @@ public class CapeResourceLoadTask extends TimerTask {
         renderEngine.loadTexture(resourceLocation, new DynamicTexture(readImage));
       }
 
-      CapeManager.reload(capeMap);
+      GlobalPlayerUseCapeManager.reload(capeMap);
     } catch (Exception e) {
       e.printStackTrace();
     }

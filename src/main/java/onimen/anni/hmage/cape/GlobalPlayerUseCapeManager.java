@@ -8,7 +8,7 @@ import java.util.UUID;
 import net.minecraft.util.ResourceLocation;
 import onimen.anni.hmage.HMage;
 
-public class CapeManager {
+public class GlobalPlayerUseCapeManager {
 
   private static Map<UUID, ResourceLocation> capeMap = new HashMap<>();
 
@@ -36,7 +36,7 @@ public class CapeManager {
    * @param capeMap capeMap
    */
   public static void reload(Map<UUID, ResourceLocation> capeMap) {
-    CapeManager.capeMap = Collections.unmodifiableMap(capeMap);
+    GlobalPlayerUseCapeManager.capeMap = Collections.unmodifiableMap(capeMap);
     HMage.logger.info("loaded cape infomation.");
   }
 

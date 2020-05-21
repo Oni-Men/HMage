@@ -14,7 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import onimen.anni.hmage.cape.CapeManager;
+import onimen.anni.hmage.cape.GlobalPlayerUseCapeManager;
 
 @SideOnly(Side.CLIENT)
 public class HMageLayerCape implements LayerRenderer<AbstractClientPlayer> {
@@ -30,7 +30,7 @@ public class HMageLayerCape implements LayerRenderer<AbstractClientPlayer> {
 
     //capeのリソースを取得
     UUID uniqueID = entitylivingbaseIn.getUniqueID();
-    ResourceLocation locationCape = CapeManager.getCapeResource(uniqueID);
+    ResourceLocation locationCape = GlobalPlayerUseCapeManager.getCapeResource(uniqueID);
     if (locationCape == null) {
       locationCape = entitylivingbaseIn.getLocationCape();
     }

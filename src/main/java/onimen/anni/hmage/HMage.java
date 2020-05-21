@@ -30,7 +30,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import onimen.anni.hmage.cape.CapeManager;
+import onimen.anni.hmage.cape.GlobalPlayerUseCapeManager;
 import onimen.anni.hmage.command.DebugCommand;
 import onimen.anni.hmage.command.NameCommand;
 import onimen.anni.hmage.command.PrefCommand;
@@ -116,7 +116,7 @@ public class HMage {
     RenderManager renderManager = this.mc.getRenderManager();
     HurtingArmorInjector.replaceSkinMap(renderManager);
     //Capeをロード
-    CapeManager.loadCape();
+    GlobalPlayerUseCapeManager.loadCape();
   }
 
   @SubscribeEvent
