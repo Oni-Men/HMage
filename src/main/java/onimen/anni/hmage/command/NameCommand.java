@@ -62,11 +62,12 @@ public class NameCommand extends CommandBase implements IClientCommand {
             Instant instant = Instant.ofEpochMilli(response.getChangedToAt());
             LocalDateTime ldt = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
             messageList.add(new TextComponentString(ChatFormatting.GOLD.toString() + index + ". "
-                + response.getName() + "     " + ChatFormatting.BLUE + ldt.format(OF_PATTERN)));
+                + response.getName() + "     " + ChatFormatting.AQUA + ldt.format(OF_PATTERN)));
           } else {
             messageList.add(new TextComponentString(ChatFormatting.GOLD.toString() + index + ". "
                 + response.getName()));
           }
+          index++;
         }
 
       } catch (IOException e) {
