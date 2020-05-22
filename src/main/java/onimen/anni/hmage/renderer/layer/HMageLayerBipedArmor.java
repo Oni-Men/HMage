@@ -1,4 +1,4 @@
-package onimen.anni.hmage.renderer;
+package onimen.anni.hmage.renderer.layer;
 
 import java.nio.FloatBuffer;
 

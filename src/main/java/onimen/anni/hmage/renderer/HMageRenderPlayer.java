@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.renderer.entity.layers.LayerCape;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
+import onimen.anni.hmage.renderer.layer.HMageLayerBipedArmor;
 import onimen.anni.hmage.renderer.layer.HMageLayerCape;
 
 public class HMageRenderPlayer extends RenderPlayer {
