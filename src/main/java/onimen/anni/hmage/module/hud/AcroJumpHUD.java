@@ -13,6 +13,7 @@ public class AcroJumpHUD extends AbstractHUD {
   private String cooldownText = "Cannot Jump now...";
   private boolean prevAllowFlying = false;
 
+
   @Override
   public boolean isEnable() {
     return true;
@@ -29,18 +30,32 @@ public class AcroJumpHUD extends AbstractHUD {
   }
 
   @Override
+  public int getDefaultX() {
+    return 0;
+  }
+
+  @Override
+  public int getDefaultY() {
+    return 0;
+  }
+
+  @Override
+  public int getWidth() {
+    return Minecraft.getMinecraft().fontRenderer.getStringWidth(cooldownText);
+  }
+
+  @Override
+  public int getHeight() {
+    return Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT;
+  }
+
+  @Override
   public void drawItem(Minecraft mc) {
 
     if (!this.isAcrobat()) { return; }
 
     ScaledResolution sr = new ScaledResolution(mc);
-
-    String str = cooldownText;
-    int width = sr.getScaledWidth();
-    int height = sr.getScaledHeight();
-    int strWidth = mc.fontRenderer.getStringWidth(str);
-
-    mc.fontRenderer.drawStringWithShadow(str, (width - strWidth) / 2, height - 69, 0xffffff);
+    mc.fontRenderer.drawStringWithShadow(cooldownText, getComputedX(sr), getComputedY(sr), 0xffffff);
   }
 
   @SubscribeEvent

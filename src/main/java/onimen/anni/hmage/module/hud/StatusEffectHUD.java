@@ -3,6 +3,7 @@ package onimen.anni.hmage.module.hud;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 import net.minecraft.client.Minecraft;
@@ -18,7 +19,7 @@ import onimen.anni.hmage.util.PositionHelper.Position;
 
 public class StatusEffectHUD extends AbstractHUD {
 
-  private static final int SPACE = 1;
+  private List<PotionEffect> potionEffectList = Lists.newArrayList();
 
   @Override
   public String getName() {
@@ -32,16 +33,29 @@ public class StatusEffectHUD extends AbstractHUD {
 
   @Override
   public int getDefaultPosition() {
-    return 6;
+    return 2;
   }
 
-  public int calculateWidth(FontRenderer fontRenderer, List<PotionEffect> potionEffectList, boolean isHorizontal) {
+  @Override
+  public int getDefaultX() {
+    return 0;
+  }
+
+  @Override
+  public int getDefaultY() {
+    return 0;
+  }
+
+  @Override
+  public int getWidth() {
     int width = 0;
 
+
     for (PotionEffect potionEffect : potionEffectList) {
-      int durationStringWidth = fontRenderer.getStringWidth(Potion.getPotionDurationString(potionEffect, 1F));
-      if (isHorizontal) {
-        width += 20 + durationStringWidth + SPACE;
+      int durationStringWidth = Minecraft.getMinecraft().fontRenderer
+          .getStringWidth(Potion.getPotionDurationString(potionEffect, 1F));
+      if (isHorizontal()) {
+        width += 20 + durationStringWidth;
       } else {
         width = Math.max(width, 20 + durationStringWidth);
       }
@@ -50,12 +64,13 @@ public class StatusEffectHUD extends AbstractHUD {
     return width;
   }
 
-  public int calculateHeight(List<PotionEffect> potionEffectList, boolean isHorizontal) {
-    if (isHorizontal) { return 20; }
+  @Override
+  public int getHeight() {
+    if (isHorizontal()) { return 20; }
     return potionEffectList.stream()
         .filter(p -> p.getPotion().hasStatusIcon() && p.doesShowParticles())
         .collect(Collectors.toList())
-        .size() * (20 + SPACE);
+        .size() * (20);
   }
 
   @Override
@@ -65,29 +80,18 @@ public class StatusEffectHUD extends AbstractHUD {
     ScaledResolution sr = new ScaledResolution(mc);
     EntityPlayerSP player = mc.player;
 
-    List<PotionEffect> potionEffects = Ordering.natural().reverse().sortedCopy(player.getActivePotionEffects());
+    potionEffectList.clear();
+    potionEffectList.addAll(Ordering.natural().reverse().sortedCopy(player.getActivePotionEffects()));
 
-    if (potionEffects.isEmpty())
+    if (potionEffectList.isEmpty())
       return;
 
-    Position position = new PositionHelper.Position(getPosition());
+    Position position = new PositionHelper.Position(getPositionFlag());
 
-    int x = getX();
-    int y = getY();
+    int x = getComputedX(sr);
+    int y = getComputedY(sr);
 
-    if (position.right) {
-      x += sr.getScaledWidth() - calculateWidth(fontRenderer, potionEffects, position.isHorizontal()) - SPACE;
-    } else {
-      x += SPACE;
-    }
-
-    if (position.bottom) {
-      y += sr.getScaledHeight() - calculateHeight(potionEffects, position.isHorizontal()) - SPACE;
-    } else {
-      y += SPACE;
-    }
-
-    for (PotionEffect potionEffect : potionEffects) {
+    for (PotionEffect potionEffect : potionEffectList) {
 
       Potion potion = potionEffect.getPotion();
 
@@ -105,16 +109,16 @@ public class StatusEffectHUD extends AbstractHUD {
 
       if (position.right && !position.isHorizontal()) {
         this.drawTexturedModalRect(x + textWidth, y, iconIndex % 8 * 18, 198 + iconIndex / 8 * 18, 18, 18);
-        fontRenderer.drawString(text, x - SPACE, y + 10 - fontRenderer.FONT_HEIGHT / 2, 0xffffff);
+        fontRenderer.drawString(text, x, y + 10 - fontRenderer.FONT_HEIGHT / 2, 0xffffff);
       } else {
         this.drawTexturedModalRect(x, y, iconIndex % 8 * 18, 198 + iconIndex / 8 * 18, 18, 18);
         fontRenderer.drawString(text, x + 20, y + 10 - fontRenderer.FONT_HEIGHT / 2, 0xffffff);
       }
 
       if (position.isHorizontal()) {
-        x += 20 + textWidth + SPACE;
+        x += 20 + textWidth;
       } else {
-        y += 20 + SPACE;
+        y += 20;
       }
     }
 

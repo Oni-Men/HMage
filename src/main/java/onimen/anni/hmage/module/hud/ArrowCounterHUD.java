@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHandSide;
 
 public class ArrowCounterHUD extends AbstractHUD {
 
@@ -23,7 +22,27 @@ public class ArrowCounterHUD extends AbstractHUD {
 
   @Override
   public int getDefaultPosition() {
-    return 0;
+    return 11;
+  }
+
+  @Override
+  public int getDefaultX() {
+    return 110;
+  }
+
+  @Override
+  public int getDefaultY() {
+    return -1;
+  }
+
+  @Override
+  public int getWidth() {
+    return 18;
+  }
+
+  @Override
+  public int getHeight() {
+    return 18;
   }
 
   private int countArrows(InventoryPlayer inventory) {
@@ -61,11 +80,8 @@ public class ArrowCounterHUD extends AbstractHUD {
     ScaledResolution sr = new ScaledResolution(mc);
     ItemStack stack = new ItemStack(Item.getItemById(262), 1);
 
-    EnumHandSide enumhandside = Minecraft.getMinecraft().player.getPrimaryHand().opposite();
-    int inverter = (enumhandside == EnumHandSide.LEFT ? 1 : -1);
-
-    int x = sr.getScaledWidth() / 2 + inverter * (91 + 20) + 2;
-    int y = sr.getScaledHeight() - 16 - 3;
+    int x = getComputedX(sr);
+    int y = getComputedY(sr);
 
     mc.getRenderItem().renderItemIntoGUI(stack, x, y);
     mc.getRenderItem().renderItemOverlayIntoGUI(mc.fontRenderer, stack, x, y, String.valueOf(arrowCount));

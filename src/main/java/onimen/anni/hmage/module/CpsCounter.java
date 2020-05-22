@@ -12,7 +12,7 @@ import onimen.anni.hmage.Preferences;
 
 public class CpsCounter extends AbstractModule {
 
-  private Queue<Long> clicks;
+  private final Queue<Long> clicks;
 
   public CpsCounter() {
     this.clicks = Lists.newLinkedList();

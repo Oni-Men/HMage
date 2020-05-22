@@ -4,18 +4,12 @@
 
 package onimen.anni.hmage.module.hud;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 import onimen.anni.hmage.module.CpsCounter;
-import onimen.anni.hmage.util.PositionHelper;
-import onimen.anni.hmage.util.PositionHelper.Position;
 
 public class CpsCounterHUD extends AbstractHUD {
 
-  private final static int SPACE = 1;
   private final CpsCounter counter;
 
   public CpsCounterHUD(CpsCounter counter) {
@@ -38,58 +32,45 @@ public class CpsCounterHUD extends AbstractHUD {
   }
 
   @Override
-  public void drawItem(Minecraft mc) {
+  public int getDefaultX() {
+    return 45;
+  }
 
-    String text = String.format("%2d CPS", this.counter.getCurrentCPS());
+  @Override
+  public int getDefaultY() {
+    return 5;
+  }
+
+  @Override
+  public int getWidth() {
+    return Minecraft.getMinecraft().fontRenderer.getStringWidth("00 CPS");
+  }
+
+  @Override
+  public int getHeight() {
+    return Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT;
+  }
+
+  @Override
+  public void drawItem(Minecraft mc) {
+    int currentCPS = this.counter.getCurrentCPS();
+
+    String text = String.format("%2d CPS", currentCPS);
 
     ScaledResolution sr = new ScaledResolution(mc);
 
-    int width = mc.fontRenderer.getStringWidth("00 CPS") + 4;
-    int offset = text.length() == 4 ? mc.fontRenderer.getStringWidth("0") : 0;
-    int height = mc.fontRenderer.FONT_HEIGHT;
+    int offset = getWidth() - mc.fontRenderer.getStringWidth(text);
 
-    Position position = new PositionHelper.Position(getPosition());
+    int width = getWidth() + 4;
+    int height = getHeight();
 
-    int x = getX();
-    int y = getY();
+    int x = getComputedX(sr);
+    int y = getComputedY(sr);
 
-    if (position.centerx) {
-      x += sr.getScaledWidth() / 2 - width / 2;
-    } else if (position.right) {
-      x += sr.getScaledWidth() - width - SPACE;
-    } else {
-      x += SPACE;
-    }
-
-    if (position.centery) {
-      y += sr.getScaledHeight() / 2 - height / 2;
-    }
-    if (position.bottom) {
-      y += sr.getScaledHeight() - height - SPACE;
-    } else {
-      y += SPACE;
-    }
-
-    GlStateManager.disableTexture2D();
-    GlStateManager.enableBlend();
-
-    GlStateManager.pushMatrix();
-    GlStateManager.color(0, 0, 0, 0.3f);
-    GlStateManager.translate(x, y - 1, 0);
-    GlStateManager.glBegin(GL11.GL_QUADS);
-    GlStateManager.glVertex3f(0, height + 2, 0);
-    GlStateManager.glVertex3f(width, height + 2, 0);
-    GlStateManager.glVertex3f(width, 0, 0);
-    GlStateManager.glVertex3f(0, 0, 0);
-    GlStateManager.glEnd();
-    GlStateManager.popMatrix();
-
-    GlStateManager.disableBlend();
-    GlStateManager.enableTexture2D();
+    drawRect(x, y - 1, width, height + 2);
 
     mc.fontRenderer.drawString(text, x + 2 + offset, y + 1, 0xffffff);
 
   }
-
 
 }

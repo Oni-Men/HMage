@@ -1,10 +1,11 @@
 package onimen.anni.hmage.module.hud;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -20,7 +21,7 @@ import onimen.anni.hmage.util.PositionHelper.Position;
 
 public class ArmorDurabilityHUD extends AbstractHUD {
 
-  private static final int SPACE = 1;
+  private List<ItemStack> armorList = Lists.newArrayList();
 
   @Override
   public String getName() {
@@ -37,6 +38,16 @@ public class ArmorDurabilityHUD extends AbstractHUD {
     return 0;
   }
 
+  @Override
+  public int getDefaultX() {
+    return 0;
+  }
+
+  @Override
+  public int getDefaultY() {
+    return 0;
+  }
+
   public String getTextForItemStack(ItemStack stack) {
     boolean itemStackDamageable = stack.isItemStackDamageable();
     if (itemStackDamageable) {
@@ -49,16 +60,17 @@ public class ArmorDurabilityHUD extends AbstractHUD {
     }
   }
 
-  public int calculateWidth(FontRenderer fontRenderer, List<ItemStack> armorList, boolean isHorizontal) {
+  @Override
+  public int getWidth() {
     int width = 0;
-
     for (ItemStack armor : armorList) {
       if (Item.getIdFromItem(armor.getItem()) == 0)
         continue;
 
-      int durabilityTextWidth = fontRenderer.getStringWidth(getTextForItemStack(armor));
-      if (isHorizontal) {
-        width += 20 + durabilityTextWidth + SPACE;
+      int durabilityTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(getTextForItemStack(armor));
+
+      if (isHorizontal()) {
+        width += 20 + durabilityTextWidth;
       } else {
         width = Math.max(width, 20 + durabilityTextWidth);
       }
@@ -67,14 +79,15 @@ public class ArmorDurabilityHUD extends AbstractHUD {
     return width;
   }
 
-  public int calculateHeight(List<ItemStack> armorList, boolean isHorizontal) {
+  @Override
+  public int getHeight() {
 
-    if (isHorizontal) { return 20; }
+    if (isHorizontal()) { return 20; }
 
     return armorList.stream()
         .filter(armor -> Item.getIdFromItem(armor.getItem()) != 0)
         .collect(Collectors.toList())
-        .size() * (20 + SPACE);
+        .size() * (20);
 
   }
 
@@ -98,7 +111,8 @@ public class ArmorDurabilityHUD extends AbstractHUD {
     EntityPlayerSP player = mc.player;
     FontRenderer fontRenderer = mc.fontRenderer;
 
-    List<ItemStack> armorList = new ArrayList<>();
+    armorList.clear();
+
     //手持ちのアイテム
     armorList.add(player.getHeldItem(EnumHand.OFF_HAND));
     armorList.add(player.getHeldItem(EnumHand.MAIN_HAND));
@@ -110,22 +124,10 @@ public class ArmorDurabilityHUD extends AbstractHUD {
 
     Collections.reverse(armorList);
 
-    Position position = new PositionHelper.Position(getPosition());
+    Position position = new PositionHelper.Position(getPositionFlag());
 
-    int x = getX();
-    int y = getY();
-
-    if (position.right) {
-      x += sr.getScaledWidth() - calculateWidth(fontRenderer, armorList, position.isHorizontal()) - SPACE;
-    } else {
-      x += SPACE;
-    }
-
-    if (position.bottom) {
-      y += sr.getScaledHeight() - calculateHeight(armorList, position.isHorizontal()) - SPACE;
-    } else {
-      y += SPACE;
-    }
+    int x = getComputedX(sr);
+    int y = getComputedY(sr);
 
     for (ItemStack armor : armorList) {
 
@@ -145,9 +147,9 @@ public class ArmorDurabilityHUD extends AbstractHUD {
       }
 
       if (position.isHorizontal()) {
-        x += 20 + stringWidth + SPACE;
+        x += 20 + stringWidth;
       } else {
-        y += 20 + SPACE;
+        y += 20;
       }
 
     }
