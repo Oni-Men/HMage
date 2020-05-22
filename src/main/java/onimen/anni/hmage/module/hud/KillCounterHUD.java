@@ -2,6 +2,8 @@ package onimen.anni.hmage.module.hud;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import onimen.anni.hmage.HMage;
+import onimen.anni.hmage.util.ShotbowUtils;
 
 public class KillCounterHUD extends AbstractHUD {
 
@@ -45,13 +47,13 @@ public class KillCounterHUD extends AbstractHUD {
   @Override
   public void drawItem(Minecraft mc) {
 
-    //    if (!ShotbowUtils.isShotbow(mc))
-    //      return;
-    //
-    //    if (HMage.getAnniObserver() == null)
-    //      return;
+    if (!ShotbowUtils.isShotbow(mc))
+      return;
 
-    text = "19 Kills";//HMage.getAnniObserver().getKillCount();
+    if (HMage.getAnniObserver() == null)
+      return;
+
+    text = String.format("%3d Kill", HMage.getAnniObserver().getKillCount());
     ScaledResolution sr = new ScaledResolution(mc);
 
     int x = getComputedX(sr);
