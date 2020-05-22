@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 
@@ -16,6 +17,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.IClientCommand;
 import onimen.anni.hmage.HMage;
@@ -85,6 +87,20 @@ public class NameCommand extends CommandBase implements IClientCommand {
         }
       });
     });
+  }
+
+  @Override
+  public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args,
+      BlockPos targetPos) {
+
+    String s = (args.length == 0 ? "" : args[args.length - 1]).toLowerCase();
+
+    List<String> nameList = sender.getEntityWorld().playerEntities.stream()
+        .filter(p -> p.getName().toLowerCase().startsWith(s))
+        .map(p -> p.getName())
+        .collect(Collectors.toList());
+
+    return nameList;
   }
 
   @Override
