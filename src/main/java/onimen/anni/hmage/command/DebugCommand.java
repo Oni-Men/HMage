@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -19,8 +18,6 @@ import net.minecraftforge.client.IClientCommand;
 import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.cape.CapeResourceLoadTask;
 import onimen.anni.hmage.cape.GlobalPlayerUseCapeManager;
-import onimen.anni.hmage.gui.CapeSetting;
-import onimen.anni.hmage.gui.GuiLanguage2;
 import onimen.anni.hmage.util.PositionHelper.PositionType;
 
 public class DebugCommand extends CommandBase implements IClientCommand {
@@ -70,14 +67,6 @@ public class DebugCommand extends CommandBase implements IClientCommand {
       break;
     case "clear":
       GlobalPlayerUseCapeManager.clear();
-      break;
-    case "cape":
-      Minecraft.getMinecraft().displayGuiScreen(new CapeSetting());
-      break;
-    case "cape2":
-      Minecraft.getMinecraft()
-          .displayGuiScreen(new GuiLanguage2(null, Minecraft.getMinecraft().gameSettings,
-              Minecraft.getMinecraft().getLanguageManager()));
       break;
     case "show":
       Map<UUID, ResourceLocation> capeMap = GlobalPlayerUseCapeManager.getCapeMap();

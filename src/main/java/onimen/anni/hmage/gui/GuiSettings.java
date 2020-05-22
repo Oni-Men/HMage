@@ -16,11 +16,13 @@ public class GuiSettings extends GuiScreen {
   private GuiButton arrowRemaining;
   private GuiButton cpsCounterHUD;
   private GuiButton toggleSneak;
+  private GuiButton capeButton;
 
   private String getButtonText(boolean b) {
     return b ? "Enabled" : "Disabled";
   }
 
+  @Override
   public void initGui() {
 
     this.buttonList.clear();
@@ -60,6 +62,10 @@ public class GuiSettings extends GuiScreen {
 
     toggleSneak = new GuiButton(5, baseX, baseY, width, height,
         getButtonText(Preferences.toggleSneak));
+    baseY += 25;
+
+    capeButton = new GuiButton(6, baseX, baseY, width, height,
+        "Select Cape");
 
     this.buttonList.add(modStateButton);
     this.buttonList.add(statusEffectHUD);
@@ -67,8 +73,10 @@ public class GuiSettings extends GuiScreen {
     this.buttonList.add(arrowRemaining);
     this.buttonList.add(cpsCounterHUD);
     this.buttonList.add(toggleSneak);
+    this.buttonList.add(capeButton);
   }
 
+  @Override
   protected void actionPerformed(GuiButton button) {
     switch (button.id) {
     case 0:
@@ -94,6 +102,10 @@ public class GuiSettings extends GuiScreen {
     case 5:
       Preferences.toggleSneak = !Preferences.toggleSneak;
       button.displayString = getButtonText(Preferences.toggleSneak);
+      break;
+    case 6:
+      Minecraft.getMinecraft().displayGuiScreen(new CapeSetting());
+      break;
     }
   }
 
@@ -103,6 +115,7 @@ public class GuiSettings extends GuiScreen {
     super.onGuiClosed();
   }
 
+  @Override
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 
     ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
@@ -136,6 +149,7 @@ public class GuiSettings extends GuiScreen {
 
   }
 
+  @Override
   public boolean doesGuiPauseGame() {
     return false;
   }

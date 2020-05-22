@@ -2,6 +2,7 @@ package onimen.anni.hmage.renderer.layer;
 
 import java.util.UUID;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
@@ -15,6 +16,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.cape.GlobalPlayerUseCapeManager;
+import onimen.anni.hmage.cape.SPPlayerUseCape;
 
 @SideOnly(Side.CLIENT)
 public class HMageLayerCape implements LayerRenderer<AbstractClientPlayer> {
@@ -30,7 +32,9 @@ public class HMageLayerCape implements LayerRenderer<AbstractClientPlayer> {
 
     //capeのリソースを取得
     UUID uniqueID = entitylivingbaseIn.getUniqueID();
-    ResourceLocation locationCape = GlobalPlayerUseCapeManager.getCapeResource(uniqueID);
+    boolean isMe = uniqueID.equals(Minecraft.getMinecraft().player.getUniqueID());
+    ResourceLocation locationCape = isMe ? SPPlayerUseCape.getResourceLocation()
+        : GlobalPlayerUseCapeManager.getCapeResource(uniqueID);
     if (locationCape == null) {
       locationCape = entitylivingbaseIn.getLocationCape();
     }
