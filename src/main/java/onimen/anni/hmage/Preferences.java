@@ -5,10 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import org.lwjgl.input.Keyboard;
 
@@ -21,69 +18,27 @@ public class Preferences {
   public static Properties cfg;
 
   public static boolean enabled = true;
-
-  public static HUDOptionData arrowCounterOption;
-  public static HUDOptionData statusEffectOption;
-  public static HUDOptionData statusArmorOption;
-  public static HUDOptionData cpsCounterOption;
-  static {
-    arrowCounterOption = new HUDOptionData("arrowCounterHUD", true, 6, -30, 0);
-    statusEffectOption = new HUDOptionData("statusEffectHUD", true, 2, 0, 0);
-    statusArmorOption = new HUDOptionData("statusArmorHUD", true, 0, 0, 0);
-    cpsCounterOption = new HUDOptionData("cpsCounterHUD", true, 0, 45, 5);
-  }
   public static boolean toggleSneak = true;
   public static int toggleSneakThreshold = 300;
-  public static boolean toggleSprint = true;
-  public static int toggleSprintThreshold = 300;
   public static boolean hurtingArmor = true;
-  public static boolean recipeBookRemover = true;
+
   public static KeyBinding openSettingsKey = new KeyBinding("hmage.key.settings", Keyboard.KEY_P,
       "key.categories.misc");
 
-  public static boolean checkIsConfigExisting() {
-    if (Files.notExists(configPath)) {
-      try {
-        Files.createFile(configPath);
-      } catch (IOException e) {
-        e.printStackTrace();
-        return false;
-      }
-      return true;
-    }
-    return false;
-  }
-
   public static void load(FMLPreInitializationEvent event) {
-
     cfg = new Properties();
 
     configPath = Paths.get(event.getModConfigurationDirectory() + "/" + HMage.MODID + ".properties");
-
+    createFileIfNotExist(configPath);
     try {
       cfg.load(Files.newBufferedReader(configPath, StandardCharsets.UTF_8));
     } catch (IOException e) {
       e.printStackTrace();
     }
 
-    read();
-
-  }
-
-  public static void read() {
     enabled = getBoolean("enabled", true);
-
-    statusArmorOption.read();
-    statusEffectOption.read();
-    arrowCounterOption.read();
-    cpsCounterOption.read();
-
     toggleSneak = getBoolean("toggleSneak.enabled", true);
     toggleSneakThreshold = getInt("toggleSneak.threshold", 300);
-
-    toggleSprint = getBoolean("toggleSprint.enabled", true);
-    toggleSprintThreshold = getInt("toggleSprint.threshold", 300);
-
     hurtingArmor = getBoolean("hurtingArmor.enabled", true);
   }
 
@@ -93,17 +48,8 @@ public class Preferences {
 
     setBoolean("enabled", enabled);
 
-    statusArmorOption.save();
-    statusEffectOption.save();
-    arrowCounterOption.save();
-    cpsCounterOption.save();
-
-    setBoolean("toggleSneak", toggleSneak);
+    setBoolean("toggleSneak.enabled", toggleSneak);
     setInt("toggleSneak.threshold", toggleSneakThreshold);
-
-    setBoolean("toggleSprint.enabled", toggleSprint);
-    setInt("toggleSprint.threshold", toggleSprintThreshold);
-
     setBoolean("hurtingArmor.enabled", hurtingArmor);
 
     try {
@@ -111,6 +57,41 @@ public class Preferences {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  /**
+   * targetが存在する場合true、そうでない場合falseを返します。またディレクトリが存在しない場合、作成します。
+   *
+   * @param target
+   * @return
+   */
+  public static boolean createFileIfNotExist(Path target) {
+    if (Files.notExists(target)) {
+      try {
+        Files.createFile(target);
+      } catch (IOException e) {
+        e.printStackTrace();
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  public static void enable() {
+    enabled = true;
+    setBoolean("enabled", enabled);
+  }
+
+  public static void disable() {
+    enabled = false;
+    setBoolean("enabled", enabled);
+  }
+
+  public static void setProperty(String key, String value) {
+    if (cfg == null)
+      return;
+    cfg.setProperty(key, value);
   }
 
   public static boolean getBoolean(String key, boolean defaultValue) {
@@ -128,92 +109,17 @@ public class Preferences {
   public static int getInt(String key, int defaultValue) {
     if (cfg == null)
       return defaultValue;
-    return Integer.valueOf(cfg.getProperty(key, String.valueOf(defaultValue)));
+    try {
+      return Integer.valueOf(cfg.getProperty(key, String.valueOf(defaultValue)));
+    } catch (NumberFormatException e) {
+      return 0;
+    }
   }
 
   public static void setInt(String key, int value) {
     if (cfg == null)
       return;
     cfg.setProperty(key, String.valueOf(value));
-  }
-
-  public static class HUDOptionData {
-
-    private final String rootKey;
-
-    private boolean enabled;
-    private int position;
-    private int translateX;
-    private int translateY;
-
-    public HUDOptionData(String rootKey) {
-      this(rootKey, true, 0, 0, 0);
-    }
-
-    public HUDOptionData(String rootKey, boolean isEnable, int position, int translateX, int translateY) {
-      this.rootKey = rootKey;
-      this.enabled = isEnable;
-      this.position = position;
-      this.translateX = translateX;
-      this.translateY = translateY;
-    }
-
-    public void read() {
-      this.enabled = Preferences.getBoolean(rootKey + ".enabled", enabled);
-      this.position = Preferences.getInt(rootKey + ".position", position);
-      this.translateX = Preferences.getInt(rootKey + ".x", translateX);
-      this.translateY = Preferences.getInt(rootKey + ".y", translateY);
-    }
-
-    public void save() {
-      Preferences.setBoolean(rootKey + ".enabled", enabled);
-      Preferences.setInt(rootKey + ".position", position);
-      Preferences.setInt(rootKey + ".x", translateX);
-      Preferences.setInt(rootKey + ".y", translateY);
-    }
-
-    public List<String> getTabCompletionsList() {
-      return Arrays.asList("enabled", "position", "x", "y")
-          .stream()
-          .map(e -> rootKey + "." + e)
-          .collect(Collectors.toList());
-    }
-
-    public boolean isEnabled() {
-      return this.enabled;
-    }
-
-    public void setEnabled(boolean value) {
-      this.enabled = value;
-    }
-
-    public void toggleEnabled() {
-      this.enabled = !this.enabled;
-    }
-
-    public int getPosition() {
-      return this.position;
-    }
-
-    public void setPosition(int value) {
-      this.position = value;
-    }
-
-    public int getTranslateX() {
-      return this.translateX;
-    }
-
-    public void setTranslateX(int value) {
-      this.translateX = value;
-    }
-
-    public int getTranslateY() {
-      return this.translateY;
-    }
-
-    public void setTranslateY(int value) {
-      this.translateY = value;
-    }
   }
 
 }

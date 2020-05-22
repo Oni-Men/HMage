@@ -7,8 +7,8 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.module.AbstractModule;
-import onimen.anni.hmage.preference.Preferences;
 
 public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD {
 

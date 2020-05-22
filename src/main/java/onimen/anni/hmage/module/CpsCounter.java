@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.MouseInputEvent;
-import onimen.anni.hmage.preference.Preferences;
+import onimen.anni.hmage.Preferences;
 
 public class CpsCounter extends AbstractModule {
 

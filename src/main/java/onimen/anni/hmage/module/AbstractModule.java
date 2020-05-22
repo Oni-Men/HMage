@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import onimen.anni.hmage.preference.Preferences;
+import onimen.anni.hmage.Preferences;
 
 public abstract class AbstractModule implements InterfaceModule {
 
