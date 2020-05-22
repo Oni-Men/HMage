@@ -1,24 +1,28 @@
 package onimen.anni.hmage.gui;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import onimen.anni.hmage.Preferences;
+import onimen.anni.hmage.module.InterfaceModule;
 
 public class GuiSettings extends GuiScreen {
 
-  private GuiButton modStateButton;
-  private GuiButton statusEffectHUD;
-  private GuiButton armorDurability;
-  private GuiButton arrowRemaining;
-  private GuiButton cpsCounterHUD;
-  private GuiButton toggleSneak;
+  private final List<InterfaceModule> moduleList;
 
-  private String getButtonText(boolean b) {
-    return b ? "Enabled" : "Disabled";
+  private int prevMouseY = 0;
+  private int scrollY = 0;
+
+  public GuiSettings(Map<String, InterfaceModule> moduleMap) {
+    this.moduleList = Lists.newArrayList(moduleMap.values());
   }
 
   public void initGui() {
@@ -27,74 +31,39 @@ public class GuiSettings extends GuiScreen {
 
     ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
 
-    int baseX = sr.getScaledWidth() / 2 + 30;
-    int baseY = sr.getScaledHeight() / 4;
+    int x = sr.getScaledWidth() / 2 + 30;
+    int y = sr.getScaledHeight() / 4;
 
     int width = 100;
     int height = 20;
 
-    modStateButton = new GuiButton(0, baseX, baseY, width, height,
-        getButtonText(Preferences.enabled));
+    this.addButton(new GuiButton(-1, x, y, width, height, getButtonText(Preferences.enabled)));
+    y += 24;
 
-    baseY += 25;
+    int id = 0;
+    for (InterfaceModule module : this.moduleList) {
+      GuiButton button = new GuiButton(id, x, y, width, height, getButtonText(module.isEnable()));
+      this.addButton(button);
+      id++;
+      y += 24;
+    }
 
-    statusEffectHUD = new GuiButton(1, baseX, baseY, width, height,
-        getButtonText(Preferences.statusEffectOption.isEnabled()));
+  }
 
-    baseY += 25;
-
-    armorDurability = new GuiButton(2, baseX, baseY, width, height,
-        getButtonText(Preferences.statusArmorOption.isEnabled()));
-
-    baseY += 25;
-
-    arrowRemaining = new GuiButton(3, baseX, baseY, width, height,
-        getButtonText(Preferences.arrowCounterOption.isEnabled()));
-
-    baseY += 25;
-
-    cpsCounterHUD = new GuiButton(4, baseX, baseY, width, height,
-        getButtonText(Preferences.cpsCounterOption.isEnabled()));
-
-    baseY += 25;
-
-    toggleSneak = new GuiButton(5, baseX, baseY, width, height,
-        getButtonText(Preferences.toggleSneak));
-
-    this.buttonList.add(modStateButton);
-    this.buttonList.add(statusEffectHUD);
-    this.buttonList.add(armorDurability);
-    this.buttonList.add(arrowRemaining);
-    this.buttonList.add(cpsCounterHUD);
-    this.buttonList.add(toggleSneak);
+  public void handleMouseInput() throws IOException {
+    super.handleMouseInput();
   }
 
   protected void actionPerformed(GuiButton button) {
-    switch (button.id) {
-    case 0:
+    if (button.id == -1) {
       Preferences.enabled = !Preferences.enabled;
       button.displayString = getButtonText(Preferences.enabled);
-      break;
-    case 1:
-      Preferences.statusEffectOption.toggleEnabled();
-      button.displayString = getButtonText(Preferences.statusEffectOption.isEnabled());
-      break;
-    case 2:
-      Preferences.statusArmorOption.toggleEnabled();
-      button.displayString = getButtonText(Preferences.statusArmorOption.isEnabled());
-      break;
-    case 3:
-      Preferences.arrowCounterOption.toggleEnabled();
-      button.displayString = getButtonText(Preferences.arrowCounterOption.isEnabled());
-      break;
-    case 4:
-      Preferences.cpsCounterOption.toggleEnabled();
-      button.displayString = getButtonText(Preferences.cpsCounterOption.isEnabled());
-      break;
-    case 5:
-      Preferences.toggleSneak = !Preferences.toggleSneak;
-      button.displayString = getButtonText(Preferences.toggleSneak);
+      return;
     }
+
+    InterfaceModule module = moduleList.get(button.id);
+    module.setEnable(!module.isEnable());
+    button.displayString = getButtonText(module.isEnable());
   }
 
   @Override
@@ -106,38 +75,92 @@ public class GuiSettings extends GuiScreen {
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 
     ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-    int halfWidth = sr.getScaledWidth() / 2;
 
     this.drawDefaultBackground();
-    super.drawScreen(mouseX, mouseY, partialTicks);
 
-    this.drawCenteredString(this.fontRenderer, ChatFormatting.GOLD + "- HMage Settings -", halfWidth,
-        16,
-        0xffffff);
+    this.drawCenteredString(this.fontRenderer, "- HMage Settings -", this.width / 2, 16 - scrollY, 0xffffff);
 
-    int baseX = sr.getScaledWidth() / 2 - 130;
-    int baseY = sr.getScaledHeight() / 4;
+    int x = sr.getScaledWidth() / 2 - 130;
+    int y = 32 - scrollY;
 
     int offset = this.fontRenderer.FONT_HEIGHT / 2 - 12;
 
-    baseY -= offset;
+    y -= offset;
 
-    this.drawString(this.fontRenderer, "Mod", baseX, baseY, 0xffffff);
-    baseY += 25;
-    this.drawString(this.fontRenderer, "Status Effect HUD", baseX, baseY, 0xffffff);
-    baseY += 25;
-    this.drawString(this.fontRenderer, "Status Armor HUD", baseX, baseY, 0xffffff);
-    baseY += 25;
-    this.drawString(this.fontRenderer, "Arrow Counter HUD", baseX, baseY, 0xffffff);
-    baseY += 25;
-    this.drawString(this.fontRenderer, "CPS HUD", baseX, baseY, 0xffffff);
-    baseY += 25;
-    this.drawString(this.fontRenderer, "Toggle Sneak", baseX, baseY, 0xffffff);
+    this.drawString(this.fontRenderer, "HMage Mod", x, y, 0xffffff);
+    y += 24;
 
+    for (InterfaceModule module : this.moduleList) {
+      this.drawString(this.fontRenderer, module.getName(), x, y, 0xffffff);
+      y += 24;
+    }
+
+    GlStateManager.pushMatrix();
+    GlStateManager.translate(0D, -scrollY - 24, 0D);
+    for (int i = 0; i < this.buttonList.size(); ++i) {
+      ((GuiButton) this.buttonList.get(i)).drawButton(this.mc, mouseX, mouseY + scrollY + 24, partialTicks);
+    }
+    GlStateManager.popMatrix();
+  }
+
+  private String getButtonText(boolean isEnabled) {
+    return isEnabled ? "Enable" : "Disable";
   }
 
   public boolean doesGuiPauseGame() {
     return false;
+  }
+
+  @Override
+  protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+    super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+
+    scrollY += prevMouseY - mouseY;
+    prevMouseY = mouseY;
+
+    if (scrollY < 0) {
+      scrollY = 0;
+    }
+
+    int maxScrollY = this.moduleList.size() * 24 + 32;
+
+    if (scrollY > maxScrollY) {
+      scrollY = maxScrollY;
+    }
+  }
+
+  protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+    prevMouseY = mouseY;
+    if (mouseButton == 0) {
+      for (int i = 0; i < this.buttonList.size(); ++i) {
+        GuiButton guibutton = this.buttonList.get(i);
+
+        if (guibutton.mousePressed(this.mc, mouseX, mouseY + scrollY + 24)) {
+          net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Pre event = new net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Pre(
+              this, guibutton, this.buttonList);
+          if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
+            break;
+          guibutton = event.getButton();
+          this.selectedButton = guibutton;
+          guibutton.playPressSound(this.mc.getSoundHandler());
+          this.actionPerformed(guibutton);
+          if (this.equals(this.mc.currentScreen))
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS
+                .post(new net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Post(this,
+                    event.getButton(), this.buttonList));
+        }
+      }
+    }
+  }
+
+  /**
+   * Called when a mouse button is released.
+   */
+  protected void mouseReleased(int mouseX, int mouseY, int state) {
+    if (this.selectedButton != null && state == 0) {
+      this.selectedButton.mouseReleased(mouseX, mouseY + scrollY);
+      this.selectedButton = null;
+    }
   }
 
 }
