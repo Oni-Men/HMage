@@ -1,7 +1,8 @@
 package onimen.anni.hmage.util;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PositionHelper {
 
@@ -63,12 +64,7 @@ public class PositionHelper {
 
   public static int getPositionBitFromString(String str) {
     int position = 0;
-    List<String> list = new ArrayList<String>();
-
-    String[] split = str.split("#");
-    for (int i = 0; i < split.length; i++) {
-      list.add(split[i]);
-    }
+    List<String> list = Arrays.stream(str.toLowerCase().split("_")).collect(Collectors.toList());
 
     if (list.contains("centerx")) {
       list.add("left");

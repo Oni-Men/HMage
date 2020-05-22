@@ -1,6 +1,7 @@
 package onimen.anni.hmage.command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +14,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.IClientCommand;
+import onimen.anni.hmage.HMage;
 import onimen.anni.hmage.Preferences;
+import onimen.anni.hmage.module.InterfaceModule;
 import onimen.anni.hmage.util.PositionHelper;
 import onimen.anni.hmage.util.PositionHelper.PositionType;
 
@@ -21,18 +24,6 @@ public class PrefCommand extends CommandBase implements IClientCommand {
 
   public static final String SUCCESS_PREFIX = ChatFormatting.GOLD + "[HMage] ";
   public static final String ERROR_PREFIX = ChatFormatting.RED + "[HMage][ERROR] ";
-
-  public static List<String> getOptionDataTabCompletions() {
-
-    List<String> tabCompletions = new ArrayList<>();
-
-    tabCompletions.addAll(Preferences.statusArmorOption.getTabCompletionsList());
-    tabCompletions.addAll(Preferences.statusEffectOption.getTabCompletionsList());
-    tabCompletions.addAll(Preferences.arrowCounterOption.getTabCompletionsList());
-    tabCompletions.addAll(Preferences.cpsCounterOption.getTabCompletionsList());
-
-    return tabCompletions;
-  }
 
   public static List<String> getPositionTypeTabCompletions() {
     List<String> tabCompletions = new ArrayList<>();
@@ -51,7 +42,7 @@ public class PrefCommand extends CommandBase implements IClientCommand {
 
   @Override
   public String getUsage(ICommandSender sender) {
-    return "/hmage <setting key> <value>";
+    return "/hmage <Module Name> <Option Name> <Option Value>";
   }
 
   @Override
@@ -62,40 +53,52 @@ public class PrefCommand extends CommandBase implements IClientCommand {
     if (args.length == 1) {
       switch (args[0].toLowerCase()) {
       case "enable":
-        Preferences.cfg.setProperty("enabled", "true");
-        sendMessage(sender, SUCCESS_PREFIX + "enabled");
+        Preferences.enable();
+        sendMessage(sender, SUCCESS_PREFIX + "HMage is enabled");
         break;
       case "disable":
-        Preferences.cfg.setProperty("enabled", "false");
-        sendMessage(sender, SUCCESS_PREFIX + "disabled");
+        Preferences.disable();
+        sendMessage(sender, SUCCESS_PREFIX + "HMage is disabled");
         break;
       default:
-        sendMessage(sender, ERROR_PREFIX + "invalid param");
+        sendMessage(sender, ERROR_PREFIX + "invalid parameter");
       }
     } else if (args.length == 2) {
 
-      String key = args[0];
-      String value = args[1].toLowerCase();
+      switch (args[1]) {
+      case "enable":
+        getModuleByName(args[0]).setEnable(true);
+        break;
+      case "disable":
+        getModuleByName(args[0]).setEnable(false);
+        break;
+      }
 
-      boolean isPositionKey = key.endsWith(".position");
+    } else if (args.length == 3) {
 
-      if (isPositionKey) {
+      String key = args[0] + "." + args[1];
+      String value = args[2];
+
+      if (args[1].contentEquals("position")) {
+        System.out.println("args 2 is position");
+        System.out.println("unformatted value: " + value);
         try {
           Integer.parseInt(value);
         } catch (NumberFormatException error) {
           value = String.valueOf(PositionHelper.getPositionBitFromString(value));
         }
+        System.out.println("formatted value: " + value);
       }
 
-      if (Preferences.cfg.containsKey(key)) {
-        Preferences.cfg.setProperty(key, value);
-        sendMessage(sender, SUCCESS_PREFIX + key + " = " + value);
+      List<String> keys = getModuleByName(args[0]).getPreferenceKeys();
+
+      if (keys.contains(args[1])) {
+        Preferences.setProperty(key, value);
       } else {
-        sendMessage(sender, ERROR_PREFIX + key + " doesn't exist.");
+        sendMessage(sender, ERROR_PREFIX + "cannot set property with key: " + key);
       }
     }
 
-    Preferences.read();
     Preferences.save();
   }
 
@@ -103,43 +106,43 @@ public class PrefCommand extends CommandBase implements IClientCommand {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args,
       BlockPos targetPos) {
 
-    List<String> tabCompletions = new ArrayList<>();
-    String lastArgument = args[args.length - 1];
+    List<String> completions = new ArrayList<>();
 
     if (args.length == 0) {
       return super.getTabCompletions(server, sender, args, targetPos);
     } else if (args.length == 1) {
-      List<String> prepare = getOptionDataTabCompletions();
-      prepare.add("enable");
-      prepare.add("disable");
-      tabCompletions.addAll(prepare
-          .stream()
-          .filter(s -> s.startsWith(lastArgument))
-          .collect(Collectors.toList()));
+
+      completions.add("enable");
+      completions.add("disable");
+      completions.addAll(getModuleNames());
+
     } else if (args.length == 2) {
-      //TODO WANNA MAKE TAB COMPLETION BETTER
-      //			if (args[0].toLowerCase().endsWith(".position")) {
-      //
-      //				List<String> prepare = getPositionTypeTabCompletions();
-      //				String[] positionParameters = lastArgument.split("#");
-      //
-      //				if (positionParameters.length == 0) {
-      //					tabCompletions.addAll(prepare.stream().map(e -> "#" + e).collect(Collectors.toList()));
-      //				} else {
-      //					String lastParameter = positionParameters[positionParameters.length - 1];
-      //
-      //					tabCompletions.addAll(prepare.stream()
-      //							.filter(e -> e.startsWith(lastParameter))
-      //							.map(e -> String.join("#",
-      //									(CharSequence[]) Arrays.copyOf(positionParameters, positionParameters.length - 1))
-      //									+ "#" + e)
-      //							.collect(Collectors.toList()));
-      //				}
-      //
-      //			}
+
+      if (!args[0].contentEquals("enable") && !args[0].contentEquals("disable")) {
+
+        InterfaceModule module = getModuleByName(args[0]);
+
+        List<String> keys = module.getPreferenceKeys();
+
+        keys.remove("enabled");
+
+        completions.addAll(keys);
+        completions.add("enable");
+        completions.add("disable");
+
+      }
+
+    } else if (args.length == 3) {
+
+      if (args[1].contentEquals("position")) {
+        completions.addAll(Arrays.stream(PositionType.values()).map(t -> t.getText()).collect(Collectors.toList()));
+      }
+
     }
 
-    return tabCompletions;
+    return completions.stream()
+        .filter(c -> c.toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -154,6 +157,14 @@ public class PrefCommand extends CommandBase implements IClientCommand {
 
   private void sendMessage(ICommandSender sender, String msg) {
     sender.sendMessage(new TextComponentString(msg));
+  }
+
+  private List<String> getModuleNames() {
+    return HMage.getModuleMap().values().stream().map(m -> m.getName()).collect(Collectors.toList());
+  }
+
+  private InterfaceModule getModuleByName(String moduleName) {
+    return HMage.getModuleMap().get(moduleName);
   }
 
 }
