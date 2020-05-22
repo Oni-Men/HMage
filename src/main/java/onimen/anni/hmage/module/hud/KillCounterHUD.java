@@ -1,18 +1,24 @@
 package onimen.anni.hmage.module.hud;
 
 import net.minecraft.client.Minecraft;
+import onimen.anni.hmage.HMage;
 import onimen.anni.hmage.util.ShotbowUtils;
 
-public class KillCounterHUD implements InterfaceHUD {
+public class KillCounterHUD extends AbstractHUD {
 
   @Override
-  public boolean isEnabled() {
-    return true;
+  public String getName() {
+    return "KillCountHUD";
   }
 
   @Override
-  public String getPrefKey() {
-    return "killCounterHUD";
+  public int getDefaultPosition() {
+    return 0;
+  }
+
+  @Override
+  public String getDescription() {
+    return "キル数を表示";
   }
 
   @Override
@@ -20,13 +26,14 @@ public class KillCounterHUD implements InterfaceHUD {
     if (!ShotbowUtils.isShotbow(mc))
       return;
 
-    //    if (HMage.anniObserver == null)
-    //      return;
-    //
-    //    int killCount = HMage.anniObserver.getKillCount();
+    if (HMage.getAnniObserver() == null)
+      return;
 
-    //mc.fontRenderer.drawString("Kills " + killCount, 150, 20, 0xffffff);
+    int killCount = HMage.getAnniObserver().getKillCount();
+
+    mc.fontRenderer.drawString("Kills " + killCount, 150, 20, 0xffffff);
 
   }
+
 
 }

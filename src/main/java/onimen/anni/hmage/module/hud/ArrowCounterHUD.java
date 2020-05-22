@@ -1,7 +1,6 @@
 package onimen.anni.hmage.module.hud;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -9,18 +8,22 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHandSide;
-import onimen.anni.hmage.Preferences;
 
-public class ArrowCounterHUD extends Gui implements InterfaceHUD {
+public class ArrowCounterHUD extends AbstractHUD {
 
   @Override
-  public String getPrefKey() {
-    return "arrowCounterHUD";
+  public String getName() {
+    return "ArrowCountHUD";
   }
 
   @Override
-  public boolean isEnabled() {
-    return Preferences.arrowCounterOption.isEnabled();
+  public String getDescription() {
+    return "インベントリ内の残りの矢を表示";
+  }
+
+  @Override
+  public int getDefaultPosition() {
+    return 0;
   }
 
   private int countArrows(InventoryPlayer inventory) {

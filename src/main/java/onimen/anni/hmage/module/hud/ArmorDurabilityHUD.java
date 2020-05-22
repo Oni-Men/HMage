@@ -9,29 +9,32 @@ import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
-import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.util.PositionHelper;
 import onimen.anni.hmage.util.PositionHelper.Position;
 
-public class StatusArmorHUD extends Gui implements InterfaceHUD {
+public class ArmorDurabilityHUD extends AbstractHUD {
 
   private static final int SPACE = 1;
 
   @Override
-  public String getPrefKey() {
-    return "statusArmorHUD";
+  public String getName() {
+    return "ArmorDurabilityHUD";
   }
 
   @Override
-  public boolean isEnabled() {
-    return Preferences.statusArmorOption.isEnabled();
+  public String getDescription() {
+    return "装備と持っているアイテムを表示";
+  }
+
+  @Override
+  public int getDefaultPosition() {
+    return 0;
   }
 
   public String getTextForItemStack(ItemStack stack) {
@@ -107,10 +110,10 @@ public class StatusArmorHUD extends Gui implements InterfaceHUD {
 
     Collections.reverse(armorList);
 
-    Position position = new PositionHelper.Position(Preferences.statusArmorOption.getPosition());
+    Position position = new PositionHelper.Position(getPosition());
 
-    int x = Preferences.statusArmorOption.getTranslateX();
-    int y = Preferences.statusArmorOption.getTranslateY();
+    int x = getX();
+    int y = getY();
 
     if (position.right) {
       x += sr.getScaledWidth() - calculateWidth(fontRenderer, armorList, position.isHorizontal()) - SPACE;
@@ -135,10 +138,10 @@ public class StatusArmorHUD extends Gui implements InterfaceHUD {
 
       if (position.right && !position.isHorizontal()) {
         drawLightedItem(mc, armor, x + stringWidth + 2, y + 2);
-        this.drawString(mc.fontRenderer, text, x, y + 10 - mc.fontRenderer.FONT_HEIGHT / 2, color);
+        mc.fontRenderer.drawString(text, x, y + 10 - mc.fontRenderer.FONT_HEIGHT / 2, color);
       } else {
         drawLightedItem(mc, armor, x + 2, y + 2);
-        this.drawString(mc.fontRenderer, text, x + 20, y + 10 - mc.fontRenderer.FONT_HEIGHT / 2, color);
+        mc.fontRenderer.drawString(text, x + 20, y + 10 - mc.fontRenderer.FONT_HEIGHT / 2, color);
       }
 
       if (position.isHorizontal()) {

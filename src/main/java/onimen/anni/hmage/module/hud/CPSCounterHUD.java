@@ -4,68 +4,54 @@
 
 package onimen.anni.hmage.module.hud;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent.MouseInputEvent;
-import onimen.anni.hmage.Preferences;
+import onimen.anni.hmage.module.CpsCounter;
 import onimen.anni.hmage.util.PositionHelper;
 import onimen.anni.hmage.util.PositionHelper.Position;
 
-public class CPSCounterHUD extends Gui implements InterfaceHUD {
+public class CpsCounterHUD extends AbstractHUD {
 
   private final static int SPACE = 1;
+  private final CpsCounter counter;
 
-  private Queue<Long> clicks = new LinkedList<Long>();
-
-  public CPSCounterHUD() {
-    this.clicks = new LinkedList<>();
-  }
-
-  private int calculateCPS() {
-
-    long now = System.currentTimeMillis();
-
-    while (!clicks.isEmpty() && clicks.peek() < now) {
-      clicks.remove();
-    }
-
-    return clicks.size();
-
+  public CpsCounterHUD(CpsCounter counter) {
+    this.counter = counter;
   }
 
   @Override
-  public String getPrefKey() {
-    return "cpsCounterHUD";
+  public String getName() {
+    return "CPSCountHUD";
   }
 
   @Override
-  public boolean isEnabled() {
-    return Preferences.cpsCounterOption.isEnabled();
+  public String getDescription() {
+    return "計測したCPSを表示";
+  }
+
+  @Override
+  public int getDefaultPosition() {
+    return 0;
   }
 
   @Override
   public void drawItem(Minecraft mc) {
 
-    String text = String.format("%d CPS", this.calculateCPS());
+    String text = String.format("%2d CPS", this.counter.getCurrentCPS());
 
     ScaledResolution sr = new ScaledResolution(mc);
 
     int width = mc.fontRenderer.getStringWidth("00 CPS") + 4;
+    int offset = text.length() == 4 ? mc.fontRenderer.getStringWidth("0") : 0;
     int height = mc.fontRenderer.FONT_HEIGHT;
 
-    Position position = new PositionHelper.Position(Preferences.cpsCounterOption.getPosition());
+    Position position = new PositionHelper.Position(getPosition());
 
-    int x = Preferences.cpsCounterOption.getTranslateX();
-    int y = Preferences.cpsCounterOption.getTranslateY();
+    int x = getX();
+    int y = getY();
 
     if (position.centerx) {
       x += sr.getScaledWidth() / 2 - width / 2;
@@ -101,22 +87,9 @@ public class CPSCounterHUD extends Gui implements InterfaceHUD {
     GlStateManager.disableBlend();
     GlStateManager.enableTexture2D();
 
-    this.drawCenteredString(mc.fontRenderer, text, x + width / 2, y + 1, 0xffffff);
+    mc.fontRenderer.drawString(text, x + 2 + offset, y + 1, 0xffffff);
 
   }
 
-  @SubscribeEvent
-  public void onAttackKeyClick(MouseInputEvent event) {
-    if (!Preferences.enabled)
-      return;
-
-    if (!Mouse.getEventButtonState())
-      return;
-
-    if (Mouse.getEventButton() != 0)
-      return;
-
-    this.clicks.add(System.currentTimeMillis() + 1000L);
-  }
 
 }

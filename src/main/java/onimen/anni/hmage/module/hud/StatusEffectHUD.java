@@ -8,28 +8,31 @@ import com.google.common.collect.Ordering;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.util.PositionHelper;
 import onimen.anni.hmage.util.PositionHelper.Position;
 
-public class StatusEffectHUD extends Gui implements InterfaceHUD {
+public class StatusEffectHUD extends AbstractHUD {
 
   private static final int SPACE = 1;
 
   @Override
-  public String getPrefKey() {
-    return "statusEffectHUD";
+  public String getName() {
+    return "StatusEffectHUD";
   }
 
   @Override
-  public boolean isEnabled() {
-    return Preferences.statusEffectOption.isEnabled();
+  public String getDescription() {
+    return "ステータス効果と残り時間を表示";
+  }
+
+  @Override
+  public int getDefaultPosition() {
+    return 6;
   }
 
   public int calculateWidth(FontRenderer fontRenderer, List<PotionEffect> potionEffectList, boolean isHorizontal) {
@@ -67,10 +70,10 @@ public class StatusEffectHUD extends Gui implements InterfaceHUD {
     if (potionEffects.isEmpty())
       return;
 
-    Position position = new PositionHelper.Position(Preferences.statusEffectOption.getPosition());
+    Position position = new PositionHelper.Position(getPosition());
 
-    int x = Preferences.statusEffectOption.getTranslateX();
-    int y = Preferences.statusEffectOption.getTranslateY();
+    int x = getX();
+    int y = getY();
 
     if (position.right) {
       x += sr.getScaledWidth() - calculateWidth(fontRenderer, potionEffects, position.isHorizontal()) - SPACE;
@@ -102,10 +105,10 @@ public class StatusEffectHUD extends Gui implements InterfaceHUD {
 
       if (position.right && !position.isHorizontal()) {
         this.drawTexturedModalRect(x + textWidth, y, iconIndex % 8 * 18, 198 + iconIndex / 8 * 18, 18, 18);
-        this.drawString(fontRenderer, text, x - SPACE, y + 10 - fontRenderer.FONT_HEIGHT / 2, 0xffffff);
+        fontRenderer.drawString(text, x - SPACE, y + 10 - fontRenderer.FONT_HEIGHT / 2, 0xffffff);
       } else {
         this.drawTexturedModalRect(x, y, iconIndex % 8 * 18, 198 + iconIndex / 8 * 18, 18, 18);
-        this.drawString(fontRenderer, text, x + 20, y + 10 - fontRenderer.FONT_HEIGHT / 2, 0xffffff);
+        fontRenderer.drawString(text, x + 20, y + 10 - fontRenderer.FONT_HEIGHT / 2, 0xffffff);
       }
 
       if (position.isHorizontal()) {

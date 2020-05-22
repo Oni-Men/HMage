@@ -7,23 +7,22 @@ import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import onimen.anni.hmage.Preferences;
 
-public class RecipeBookRemover implements InterfaceModule {
+public class RecipeBookRemover extends AbstractModule {
 
   @Override
-  public boolean isEnabled() {
-    return Preferences.recipeBookRemover;
+  public String getName() {
+    return "HideRecipeBook";
   }
 
   @Override
-  public String getPrefKey() {
-    return "recipeBookRemover";
+  public String getDescription() {
+    return "レシピブックを表示しない";
   }
 
   @SubscribeEvent
   public void onInitGuiEvent(GuiScreenEvent.InitGuiEvent event) {
-    if (!isEnabled()) { return; }
+    if (!isEnable()) { return; }
 
     if (event.getGui() instanceof GuiInventory) {
       for (Iterator<GuiButton> itr = event.getButtonList().iterator(); itr.hasNext();) {

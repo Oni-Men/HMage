@@ -1,25 +1,31 @@
 package onimen.anni.hmage.module.hud;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import onimen.anni.hmage.HMage;
+import onimen.anni.hmage.observer.AnniObserver.ClassType;
 
-public class AcroJumpHUD extends Gui implements InterfaceHUD {
+public class AcroJumpHUD extends AbstractHUD {
 
   private long allowFlightChanged = 0;
   private String cooldownText = "Cannot Jump now...";
   private boolean prevAllowFlying = false;
 
   @Override
-  public boolean isEnabled() {
+  public boolean isEnable() {
     return true;
   }
 
   @Override
-  public String getPrefKey() {
-    return "acrojumpHUD";
+  public String getDescription() {
+    return "アクロジャンプのクールタイムを表示";
+  }
+
+  @Override
+  public String getName() {
+    return "AcroJumpHUD";
   }
 
   @Override
@@ -50,7 +56,7 @@ public class AcroJumpHUD extends Gui implements InterfaceHUD {
   }
 
   private boolean isAcrobat() {
-    //if (HMage.anniObserver != null) { return HMage.anniObserver.getUsingClassType() == ClassType.ACROBAT; }
+    if (HMage.getAnniObserver() != null) { return HMage.getAnniObserver().getUsingClassType() == ClassType.ACROBAT; }
     return false;
   }
 
@@ -59,4 +65,10 @@ public class AcroJumpHUD extends Gui implements InterfaceHUD {
     if (elapsedSec != 0) { return String.format("Jump %dsec", 10 - elapsedSec); }
     return "Jump Ready";
   }
+
+  @Override
+  public int getDefaultPosition() {
+    return 0;
+  }
+
 }
