@@ -1,6 +1,5 @@
 package onimen.anni.hmage;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
@@ -8,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.collect.Maps;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.inventory.IInventory;
@@ -37,13 +35,16 @@ import onimen.anni.hmage.command.NameCommand;
 import onimen.anni.hmage.command.PrefCommand;
 import onimen.anni.hmage.gui.GuiAnniServers;
 import onimen.anni.hmage.gui.GuiSettings;
+import onimen.anni.hmage.module.CpsCounter;
 import onimen.anni.hmage.module.InterfaceModule;
+import onimen.anni.hmage.module.RecipeBookRemover;
+import onimen.anni.hmage.module.SpeedFovDisabler;
 import onimen.anni.hmage.module.hud.AcroJumpHUD;
+import onimen.anni.hmage.module.hud.ArmorDurabilityHUD;
 import onimen.anni.hmage.module.hud.ArrowCounterHUD;
-import onimen.anni.hmage.module.hud.CPSCounterHUD;
+import onimen.anni.hmage.module.hud.CpsCounterHUD;
 import onimen.anni.hmage.module.hud.InterfaceHUD;
 import onimen.anni.hmage.module.hud.KillCounterHUD;
-import onimen.anni.hmage.module.hud.StatusArmorHUD;
 import onimen.anni.hmage.module.hud.StatusEffectHUD;
 import onimen.anni.hmage.observer.AnniObserver;
 import onimen.anni.hmage.transformer.HurtingArmorInjector;
@@ -61,9 +62,10 @@ public class HMage {
   public static HMage INSTANCE;
   private Minecraft mc;
 
-  private Map<String, InterfaceModule> moduleMap = new HashMap<>();
-  private Map<String, InterfaceHUD> hudMap = new HashMap<String, InterfaceHUD>();
   private CustomMovementInput customMovementInput = new CustomMovementInput(Minecraft.getMinecraft().gameSettings);
+
+  private static Map<String, InterfaceModule> moduleMap = Maps.newLinkedHashMap();
+  private static Map<String, InterfaceHUD> hudMap = Maps.newLinkedHashMap();
 
   public static String playingServerName;
   public static Map<String, AnniObserver> anniObserverMap;
@@ -92,18 +94,18 @@ public class HMage {
 
     MinecraftForge.EVENT_BUS.register(module);
 
-    moduleMap.put(module.getPrefKey(), module);
+    moduleMap.put(module.getName(), module);
     if (module instanceof InterfaceHUD) {
-      hudMap.put(module.getPrefKey(), (InterfaceHUD) module);
+      hudMap.put(module.getName(), (InterfaceHUD) module);
     }
   }
 
-  public Map<String, InterfaceModule> getModuleMap() {
-    return this.moduleMap;
+  public static Map<String, InterfaceModule> getModuleMap() {
+    return moduleMap;
   }
 
-  public Map<String, InterfaceHUD> getHUDMap() {
-    return this.hudMap;
+  public static Map<String, InterfaceHUD> getHUDMap() {
+    return hudMap;
   }
 
   public HMage() {
@@ -113,11 +115,17 @@ public class HMage {
     this.mc = Minecraft.getMinecraft();
     anniObserverMap = Maps.newHashMap();
 
+    CpsCounter cpsCounter = new CpsCounter();
     //Register Modules
+    this.registerModule(cpsCounter);
+    this.registerModule(new RecipeBookRemover());
+    this.registerModule(new SpeedFovDisabler());
+
+    //HUD
     this.registerModule(new ArrowCounterHUD());
     this.registerModule(new StatusEffectHUD());
-    this.registerModule(new StatusArmorHUD());
-    this.registerModule(new CPSCounterHUD());
+    this.registerModule(new ArmorDurabilityHUD());
+    this.registerModule(new CpsCounterHUD(cpsCounter));
     this.registerModule(new AcroJumpHUD());
     this.registerModule(new KillCounterHUD());
   }
@@ -143,7 +151,6 @@ public class HMage {
 
   @SubscribeEvent
   public void onClientTick(ClientTickEvent event) {
-
     if (mc == null)
       return;
 
@@ -163,9 +170,7 @@ public class HMage {
 
     if (Preferences.openSettingsKey.isPressed()) {
       if (mc.currentScreen == null) {
-        mc.displayGuiScreen(new GuiSettings());
-      } else if (mc.currentScreen instanceof GuiSettings) {
-        mc.displayGuiScreen((GuiScreen) null);
+        mc.displayGuiScreen(new GuiSettings(getModuleMap()));
       }
     }
 
@@ -186,15 +191,15 @@ public class HMage {
 
       if (mc.currentScreen == null) {
 
-        for (InterfaceHUD item : this.hudMap.values()) {
-          if (item.isEnabled())
+        for (InterfaceHUD item : hudMap.values()) {
+          if (item.isEnable())
             item.drawItem(mc);
         }
 
       }
 
     } else if (type == ElementType.POTION_ICONS) {
-      if (event.isCancelable() && Preferences.statusEffectOption.isEnabled())
+      if (event.isCancelable() && Preferences.getBoolean("StatusEffectHUD.enabled", true))
         event.setCanceled(true);
     }
   }
@@ -203,12 +208,14 @@ public class HMage {
   public void onInitGuiEvent(InitGuiEvent event) {
     if (!(event.getGui() instanceof GuiChest)) { return; }
     GuiChest gui = (GuiChest) event.getGui();
+
+    if (gui instanceof GuiAnniServers) { return; }
+
     IInventory chestInventory = GuiScreenUtils.getChestInventory(gui);
 
     if (chestInventory == null) { return; }
 
     ITextComponent chestDisplayName = chestInventory.getDisplayName();
-
     if (chestDisplayName.getFormattedText().startsWith(GuiScreenUtils.SELEC_SERVER)) {
       mc.displayGuiScreen(new GuiAnniServers(mc.player.inventory, chestInventory));
     }
