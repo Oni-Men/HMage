@@ -25,6 +25,7 @@ public class GuiSettings extends GuiScreen {
     this.moduleList = Lists.newArrayList(moduleMap.values());
   }
 
+  @Override
   public void initGui() {
 
     this.buttonList.clear();
@@ -50,10 +51,12 @@ public class GuiSettings extends GuiScreen {
 
   }
 
+  @Override
   public void handleMouseInput() throws IOException {
     super.handleMouseInput();
   }
 
+  @Override
   protected void actionPerformed(GuiButton button) {
     if (button.id == -1) {
       Preferences.enabled = !Preferences.enabled;
@@ -72,6 +75,7 @@ public class GuiSettings extends GuiScreen {
     super.onGuiClosed();
   }
 
+  @Override
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 
     ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
@@ -98,7 +102,7 @@ public class GuiSettings extends GuiScreen {
     GlStateManager.pushMatrix();
     GlStateManager.translate(0D, -scrollY - 24, 0D);
     for (int i = 0; i < this.buttonList.size(); ++i) {
-      ((GuiButton) this.buttonList.get(i)).drawButton(this.mc, mouseX, mouseY + scrollY + 24, partialTicks);
+      this.buttonList.get(i).drawButton(this.mc, mouseX, mouseY + scrollY + 24, partialTicks);
     }
     GlStateManager.popMatrix();
   }
@@ -107,6 +111,7 @@ public class GuiSettings extends GuiScreen {
     return isEnabled ? "Enable" : "Disable";
   }
 
+  @Override
   public boolean doesGuiPauseGame() {
     return false;
   }
@@ -129,6 +134,7 @@ public class GuiSettings extends GuiScreen {
     }
   }
 
+  @Override
   protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
     prevMouseY = mouseY;
     if (mouseButton == 0) {
@@ -156,6 +162,7 @@ public class GuiSettings extends GuiScreen {
   /**
    * Called when a mouse button is released.
    */
+  @Override
   protected void mouseReleased(int mouseX, int mouseY, int state) {
     if (this.selectedButton != null && state == 0) {
       this.selectedButton.mouseReleased(mouseX, mouseY + scrollY);

@@ -13,8 +13,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.IClientCommand;
-import onimen.anni.hmage.cape.CapeManager;
 import onimen.anni.hmage.cape.CapeResourceLoadTask;
+import onimen.anni.hmage.cape.GlobalPlayerUseCapeManager;
 import onimen.anni.hmage.util.PositionHelper.PositionType;
 
 public class DebugCommand extends CommandBase implements IClientCommand {
@@ -48,10 +48,10 @@ public class DebugCommand extends CommandBase implements IClientCommand {
       new CapeResourceLoadTask().run();
       break;
     case "clear":
-      CapeManager.clear();
+      GlobalPlayerUseCapeManager.clear();
       break;
     case "show":
-      Map<UUID, ResourceLocation> capeMap = CapeManager.getCapeMap();
+      Map<UUID, ResourceLocation> capeMap = GlobalPlayerUseCapeManager.getCapeMap();
       for (Entry<UUID, ResourceLocation> entry : capeMap.entrySet()) {
         sender.sendMessage(new TextComponentString(entry.getKey() + "@" + entry.getValue().getResourcePath()));
       }
