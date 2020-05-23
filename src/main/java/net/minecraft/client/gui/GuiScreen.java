@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -48,7 +47,6 @@ import onimen.anni.hmage.Preferences;
 public abstract class GuiScreen extends Gui implements GuiYesNoCallback {
   private static final Logger LOGGER = LogManager.getLogger();
   private static final Set<String> PROTOCOLS = Sets.newHashSet("http", "https");
-  private static final Splitter NEWLINE_SPLITTER = Splitter.on('\n');
   /** Reference to the Minecraft object. */
   public Minecraft mc;
   /** Holds a instance of RenderItem, used to draw the achievement icons on screen (is based on ItemStack) */

@@ -25,7 +25,7 @@ public class GuiSettings extends GuiScreen {
   private int scrollY = 0;
 
   public GuiSettings(Map<String, InterfaceModule> moduleMap) {
-    //mob 有効/無効の設定
+    //mod 有効/無効の設定
     buttonObjects.add(new ModEnabledButtonObject());
 
     //各モジュールの有効/無効の設定
