@@ -19,6 +19,7 @@ public class GuiAnniServers extends GuiChest {
 
     if (slotIn == null) {
       super.handleMouseClick(slotIn, slotId, mouseButton, type);
+      return;
     }
 
     ItemStack stack = slotIn.getStack();
