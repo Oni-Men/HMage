@@ -5,6 +5,8 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.Minecraft;
@@ -15,7 +17,9 @@ import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import onimen.anni.hmage.HMage;
 import onimen.anni.hmage.util.ShotbowUtils;
+import scala.collection.mutable.StringBuilder;
 
 public class AnniObserver {
 
@@ -78,13 +82,55 @@ public class AnniObserver {
     }
   }
 
-  private ClassType usingClassType;
-  private boolean isInGame = false;
-  private int phase = 0;
+  public enum GamePhase {
+    STARTING(0),
+    PHASE_1(1),
+    PHASE_2(2),
+    PHASE_3(3),
+    PHASE_4(4),
+    PHASE_5(5),
+    ENDING(6),
+    UNKNOWN(-1);
+
+    private int phase;
+
+    private GamePhase(int phase) {
+      this.phase = phase;
+    }
+
+    public int getPhase() {
+      return this.phase;
+    }
+
+    public static GamePhase getGamePhasebyText(String text) {
+      if (text.startsWith("Starts in ")) {
+        return STARTING;
+      } else if (text.startsWith("Ending")) { return ENDING; }
+      switch (text) {
+      case "Phase 1":
+        return PHASE_1;
+      case "Phase 2":
+        return PHASE_2;
+      case "Phase 3":
+        return PHASE_3;
+      case "Phase 4":
+        return PHASE_4;
+      case "Phase 5":
+      case "NEXUS BLEED":
+        return PHASE_5;
+      }
+      return UNKNOWN;
+    }
+  }
+
+  private ClassType usingClassType = ClassType.CIVILIAN;
+  private GamePhase gamePhase = GamePhase.UNKNOWN;
   private int kills = 0;
 
   private Minecraft mc;
   private Map<UUID, BossInfoClient> bossInfoMap = null;
+
+  private int tickLeftWhileNoBoss = 0;
 
   public AnniObserver(Minecraft mcIn) {
     this.mc = mcIn;
@@ -94,20 +140,20 @@ public class AnniObserver {
     return usingClassType;
   }
 
-  public boolean isInGame() {
-    return isInGame;
-  }
-
-  public void setIsInGame(boolean isInGame) {
-    this.isInGame = isInGame;
-  }
-
-  public int getPhase() {
-    return phase;
+  public GamePhase getGamePhase() {
+    return gamePhase;
   }
 
   public int getKillCount() {
     return this.kills;
+  }
+
+  public void onJoinGame() {
+    this.tickLeftWhileNoBoss = 0;
+  }
+
+  public void onLeaveGame() {
+    this.tickLeftWhileNoBoss = 0;
   }
 
   public void onClientTick(ClientTickEvent event) {
@@ -118,13 +164,16 @@ public class AnniObserver {
       }
 
       if (bossInfoMap != null) {
-        for (BossInfoClient bossInfo : bossInfoMap.values()) {
-          String name = bossInfo.getName().getUnformattedText();
-          String[] split = name.split(" ");
-          if (name.startsWith("Phase") && split.length >= 2) {
-            this.phase = Integer.valueOf(split[1]);
-          } else if (name.startsWith("NEXUS BLEED")) {
-            this.phase = 5;
+        if (bossInfoMap.isEmpty()) {
+          tickLeftWhileNoBoss++;
+          if (tickLeftWhileNoBoss > 100) {
+            HMage.anniObserverMap.unsetAnniObserver();
+          }
+        } else {
+          tickLeftWhileNoBoss = 0;
+          for (BossInfoClient bossInfo : bossInfoMap.values()) {
+            String name = bossInfo.getName().getUnformattedText();
+            gamePhase = GamePhase.getGamePhasebyText(name);
           }
         }
       }
@@ -193,7 +242,7 @@ public class AnniObserver {
 
     String formattedName = removeTeamPrefix(player.getDisplayName().getFormattedText());
 
-    if (!message.getFormattedText().startsWith(formattedName)) { return false; }
+    if (formattedName != null && !message.getFormattedText().startsWith(formattedName)) { return false; }
 
     String[] split = message.getUnformattedText().split(" ");
 
@@ -209,11 +258,37 @@ public class AnniObserver {
    * @param formatted formatted string
    * @return
    */
-  private String removeTeamPrefix(String formatted) {
-    if (formatted.endsWith("]")) { return null; }
-    int indexOf = formatted.indexOf("]");
-    if (indexOf == -1) { return null; }
-    return formatted.substring(indexOf + 1);
+  @Nullable
+  private static String removeTeamPrefix(String formatted) {
+
+    final StringBuilder builder = new StringBuilder();
+    final char prefix = ChatFormatting.PREFIX_CODE;
+    final char[] chars = formatted.toCharArray();
+
+    boolean insideBracket = false;
+
+    for (int i = 0, len = chars.length; i < len; i++) {
+
+      if (chars[i] == prefix) {
+        if (i + 2 < len && chars[i + 1] == 'r') {
+          if (chars[i + 2] == '[') {
+            insideBracket = true;
+            i += 2;
+            continue;
+          }
+          if (chars[i + 2] == ']') {
+            insideBracket = false;
+            i += 2;
+            continue;
+          }
+        }
+      }
+
+      if (!insideBracket)
+        builder.append(chars[i]);
+    }
+
+    return builder.toString();
   }
 
   @SuppressWarnings("unchecked")
