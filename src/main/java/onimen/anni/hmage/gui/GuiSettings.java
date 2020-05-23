@@ -1,10 +1,9 @@
 package onimen.anni.hmage.gui;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -12,17 +11,30 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import onimen.anni.hmage.Preferences;
+import onimen.anni.hmage.gui.button.ButtonObject;
+import onimen.anni.hmage.gui.button.CapeSelectButtonObject;
+import onimen.anni.hmage.gui.button.ModEnabledButtonObject;
+import onimen.anni.hmage.gui.button.ModuleSettingButtonObject;
 import onimen.anni.hmage.module.InterfaceModule;
 
 public class GuiSettings extends GuiScreen {
 
-  private final List<InterfaceModule> moduleList;
+  private List<ButtonObject> buttonObjects = new ArrayList<ButtonObject>();
 
   private int prevMouseY = 0;
   private int scrollY = 0;
 
   public GuiSettings(Map<String, InterfaceModule> moduleMap) {
-    this.moduleList = Lists.newArrayList(moduleMap.values());
+    //mob 有効/無効の設定
+    buttonObjects.add(new ModEnabledButtonObject());
+
+    //各モジュールの有効/無効の設定
+    for (InterfaceModule module : moduleMap.values()) {
+      buttonObjects.add(new ModuleSettingButtonObject(module));
+    }
+
+    //capeの設定
+    buttonObjects.add(new CapeSelectButtonObject());
   }
 
   @Override
@@ -33,17 +45,16 @@ public class GuiSettings extends GuiScreen {
     ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
 
     int x = sr.getScaledWidth() / 2 + 30;
-    int y = sr.getScaledHeight() / 4;
+    int y = 32 + 24;
+    y -= this.fontRenderer.FONT_HEIGHT / 2 - 12;
 
     int width = 100;
     int height = 20;
 
-    this.addButton(new GuiButton(-1, x, y, width, height, getButtonText(Preferences.enabled)));
-    y += 24;
-
     int id = 0;
-    for (InterfaceModule module : this.moduleList) {
-      GuiButton button = new GuiButton(id, x, y, width, height, getButtonText(module.isEnable()));
+    for (ButtonObject module : this.buttonObjects) {
+      System.out.println("btn:" + y);
+      GuiButton button = new GuiButton(id, x, y, width, height, module.getButtonText());
       this.addButton(button);
       id++;
       y += 24;
@@ -58,15 +69,8 @@ public class GuiSettings extends GuiScreen {
 
   @Override
   protected void actionPerformed(GuiButton button) {
-    if (button.id == -1) {
-      Preferences.enabled = !Preferences.enabled;
-      button.displayString = getButtonText(Preferences.enabled);
-      return;
-    }
-
-    InterfaceModule module = moduleList.get(button.id);
-    module.setEnable(!module.isEnable());
-    button.displayString = getButtonText(module.isEnable());
+    ButtonObject buttonObject = buttonObjects.get(button.id);
+    buttonObject.actionPerformed(button);
   }
 
   @Override
@@ -87,15 +91,10 @@ public class GuiSettings extends GuiScreen {
     int x = sr.getScaledWidth() / 2 - 130;
     int y = 32 - scrollY;
 
-    int offset = this.fontRenderer.FONT_HEIGHT / 2 - 12;
+    y -= this.fontRenderer.FONT_HEIGHT / 2 - 12 - this.fontRenderer.FONT_HEIGHT / 2;
 
-    y -= offset;
-
-    this.drawString(this.fontRenderer, "HMage Mod", x, y, 0xffffff);
-    y += 24;
-
-    for (InterfaceModule module : this.moduleList) {
-      this.drawString(this.fontRenderer, module.getName(), x, y, 0xffffff);
+    for (ButtonObject buttonObject : this.buttonObjects) {
+      this.drawString(this.fontRenderer, buttonObject.getTitle(), x, y, 0xffffff);
       y += 24;
     }
 
@@ -105,10 +104,6 @@ public class GuiSettings extends GuiScreen {
       this.buttonList.get(i).drawButton(this.mc, mouseX, mouseY + scrollY + 24, partialTicks);
     }
     GlStateManager.popMatrix();
-  }
-
-  private String getButtonText(boolean isEnabled) {
-    return isEnabled ? "Enable" : "Disable";
   }
 
   @Override
@@ -127,7 +122,7 @@ public class GuiSettings extends GuiScreen {
       scrollY = 0;
     }
 
-    int maxScrollY = this.moduleList.size() * 24 + 32;
+    int maxScrollY = this.buttonObjects.size() * 24 + 32;
 
     if (scrollY > maxScrollY) {
       scrollY = maxScrollY;
@@ -169,5 +164,4 @@ public class GuiSettings extends GuiScreen {
       this.selectedButton = null;
     }
   }
-
 }
