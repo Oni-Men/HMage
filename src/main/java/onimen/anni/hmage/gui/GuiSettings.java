@@ -46,6 +46,7 @@ public class GuiSettings extends GuiScreen {
 
     int x = sr.getScaledWidth() / 2 + 30;
     int y = 32 + 24;
+    //1文字の半分の高さだけずらす
     y -= this.fontRenderer.FONT_HEIGHT / 2 - 12;
 
     int width = 100;
@@ -53,7 +54,6 @@ public class GuiSettings extends GuiScreen {
 
     int id = 0;
     for (ButtonObject module : this.buttonObjects) {
-      System.out.println("btn:" + y);
       GuiButton button = new GuiButton(id, x, y, width, height, module.getButtonText());
       this.addButton(button);
       id++;
@@ -91,7 +91,7 @@ public class GuiSettings extends GuiScreen {
     int x = sr.getScaledWidth() / 2 - 130;
     int y = 32 - scrollY;
 
-    y -= this.fontRenderer.FONT_HEIGHT / 2 - 12 - this.fontRenderer.FONT_HEIGHT / 2;
+    y += 12;
 
     for (ButtonObject buttonObject : this.buttonObjects) {
       this.drawString(this.fontRenderer, buttonObject.getTitle(), x, y, 0xffffff);
