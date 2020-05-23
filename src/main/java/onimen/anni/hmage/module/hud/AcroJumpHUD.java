@@ -5,7 +5,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import onimen.anni.hmage.HMage;
-import onimen.anni.hmage.observer.AnniObserver.ClassType;
+import onimen.anni.hmage.observer.ClassType;
 
 public class AcroJumpHUD extends AbstractHUD {
 

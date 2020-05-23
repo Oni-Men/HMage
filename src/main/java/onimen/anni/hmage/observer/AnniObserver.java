@@ -13,115 +13,23 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.BossInfoClient;
 import net.minecraft.client.gui.GuiBossOverlay;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.BossInfo.Color;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.HMage;
 import onimen.anni.hmage.util.ShotbowUtils;
 import scala.collection.mutable.StringBuilder;
 
 public class AnniObserver {
 
-  public enum ClassType {
-    ACROBAT("Acrobat"),
-    ALCHEMIST("Alchemist"),
-    ARCHER("Archer"),
-    ASSASSIN("Assassin"),
-    BARD("Bard"),
-    BERSEKER("Berserker"),
-    BLOODMAGE("Bloodmage"),
-    BUILDER("Builder"),
-    CIVILIAN("Civilian"),
-    DASHER("Dasher"),
-    DEFENDER("Defender"),
-    ENCHANTER("Enchanter"),
-    ENGINEER("Engineer"),
-    FARMER("Farmer"),
-    HANDYMAN("Handyman"),
-    HEALER("Healer"),
-    HUNTER("Hunter"),
-    ICEMAN("Iceman"),
-    IMMOBILIZER("Immobilizer"),
-    LUMBERJACK("Lumberjack"),
-    MERCENARY("Mercenary"),
-    MINER("Miner"),
-    NINJA("Ninja"),
-    PYRO("Pyro"),
-    RIFT_WALKER("Rift Walker"),
-    ROBIN_HOOD("Robin Hood"),
-    SCORPIO("Scorpio"),
-    SCOUT("Scout"),
-    SNIPER("Sniper"),
-    SPIDER("Spider"),
-    SPY("Spy"),
-    SUCCUBUS("Succubus"),
-    SWAPPER("Swapper"),
-    THOR("Thor"),
-    TINKERER("Tinkerer"),
-    TRANSPORTER("Transporter"),
-    VAMPIRE("Vampire"),
-    WARRIOR("Warrior"),
-    WIZARD("Wizard");
-
-    private String name;
-
-    private ClassType(String name) {
-      this.name = name;
-    }
-
-    public String getDisplayName() {
-      return this.name;
-    }
-
-    public static ClassType getClassTypeFromName(String name) {
-      for (ClassType classType : ClassType.values()) {
-        if (classType.getDisplayName().equals(name)) { return classType; }
-      }
-      return ClassType.CIVILIAN;
-    }
-  }
-
-  public enum GamePhase {
-    STARTING(0),
-    PHASE_1(1),
-    PHASE_2(2),
-    PHASE_3(3),
-    PHASE_4(4),
-    PHASE_5(5),
-    ENDING(6),
-    UNKNOWN(-1);
-
-    private int phase;
-
-    private GamePhase(int phase) {
-      this.phase = phase;
-    }
-
-    public int getPhase() {
-      return this.phase;
-    }
-
-    public static GamePhase getGamePhasebyText(String text) {
-      if (text.startsWith("Starts in ")) {
-        return STARTING;
-      } else if (text.startsWith("Ending")) { return ENDING; }
-      switch (text) {
-      case "Phase 1":
-        return PHASE_1;
-      case "Phase 2":
-        return PHASE_2;
-      case "Phase 3":
-        return PHASE_3;
-      case "Phase 4":
-        return PHASE_4;
-      case "Phase 5":
-      case "NEXUS BLEED":
-        return PHASE_5;
-      }
-      return UNKNOWN;
-    }
-  }
+  private static final String MAP_PREFIX = ChatFormatting.GOLD.toString() + ChatFormatting.BOLD.toString() + "Map: ";
+  private static final String VOTING_TEXT = ChatFormatting.GREEN + "/vote [map name] to vote";
 
   private ClassType usingClassType = ClassType.CIVILIAN;
   private GamePhase gamePhase = GamePhase.UNKNOWN;
@@ -130,7 +38,7 @@ public class AnniObserver {
   private Minecraft mc;
   private Map<UUID, BossInfoClient> bossInfoMap = null;
 
-  private int tickLeftWhileNoBoss = 0;
+  private int tickLeftWhileNoScoreboard = 0;
 
   public AnniObserver(Minecraft mcIn) {
     this.mc = mcIn;
@@ -149,13 +57,14 @@ public class AnniObserver {
   }
 
   public void onJoinGame() {
-    this.tickLeftWhileNoBoss = 0;
+    this.tickLeftWhileNoScoreboard = 0;
   }
 
   public void onLeaveGame() {
-    this.tickLeftWhileNoBoss = 0;
+    this.tickLeftWhileNoScoreboard = 0;
   }
 
+  @SideOnly(Side.CLIENT)
   public void onClientTick(ClientTickEvent event) {
     if (mc.ingameGUI != null) {
 
@@ -163,21 +72,29 @@ public class AnniObserver {
         this.bossInfoMap = getBossInfoMap(mc.ingameGUI.getBossOverlay());
       }
 
-      if (bossInfoMap != null) {
-        if (bossInfoMap.isEmpty()) {
-          tickLeftWhileNoBoss++;
-          if (tickLeftWhileNoBoss > 100) {
-            HMage.anniObserverMap.unsetAnniObserver();
-          }
+      if (mc.world != null) {
+        Scoreboard scoreboard = mc.world.getScoreboard();
+
+        if (scoreboard != null && isAnniScoreboard(scoreboard)) {
+          tickLeftWhileNoScoreboard = 0;
         } else {
-          tickLeftWhileNoBoss = 0;
-          for (BossInfoClient bossInfo : bossInfoMap.values()) {
-            String name = bossInfo.getName().getUnformattedText();
-            gamePhase = GamePhase.getGamePhasebyText(name);
+          tickLeftWhileNoScoreboard++;
+          if (tickLeftWhileNoScoreboard > 100) {
+            HMage.anniObserverMap.unsetAnniObserver();
           }
         }
       }
 
+      if (bossInfoMap != null) {
+        if (!bossInfoMap.isEmpty()) {
+          for (BossInfoClient bossInfo : bossInfoMap.values()) {
+            if (bossInfo.getColor() == Color.BLUE) {
+              String name = bossInfo.getName().getUnformattedText();
+              gamePhase = GamePhase.getGamePhasebyText(name);
+            }
+          }
+        }
+      }
     }
   }
 
@@ -259,7 +176,7 @@ public class AnniObserver {
    * @return
    */
   @Nullable
-  private static String removeTeamPrefix(String formatted) {
+  private String removeTeamPrefix(String formatted) {
 
     final StringBuilder builder = new StringBuilder();
     final char prefix = ChatFormatting.PREFIX_CODE;
@@ -289,6 +206,24 @@ public class AnniObserver {
     }
 
     return builder.toString();
+  }
+
+  private boolean isAnniScoreboard(Scoreboard scoreboard) {
+    ScoreObjective scoreobjective = scoreboard.getObjectiveInDisplaySlot(1);
+
+    if (scoreobjective != null) {
+      String displayName = scoreobjective.getDisplayName();
+
+      if (displayName.contentEquals(VOTING_TEXT)) { return true; }
+
+      for (int i = 0, len = Math.min(MAP_PREFIX.length(), displayName.length()); i < len; i++) {
+        if (MAP_PREFIX.charAt(i) != displayName.charAt(i))
+          return false;
+      }
+
+      return true;
+    }
+    return false;
   }
 
   @SuppressWarnings("unchecked")

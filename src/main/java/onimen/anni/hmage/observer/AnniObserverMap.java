@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 
 import net.minecraft.client.Minecraft;
 import onimen.anni.hmage.HMage;
-import onimen.anni.hmage.observer.AnniObserver.GamePhase;
 
 public class AnniObserverMap {
 

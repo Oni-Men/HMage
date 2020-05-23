@@ -9,7 +9,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import onimen.anni.hmage.HMage;
-import onimen.anni.hmage.observer.AnniObserver.GamePhase;
+import onimen.anni.hmage.observer.GamePhase;
 import onimen.anni.hmage.util.NBTUtils;
 
 public class GuiAnniServers extends GuiChest {
