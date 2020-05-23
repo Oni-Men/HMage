@@ -17,6 +17,10 @@ public class GuiAnniServers extends GuiChest {
   @Override
   protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type) {
 
+    if (slotIn == null) {
+      super.handleMouseClick(slotIn, slotId, mouseButton, type);
+    }
+
     ItemStack stack = slotIn.getStack();
     boolean isServerSelectAction = type == ClickType.PICKUP &&
         slotIn != null &&
