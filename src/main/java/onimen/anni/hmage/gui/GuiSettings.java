@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.lwjgl.input.Mouse;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -23,6 +25,7 @@ public class GuiSettings extends GuiScreen {
 
   private int prevMouseY = 0;
   private int scrollY = 0;
+  private int maxScrollY = 0;
 
   public GuiSettings(Map<String, InterfaceModule> moduleMap) {
     //mod 有効/無効の設定
@@ -62,11 +65,25 @@ public class GuiSettings extends GuiScreen {
       y += 24;
     }
 
+    maxScrollY = this.buttonObjects.size() * 24 + 48 - sr.getScaledHeight();
   }
 
   @Override
   public void handleMouseInput() throws IOException {
     super.handleMouseInput();
+    int delta = Mouse.getEventDWheel();
+
+    if (delta != 0) {
+      if (delta > 1) {
+        delta = 1;
+      }
+
+      if (delta < -1) {
+        delta = -1;
+      }
+
+      this.scroll(-delta * 8);
+    }
   }
 
   @Override
@@ -134,18 +151,9 @@ public class GuiSettings extends GuiScreen {
   protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
     super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
 
-    scrollY += prevMouseY - mouseY;
+    this.scroll(prevMouseY - mouseY);
     prevMouseY = mouseY;
 
-    if (scrollY < 0) {
-      scrollY = 0;
-    }
-
-    int maxScrollY = this.buttonObjects.size() * 24 + 32;
-
-    if (scrollY > maxScrollY) {
-      scrollY = maxScrollY;
-    }
   }
 
   @Override
@@ -182,5 +190,18 @@ public class GuiSettings extends GuiScreen {
       this.selectedButton.mouseReleased(mouseX, mouseY + scrollY);
       this.selectedButton = null;
     }
+  }
+
+  public void scroll(int delta) {
+    scrollY += delta;
+
+    if (scrollY < 0) {
+      scrollY = 0;
+    }
+
+    if (scrollY > maxScrollY) {
+      scrollY = maxScrollY;
+    }
+
   }
 }
