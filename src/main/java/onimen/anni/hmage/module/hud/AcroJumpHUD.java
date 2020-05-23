@@ -71,7 +71,9 @@ public class AcroJumpHUD extends AbstractHUD {
   }
 
   private boolean isAcrobat() {
-    if (HMage.getAnniObserver() != null) { return HMage.getAnniObserver().getUsingClassType() == ClassType.ACROBAT; }
+    if (HMage.anniObserverMap.getAnniObserver() != null) {
+      return HMage.anniObserverMap.getAnniObserver().getUsingClassType() == ClassType.ACROBAT;
+    }
     return false;
   }
 

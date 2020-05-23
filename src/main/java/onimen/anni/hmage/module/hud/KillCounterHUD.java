@@ -50,10 +50,10 @@ public class KillCounterHUD extends AbstractHUD {
     if (!ShotbowUtils.isShotbow(mc))
       return;
 
-    if (HMage.getAnniObserver() == null)
+    if (HMage.anniObserverMap.getAnniObserver() == null)
       return;
 
-    text = String.format("%3d Kill", HMage.getAnniObserver().getKillCount());
+    text = String.format("%3d Kill", HMage.anniObserverMap.getAnniObserver().getKillCount());
     ScaledResolution sr = new ScaledResolution(mc);
 
     int x = getComputedX(sr);

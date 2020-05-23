@@ -46,7 +46,7 @@ import onimen.anni.hmage.module.hud.CpsCounterHUD;
 import onimen.anni.hmage.module.hud.InterfaceHUD;
 import onimen.anni.hmage.module.hud.KillCounterHUD;
 import onimen.anni.hmage.module.hud.StatusEffectHUD;
-import onimen.anni.hmage.observer.AnniObserver;
+import onimen.anni.hmage.observer.AnniObserverMap;
 import onimen.anni.hmage.transformer.HurtingArmorInjector;
 import onimen.anni.hmage.util.CustomMovementInput;
 import onimen.anni.hmage.util.GuiScreenUtils;
@@ -67,27 +67,7 @@ public class HMage {
   private static Map<String, InterfaceModule> moduleMap = Maps.newLinkedHashMap();
   private static Map<String, InterfaceHUD> hudMap = Maps.newLinkedHashMap();
 
-  public static String playingServerName;
-  public static Map<String, AnniObserver> anniObserverMap;
-
-  public static void setAnniObserver(String serverName) {
-    setAnniObserver(serverName, false);
-  }
-
-  public static void setAnniObserver(String serverName, boolean force) {
-    playingServerName = serverName;
-    if (!anniObserverMap.containsKey(serverName)) {
-      anniObserverMap.put(serverName, new AnniObserver(Minecraft.getMinecraft()));
-
-      logger.info("New Annihilation Observer created");
-    }
-
-    logger.info("Playing server name: " + playingServerName);
-  }
-
-  public static AnniObserver getAnniObserver() {
-    return anniObserverMap.get(playingServerName);
-  }
+  public static AnniObserverMap anniObserverMap;
 
   public void registerModule(InterfaceModule module) {
     if (module == null) { return; }
@@ -113,7 +93,7 @@ public class HMage {
     MinecraftForge.EVENT_BUS.register(this);
 
     this.mc = Minecraft.getMinecraft();
-    anniObserverMap = Maps.newHashMap();
+    anniObserverMap = AnniObserverMap.getInstance();
 
     CpsCounter cpsCounter = new CpsCounter();
     //Register Modules
@@ -160,8 +140,8 @@ public class HMage {
         mc.player.movementInput = customMovementInput;
     }
 
-    if (getAnniObserver() != null) {
-      getAnniObserver().onClientTick(event);
+    if (anniObserverMap.getAnniObserver() != null) {
+      anniObserverMap.getAnniObserver().onClientTick(event);
     }
   }
 
@@ -170,6 +150,7 @@ public class HMage {
 
     if (Preferences.openSettingsKey.isPressed()) {
       if (mc.currentScreen == null) {
+        //mc.displayGuiScreen(new CapeSetting());
         mc.displayGuiScreen(new GuiSettings(getModuleMap()));
       }
     }
@@ -223,8 +204,8 @@ public class HMage {
 
   @SubscribeEvent
   public void onRecieveChat(ClientChatReceivedEvent event) {
-    if (getAnniObserver() != null) {
-      getAnniObserver().onRecieveChat(event);
+    if (anniObserverMap.getAnniObserver() != null) {
+      anniObserverMap.getAnniObserver().onRecieveChat(event);
     }
   }
 

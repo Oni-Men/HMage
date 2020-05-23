@@ -1,5 +1,7 @@
 package onimen.anni.hmage.gui;
 
+import java.util.List;
+
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.IInventory;
@@ -7,6 +9,8 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import onimen.anni.hmage.HMage;
+import onimen.anni.hmage.observer.AnniObserver.GamePhase;
+import onimen.anni.hmage.util.NBTUtils;
 
 public class GuiAnniServers extends GuiChest {
 
@@ -29,9 +33,16 @@ public class GuiAnniServers extends GuiChest {
         Item.getIdFromItem(stack.getItem()) != 0;
 
     if (isServerSelectAction) {
-      HMage.setAnniObserver(stack.getDisplayName());
+      HMage.anniObserverMap.setAnniObserver(stack.getDisplayName(), getPhaseFromStack(stack));
     }
     super.handleMouseClick(slotIn, slotId, mouseButton, type);
+  }
+
+  private GamePhase getPhaseFromStack(ItemStack stack) {
+    List<String> lore = NBTUtils.getLore(stack);
+    if (lore != null && lore.size() == 3)
+      return GamePhase.getGamePhasebyText(lore.get(2));
+    return GamePhase.UNKNOWN;
   }
 
 }
