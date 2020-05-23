@@ -35,6 +35,8 @@ public class GuiSettings extends GuiScreen {
 
     //capeの設定
     buttonObjects.add(new CapeSelectButtonObject());
+    //    //debug
+    //    buttonObjects.add(new DebugButtonObject());
   }
 
   @Override
@@ -98,12 +100,29 @@ public class GuiSettings extends GuiScreen {
       y += 24;
     }
 
+    ButtonObject mouseOveredObject = null;
+
     GlStateManager.pushMatrix();
     GlStateManager.translate(0D, -scrollY - 24, 0D);
     for (int i = 0; i < this.buttonList.size(); ++i) {
-      this.buttonList.get(i).drawButton(this.mc, mouseX, mouseY + scrollY + 24, partialTicks);
+      //ボタンの描画
+      GuiButton button = this.buttonList.get(i);
+      button.drawButton(this.mc, mouseX, mouseY + scrollY + 24, partialTicks);
+
+      //マウスでかぶさっているボタンを取得
+      if (button.isMouseOver()) {
+        mouseOveredObject = buttonObjects.get(i);
+      }
     }
     GlStateManager.popMatrix();
+
+    //tooltip
+    if (mouseOveredObject != null) {
+      List<String> description = mouseOveredObject.getDescription();
+      if (description != null && !description.isEmpty()) {
+        this.drawHoveringText(description, mouseX, mouseY);
+      }
+    }
   }
 
   @Override

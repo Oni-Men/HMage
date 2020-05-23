@@ -1,33 +1,30 @@
 package onimen.anni.hmage.gui.button;
 
-import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.resources.I18n;
-import onimen.anni.hmage.gui.CapeSetting;
+import onimen.anni.hmage.gui.ModuleLocationSetting;
 
-public class CapeSelectButtonObject implements ButtonObject {
+public class DebugButtonObject implements ButtonObject {
 
   @Override
   public String getTitle() {
-    return "Cape";
+    return "";
   }
 
   @Override
   public String getButtonText() {
-    return "Cape Select";
+    return "debug";
   }
 
   @Override
   public void actionPerformed(GuiButton button) {
-    Minecraft.getMinecraft().displayGuiScreen(new CapeSetting());
+    Minecraft.getMinecraft().displayGuiScreen(new ModuleLocationSetting());
   }
 
   @Override
   public List<String> getDescription() {
-    return Arrays.asList(I18n.format("hmage.setting.desc.capeselect"));
+    return null;
   }
-
 }
