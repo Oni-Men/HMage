@@ -27,7 +27,6 @@ options.encoding = 'UTF-8'
 minecraft {
     version = "1.12.2-14.23.5.2768"
     runDir = "run"
-
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.
@@ -82,9 +81,7 @@ processResources {
 
 jar {
     manifest {
-        //coremodのパスを指定する。
         attributes FMLCorePlugin: 'onimen.anni.hmage.transformer.HMageCoreLoader'
-        //今回はAluminiummodが別で入っているためそれも読み込む。
         attributes FMLCorePluginContainsFMLMod : 'true'
     }
 }
