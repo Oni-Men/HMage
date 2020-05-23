@@ -2,78 +2,80 @@ package onimen.anni.hmage.transformer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.objectweb.asm.Opcodes;
 
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import onimen.anni.hmage.HMage;
 
-public class HMageClassTransformer implements IClassTransformer {
+@SideOnly(Side.CLIENT)
+public class HMageClassTransformer implements IClassTransformer, Opcodes {
 
-  private ZipFile hmageZip = null;
+  private static final String[] replaceList = new String[] {
+      "net.minecraft.client.gui.GuiScreen"
+  };
 
-  public HMageClassTransformer() {
-    //    try {
-    //      URL url = HMageClassTransformer.class.getProtectionDomain().getCodeSource().getLocation();
-    //      URI uri = url.toURI();
-    //      File file = new File("D:\\Developments\\workspace\\HMage\\build\\libs\\HMage-1.0.1.jar");
-    //      this.hmageZip = new ZipFile(file);
-    //      Enumeration<? extends ZipEntry> entries = this.hmageZip.entries();
-    //
-    //      while (entries.hasMoreElements()) {
-    //        String name = entries.nextElement().getName();
-    //        System.out.println(name);
-    //      }
-    //
-    //    } catch (Exception e) {
-    //      e.printStackTrace();
-    //    }
-  }
-
-	@Override
+  @Override
   public byte[] transform(String name, String transformedName, byte[] bytes) {
-    if (!name.contains("LayerArmorBase"))
-      return bytes;
-    String nameClass = "onimen/anni/hmage/patch/renderer/entity/layers/LayerArmorBase.class";//String.valueOf(name) + ".class";
-    byte[] hmageBytes = getHMageResource(nameClass);
-    if (hmageBytes != null) {
-      System.out.println("Transform " + name);
-      return hmageBytes;
+    if (Arrays.<String> asList(replaceList).contains(transformedName)) {
+      try {
+        return replaceClass(bytes, name, transformedName);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
     return bytes;
-	}
+  }
 
-  private synchronized byte[] getHMageResource(String name) {
-    try {
-    InputStream in = getHMageResourceStream(name);
-    if (in == null)
-      return null;
-    byte[] bytes = IOUtils.toByteArray(in);
-      in.close();
+  private byte[] replaceClass(byte[] bytes, String name, String transformedName) throws IOException {
+    ZipFile zipFile = null;
+    InputStream streamIn = null;
+
+    if (HMageCoreLoader.location == null) {
+      HMage.logger.error("CoreMod Location is null: " + transformedName);
       return bytes;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return null;
     }
-  }
 
-  private synchronized InputStream getHMageResourceStream(String name) {
-    if (this.hmageZip == null)
-      return null;
-    name = StringUtils.removeStart(name, "/");
-    ZipEntry entry = this.hmageZip.getEntry(name);
-    if (entry == null) {
-      return null;
-    }
+    String readClass = transformedName.replace(".", "/") + ".class";
+
     try {
-      InputStream in = this.hmageZip.getInputStream(entry);
-      return in;
-    } catch (IOException e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
+      zipFile = new ZipFile(HMageCoreLoader.location);
+      Enumeration<? extends ZipEntry> entries = zipFile.entries();
+      ZipEntry zipEntry = null;
 
+      while (entries.hasMoreElements()) {
+        ZipEntry next = entries.nextElement();
+        if (next.getName().contentEquals(readClass)) {
+          zipEntry = next;
+          break;
+        }
+      }
+
+      if (zipEntry != null) {
+        streamIn = zipFile.getInputStream(zipEntry);
+        bytes = new byte[(int) zipEntry.getSize()];
+        streamIn.read(bytes);
+      } else {
+        HMage.logger.error("File not found: " + readClass);
+      }
+      return bytes;
+    } catch (Exception e) {
+      HMage.logger.error("Failed to replace class:" + transformedName);
+      return bytes;
+    } finally {
+      if (streamIn != null) {
+        streamIn.close();
+      }
+      if (zipFile != null) {
+        zipFile.close();
+      }
+    }
+
+  }
 }

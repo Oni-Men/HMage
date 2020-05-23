@@ -22,6 +22,9 @@ public class Preferences {
   public static int toggleSneakThreshold = 300;
   public static boolean hurtingArmor = true;
 
+  public static int guiBgColorStart = 0x30bc658d;
+  public static int guiBgColorEnd = 0x3082c4c3;
+
   public static KeyBinding openSettingsKey = new KeyBinding("hmage.key.settings", Keyboard.KEY_P,
       "key.categories.misc");
 
@@ -37,9 +40,13 @@ public class Preferences {
     }
 
     enabled = getBoolean("enabled", true);
+
     toggleSneak = getBoolean("toggleSneak.enabled", true);
     toggleSneakThreshold = getInt("toggleSneak.threshold", 300);
     hurtingArmor = getBoolean("hurtingArmor.enabled", true);
+
+    guiBgColorStart = getInt("gui.background.start", guiBgColorStart);
+    guiBgColorEnd = getInt("gui.background.end", guiBgColorEnd);
   }
 
   public static void save() {
@@ -51,6 +58,9 @@ public class Preferences {
     setBoolean("toggleSneak.enabled", toggleSneak);
     setInt("toggleSneak.threshold", toggleSneakThreshold);
     setBoolean("hurtingArmor.enabled", hurtingArmor);
+
+    setInt("gui.background.start", guiBgColorStart);
+    setInt("gui.background.end", guiBgColorEnd);
 
     try {
       cfg.store(Files.newBufferedWriter(configPath, StandardCharsets.UTF_8), "Created by HMage");
