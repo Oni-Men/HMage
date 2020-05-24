@@ -5,8 +5,6 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.Minecraft;
@@ -159,14 +157,13 @@ public class AnniObserver {
 
     String formattedName = removeTeamPrefix(player.getDisplayName().getFormattedText());
 
-    if (formattedName != null && !message.getFormattedText().startsWith(formattedName)) { return false; }
-
-    String[] split = message.getUnformattedText().split(" ");
-
-    if (split.length < 3)
-      return false;
-
-    return split[1].contentEquals("killed") || split[1].contentEquals("shot");
+    if (message.getFormattedText().startsWith(formattedName)) {
+      String[] split = message.getUnformattedText().split(" ");
+      if (split.length >= 3) {
+        return split[1].contentEquals("killed") || split[1].contentEquals("shot");
+      }
+    }
+    return false;
   }
 
   /**
@@ -175,7 +172,6 @@ public class AnniObserver {
    * @param formatted formatted string
    * @return
    */
-  @Nullable
   private String removeTeamPrefix(String formatted) {
 
     final StringBuilder builder = new StringBuilder();
@@ -187,7 +183,7 @@ public class AnniObserver {
     for (int i = 0, len = chars.length; i < len; i++) {
 
       if (chars[i] == prefix) {
-        if (i + 2 < len && chars[i + 1] == 'r') {
+        if (i + 2 < len && chars[i + 1] == 'f') {
           if (chars[i + 2] == '[') {
             insideBracket = true;
             i += 2;
