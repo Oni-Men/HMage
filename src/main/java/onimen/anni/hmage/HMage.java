@@ -45,6 +45,7 @@ import onimen.anni.hmage.module.hud.ArrowCounterHUD;
 import onimen.anni.hmage.module.hud.CpsCounterHUD;
 import onimen.anni.hmage.module.hud.InterfaceHUD;
 import onimen.anni.hmage.module.hud.KillCounterHUD;
+import onimen.anni.hmage.module.hud.NexusDamageHUD;
 import onimen.anni.hmage.module.hud.StatusEffectHUD;
 import onimen.anni.hmage.observer.AnniObserverMap;
 import onimen.anni.hmage.transformer.HurtingArmorInjector;
@@ -90,7 +91,19 @@ public class HMage {
 
   public HMage() {
     INSTANCE = this;
+  }
+
+  @SideOnly(Side.CLIENT)
+  @EventHandler
+  public void preInit(FMLPreInitializationEvent event) {
     MinecraftForge.EVENT_BUS.register(this);
+    logger = event.getModLog();
+    Preferences.load(event);
+  }
+
+  @SideOnly(Side.CLIENT)
+  @EventHandler
+  public void init(FMLInitializationEvent event) {
 
     this.mc = Minecraft.getMinecraft();
     anniObserverMap = AnniObserverMap.getInstance();
@@ -107,17 +120,9 @@ public class HMage {
     this.registerModule(new ArmorDurabilityHUD());
     this.registerModule(new CpsCounterHUD(cpsCounter));
     this.registerModule(new AcroJumpHUD());
-    this.registerModule(new KillCounterHUD());
-  }
+    this.registerModule(new KillCounterHUD(this.mc.fontRenderer));
+    this.registerModule(new NexusDamageHUD(this.mc.fontRenderer));
 
-  @EventHandler
-  public void preInit(FMLPreInitializationEvent event) {
-    logger = event.getModLog();
-    Preferences.load(event);
-  }
-
-  @EventHandler
-  public void init(FMLInitializationEvent event) {
     ClientCommandHandler.instance.registerCommand(new PrefCommand());
     ClientCommandHandler.instance.registerCommand(new DebugCommand());
     ClientCommandHandler.instance.registerCommand(new NameCommand());
