@@ -38,7 +38,7 @@ public class AnniObserverMap {
 
     if (anniObserverMap.containsKey(serverName)) {
       AnniObserver anniObserver = anniObserverMap.get(serverName);
-      if (anniObserver != null && anniObserver.getGamePhase().getPhase() > phase.getPhase()) {
+      if (anniObserver != null && anniObserver.getGameInfo().getGamePhase().getValue() > phase.getValue()) {
         canPutNewObserver = true;
       }
     } else {

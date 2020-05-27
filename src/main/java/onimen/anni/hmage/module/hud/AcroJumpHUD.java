@@ -36,7 +36,7 @@ public class AcroJumpHUD extends AbstractHUD {
 
   @Override
   public int getDefaultY() {
-    return 0;
+    return 30;
   }
 
   @Override
@@ -72,20 +72,22 @@ public class AcroJumpHUD extends AbstractHUD {
 
   private boolean isAcrobat() {
     if (HMage.anniObserverMap.getAnniObserver() != null) {
-      return HMage.anniObserverMap.getAnniObserver().getUsingClassType() == ClassType.ACROBAT;
+      return HMage.anniObserverMap.getAnniObserver().getGameInfo().getClassType() == ClassType.ACROBAT;
     }
     return false;
   }
 
   private String getCooldownText() {
-    int elapsedSec = (int) ((System.currentTimeMillis() - allowFlightChanged) / 1000f);
-    if (elapsedSec != 0) { return String.format("Jump %dsec", 10 - elapsedSec); }
-    return "Jump Ready";
+    int cooltime = 10 - (int) ((System.currentTimeMillis() - allowFlightChanged) / 1000f);
+    if (cooltime > 0) {
+      return String.format("Jump %dsec", cooltime);
+    }
+    return "Jump Ready!";
   }
 
   @Override
   public int getDefaultPosition() {
-    return 0;
+    return 7;
   }
 
 }

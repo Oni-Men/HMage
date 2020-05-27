@@ -16,7 +16,7 @@ public enum GamePhase {
     this.phase = phase;
   }
 
-  public int getPhase() {
+  public int getValue() {
     return this.phase;
   }
 

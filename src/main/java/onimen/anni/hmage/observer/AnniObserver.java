@@ -5,6 +5,8 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.Minecraft;
@@ -13,7 +15,6 @@ import net.minecraft.client.gui.GuiBossOverlay;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.BossInfo.Color;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -29,29 +30,23 @@ public class AnniObserver {
   private static final String MAP_PREFIX = ChatFormatting.GOLD.toString() + ChatFormatting.BOLD.toString() + "Map: ";
   private static final String VOTING_TEXT = ChatFormatting.GREEN + "/vote [map name] to vote";
 
-  private ClassType usingClassType = ClassType.CIVILIAN;
-  private GamePhase gamePhase = GamePhase.UNKNOWN;
-  private int kills = 0;
+  private static final String NEXUS_DAMAGE_LOG = ChatFormatting.DARK_GRAY.toString() + " has damaged the ";
 
   private Minecraft mc;
   private Map<UUID, BossInfoClient> bossInfoMap = null;
 
   private int tickLeftWhileNoScoreboard = 0;
 
+  @Nonnull
+  private final GameInfo gameInfo;
+
   public AnniObserver(Minecraft mcIn) {
     this.mc = mcIn;
+    this.gameInfo = new GameInfo();
   }
 
-  public ClassType getUsingClassType() {
-    return usingClassType;
-  }
-
-  public GamePhase getGamePhase() {
-    return gamePhase;
-  }
-
-  public int getKillCount() {
-    return this.kills;
+  public GameInfo getGameInfo() {
+    return this.gameInfo;
   }
 
   public void onJoinGame() {
@@ -88,7 +83,7 @@ public class AnniObserver {
           for (BossInfoClient bossInfo : bossInfoMap.values()) {
             if (bossInfo.getColor() == Color.BLUE) {
               String name = bossInfo.getName().getUnformattedText();
-              gamePhase = GamePhase.getGamePhasebyText(name);
+              this.gameInfo.setGamePhase(GamePhase.getGamePhasebyText(name));
             }
           }
         }
@@ -106,27 +101,20 @@ public class AnniObserver {
     if (message.getUnformattedText().contentEquals(""))
       return;
 
-    if (event.getType() == ChatType.SYSTEM && this.isClassSelect(message)) {
-      ClassType classType = getClassType(message);
-
-      if (classType != null) {
-        this.usingClassType = classType;
-      }
+    switch (event.getType()) {
+    case CHAT:
+      this.handleChatLog(message);
+      break;
+    case GAME_INFO:
+      this.handleGameInfo(message);
+      break;
+    case SYSTEM:
+      this.handleSystemLog(message);
+      break;
+    default:
+      break;
     }
 
-    if (event.getType() == ChatType.CHAT && this.isKillLogOfPlayer(message, mc.player)) {
-      kills++;
-    }
-  }
-
-  /**
-   * 渡されたメッセージがクラスを選択したときに受け取るメッセージかチェックします。
-   *
-   * @param message
-   * @return
-   */
-  private boolean isClassSelect(ITextComponent message) {
-    return message.getFormattedText().startsWith(ChatFormatting.GOLD + "[Class]");
   }
 
   /**
@@ -136,34 +124,69 @@ public class AnniObserver {
    * @return
    */
   private ClassType getClassType(ITextComponent message) {
-    String[] split = message.getUnformattedText().split(" ");
-
-    if (split.length != 3)
-      return null;
-
-    return ClassType.getClassTypeFromName(split[1]);
+    if (message.getFormattedText().startsWith(ChatFormatting.GOLD + "[Class]")) {
+      String[] split = message.getUnformattedText().split(" ");
+      if (split.length == 3)
+        return ClassType.getClassTypeFromName(split[1]);
+    }
+    return null;
   }
 
   /**
-   * メッセージがプレイヤーによるキルログであるかどうかをチェックします。
+   * チャットログを処理します。
    *
    * @param message
    * @param player
    * @return
    */
-  private boolean isKillLogOfPlayer(ITextComponent message, EntityPlayer player) {
+  private void handleChatLog(ITextComponent message) {
 
-    if (player == null) { return false; }
+    EntityPlayer player = this.mc.player;
+
+    if (player == null)
+      return;
 
     String formattedName = removeTeamPrefix(player.getDisplayName().getFormattedText());
 
     if (message.getFormattedText().startsWith(formattedName)) {
       String[] split = message.getUnformattedText().split(" ");
       if (split.length >= 3) {
-        return split[1].contentEquals("killed") || split[1].contentEquals("shot");
+        switch (split[1]) {
+        case "killed":
+          this.gameInfo.incrementMeleeKill();
+          break;
+        case "shot":
+          this.gameInfo.incrementShotKill();
+          break;
+        }
       }
     }
-    return false;
+    return;
+  }
+
+  private void handleGameInfo(ITextComponent message) {
+    EntityPlayer player = this.mc.player;
+
+    if (player == null)
+      return;
+
+    String formattedName = removeTeamPrefix(player.getDisplayName().getFormattedText());
+
+    if (message.getFormattedText().startsWith(formattedName)) {
+      System.out.println(message.getUnformattedText());
+    }
+
+    if (message.getFormattedText().startsWith(formattedName + NEXUS_DAMAGE_LOG)) {
+      this.gameInfo.incrementNexusDamage();
+    }
+  }
+
+  private void handleSystemLog(ITextComponent message) {
+    ClassType classType = getClassType(message);
+
+    if (classType != null) {
+      this.gameInfo.setClassType(classType);
+    }
   }
 
   /**

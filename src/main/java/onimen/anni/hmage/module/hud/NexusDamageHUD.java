@@ -6,19 +6,15 @@ import net.minecraft.client.gui.ScaledResolution;
 import onimen.anni.hmage.HMage;
 import onimen.anni.hmage.util.ShotbowUtils;
 
-public class KillCounterHUD extends AbstractHUD {
+public class NexusDamageHUD extends AbstractHUD {
 
-  private String text = "";
+  private String text;
   private int width, height;
 
-  public KillCounterHUD(FontRenderer fontRenderer) {
-    width = fontRenderer.getStringWidth("Kills 000");
+  public NexusDamageHUD(FontRenderer fontRenderer) {
+    text = "Nexus 0";
+    width = fontRenderer.getStringWidth(text);
     height = fontRenderer.FONT_HEIGHT;
-  }
-
-  @Override
-  public String getName() {
-    return "KillCountHUD";
   }
 
   @Override
@@ -33,12 +29,34 @@ public class KillCounterHUD extends AbstractHUD {
 
   @Override
   public int getDefaultY() {
-    return 16;
+    return 27;
   }
 
   @Override
-  public String getDescription() {
-    return "キル数を表示";
+  public void drawItem(Minecraft mc) {
+
+    if (!ShotbowUtils.isShotbow(mc))
+      return;
+
+    if (HMage.anniObserverMap.getAnniObserver() == null)
+      return;
+
+    String nexusDamageText = "Nexus " + HMage.anniObserverMap.getAnniObserver().getGameInfo().getNexusAttackCount();
+
+    if (!this.text.contentEquals(nexusDamageText)) {
+      this.text = nexusDamageText;
+      this.width = mc.fontRenderer.getStringWidth(text);
+    }
+
+    ScaledResolution sr = new ScaledResolution(mc);
+
+    int x = getComputedX(sr);
+    int y = getComputedY(sr);
+
+    int offset = getWidth() - mc.fontRenderer.getStringWidth(text);
+
+    this.drawRect(x, y - 1, getWidth() + 4, getHeight() + 2);
+    mc.fontRenderer.drawString(text, x + 2 + offset, y, 0xffffff);
   }
 
   @Override
@@ -52,31 +70,13 @@ public class KillCounterHUD extends AbstractHUD {
   }
 
   @Override
-  public void drawItem(Minecraft mc) {
-
-    if (!ShotbowUtils.isShotbow(mc))
-      return;
-
-    if (HMage.anniObserverMap.getAnniObserver() == null)
-      return;
-
-    String killCountText = "Kills " + HMage.anniObserverMap.getAnniObserver().getGameInfo().getKillCount();
-
-    if (!this.text.contentEquals(killCountText)) {
-      this.text = killCountText;
-      this.width = mc.fontRenderer.getStringWidth(killCountText);
-    }
-    ScaledResolution sr = new ScaledResolution(mc);
-
-    int x = getComputedX(sr);
-    int y = getComputedY(sr);
-
-    int offset = getWidth() - mc.fontRenderer.getStringWidth(text);
-
-    this.drawRect(x, y - 1, getWidth() + 4, getHeight() + 2);
-    mc.fontRenderer.drawString(text, x + 2 + offset, y, 0xffffff);
-
+  public String getName() {
+    return "NexusDamageHUD";
   }
 
+  @Override
+  public String getDescription() {
+    return "ネクサスを削った回数を表示します";
+  }
 
 }
