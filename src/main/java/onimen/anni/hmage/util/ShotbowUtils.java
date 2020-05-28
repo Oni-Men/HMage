@@ -1,14 +1,16 @@
 package onimen.anni.hmage.util;
 
+import java.util.Arrays;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 
 public class ShotbowUtils {
 
-  public static final String[] SHOTBOW_IPS = new String[] {
-      "us.shotbow.net",
-      "eu.shotbow.net",
-      "jp.shotbow.net"
+  public static final String[] SHOTBOW_IP_SUFFIXES = new String[] {
+      ".shotbow.net",
+      ".shotbow.com",
+      ".minez.net"
   };
 
   public static boolean isShotbow(Minecraft mc) {
@@ -24,13 +26,7 @@ public class ShotbowUtils {
       return false;
     }
 
-    //    for (String shotbowIP : SHOTBOW_IPS) {
-    //      if (shotbowIP.equalsIgnoreCase(serverIP)) {
-    //        return true;
-    //      }
-    //    }
-
-    return serverIP.endsWith(".shotbow.net");
+    return Arrays.stream(SHOTBOW_IP_SUFFIXES).anyMatch(suffix -> serverIP.endsWith(suffix));
 
   }
 
