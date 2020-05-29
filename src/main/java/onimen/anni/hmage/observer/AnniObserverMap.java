@@ -1,6 +1,8 @@
 package onimen.anni.hmage.observer;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -66,6 +68,10 @@ public class AnniObserverMap {
     if (this.playingServerName == null)
       return null;
     return anniObserverMap.get(playingServerName);
+  }
+
+  public List<GameInfo> getGameInfoList() {
+    return this.anniObserverMap.values().stream().map(o -> o.getGameInfo()).collect(Collectors.toList());
   }
 
 }

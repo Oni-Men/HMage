@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import onimen.anni.hmage.Preferences;
+import onimen.anni.hmage.gui.button.GameHistoryButton;
 import onimen.anni.hmage.gui.button.ButtonObject;
 import onimen.anni.hmage.gui.button.CapeSelectButtonObject;
 import onimen.anni.hmage.gui.button.ModEnabledButtonObject;
@@ -30,6 +31,7 @@ public class GuiSettings extends GuiScreen {
   public GuiSettings(Map<String, InterfaceModule> moduleMap) {
     //mod 有効/無効の設定
     buttonObjects.add(new ModEnabledButtonObject());
+    buttonObjects.add(new GameHistoryButton());
 
     //各モジュールの有効/無効の設定
     for (InterfaceModule module : moduleMap.values()) {
@@ -40,6 +42,7 @@ public class GuiSettings extends GuiScreen {
     buttonObjects.add(new CapeSelectButtonObject());
     //    //debug
     //    buttonObjects.add(new DebugButtonObject());
+
   }
 
   @Override
