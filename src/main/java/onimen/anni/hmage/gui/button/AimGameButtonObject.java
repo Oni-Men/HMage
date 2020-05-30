@@ -1,21 +1,22 @@
 package onimen.anni.hmage.gui.button;
 
+import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import onimen.anni.hmage.gui.AimGameGui;
 
-public class DebugButtonObject implements ButtonObject {
+public class AimGameButtonObject implements ButtonObject {
 
   @Override
   public String getTitle() {
-    return "";
+    return "Aim Game";
   }
 
   @Override
   public String getButtonText() {
-    return "debug";
+    return "Game Start";
   }
 
   @Override
@@ -25,6 +26,7 @@ public class DebugButtonObject implements ButtonObject {
 
   @Override
   public List<String> getDescription() {
-    return null;
+    return Arrays.asList("AIMを鍛えるゲームを開始する。");
   }
+
 }

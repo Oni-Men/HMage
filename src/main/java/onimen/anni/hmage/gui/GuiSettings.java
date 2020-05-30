@@ -13,9 +13,11 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import onimen.anni.hmage.Preferences;
-import onimen.anni.hmage.gui.button.GameHistoryButton;
+import onimen.anni.hmage.gui.button.AimGameButtonObject;
 import onimen.anni.hmage.gui.button.ButtonObject;
 import onimen.anni.hmage.gui.button.CapeSelectButtonObject;
+import onimen.anni.hmage.gui.button.DebugButtonObject;
+import onimen.anni.hmage.gui.button.GameHistoryButton;
 import onimen.anni.hmage.gui.button.ModEnabledButtonObject;
 import onimen.anni.hmage.gui.button.ModuleSettingButtonObject;
 import onimen.anni.hmage.module.InterfaceModule;
@@ -40,8 +42,10 @@ public class GuiSettings extends GuiScreen {
 
     //capeの設定
     buttonObjects.add(new CapeSelectButtonObject());
+    //Aim Game
+    buttonObjects.add(new AimGameButtonObject());
     //    //debug
-    //    buttonObjects.add(new DebugButtonObject());
+    buttonObjects.add(new DebugButtonObject());
 
   }
 
