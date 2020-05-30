@@ -19,6 +19,11 @@ public class CpsCounter extends AbstractModule {
   }
 
   @Override
+  public boolean isShowMenu() {
+    return false;
+  }
+
+  @Override
   public String getName() {
     return "CountCPS";
   }

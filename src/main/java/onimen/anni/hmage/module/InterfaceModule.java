@@ -6,6 +6,10 @@ public interface InterfaceModule {
 
   public boolean isEnable();
 
+  default boolean isShowMenu() {
+    return true;
+  }
+
   public void setEnable(boolean value);
 
   public String getName();

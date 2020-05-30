@@ -16,7 +16,6 @@ import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.gui.button.AimGameButtonObject;
 import onimen.anni.hmage.gui.button.ButtonObject;
 import onimen.anni.hmage.gui.button.CapeSelectButtonObject;
-import onimen.anni.hmage.gui.button.DebugButtonObject;
 import onimen.anni.hmage.gui.button.GameHistoryButton;
 import onimen.anni.hmage.gui.button.ModEnabledButtonObject;
 import onimen.anni.hmage.gui.button.ModuleSettingButtonObject;
@@ -37,15 +36,15 @@ public class GuiSettings extends GuiScreen {
 
     //各モジュールの有効/無効の設定
     for (InterfaceModule module : moduleMap.values()) {
-      buttonObjects.add(new ModuleSettingButtonObject(module));
+      if (module.isShowMenu()) {
+        buttonObjects.add(new ModuleSettingButtonObject(module));
+      }
     }
 
     //capeの設定
     buttonObjects.add(new CapeSelectButtonObject());
     //Aim Game
     buttonObjects.add(new AimGameButtonObject());
-    //    //debug
-    buttonObjects.add(new DebugButtonObject());
 
   }
 
