@@ -3,6 +3,8 @@ package onimen.anni.hmage.gui;
 import java.io.IOException;
 import java.util.Random;
 
+import javax.vecmath.Vector2f;
+
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.Minecraft;
@@ -13,15 +15,18 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.ResourceLocation;
+import onimen.anni.hmage.HMage;
 import onimen.anni.hmage.util.JavaUtil;
 
 public class AimGameGui extends GuiScreen {
 
+  private final static ResourceLocation TARAGET_TEXTURE = new ResourceLocation(
+      HMage.MODID + ":textures/gui/target.png");
+
   private int BACKGROUND_SIZE = 300;
 
-  private int targetX;
-
-  private int targetY;
+  private Vector2f targetPos;
 
   private GamePhase phase = GamePhase.START;
 
@@ -31,16 +36,17 @@ public class AimGameGui extends GuiScreen {
 
   private Random rand = new Random();
 
-  private int inSize = 20;
+  private int insideRadius = 30;
 
-  private int outSize = 60;
+  private int outsideRadius = 60;
 
   private long startTime;
 
   public AimGameGui() {
+
     ScaledResolution resolution = new ScaledResolution(Minecraft.getMinecraft());
-    inSize /= resolution.getScaleFactor();
-    outSize /= resolution.getScaleFactor();
+    insideRadius /= resolution.getScaleFactor();
+    outsideRadius /= resolution.getScaleFactor();
     BACKGROUND_SIZE /= resolution.getScaleFactor();
 
     showStartGui();
@@ -49,8 +55,8 @@ public class AimGameGui extends GuiScreen {
   protected void showStartGui() {
     phase = GamePhase.START;
     ScaledResolution resolution = new ScaledResolution(Minecraft.getMinecraft());
-    targetX = resolution.getScaledWidth() / 2;
-    targetY = resolution.getScaledHeight() / 2;
+
+    this.targetPos = new Vector2f(resolution.getScaledWidth() / 2, resolution.getScaledHeight() / 2);
   }
 
   @Override
@@ -66,7 +72,7 @@ public class AimGameGui extends GuiScreen {
         if (point.point >= hightScore.point) {
           hightScore = point;
         }
-        addButton(new GuiButton(1, this.width / 2 - 50, 16 * 20, 100, 20, "BACK"));
+        addButton(new GuiButton(1, this.width / 2 - 50, this.height - 22, 100, 20, "BACK"));
       }
     }
 
@@ -82,12 +88,12 @@ public class AimGameGui extends GuiScreen {
 
     if (phase == GamePhase.START) {
       this.drawCenteredString(this.fontRenderer, ChatFormatting.RED + "↓ Click To Start ↓",
-          this.width / 2, targetY - outSize - 15, 0xffffff);
+          this.width / 2, (int) (targetPos.y - outsideRadius - 15), 0xffffff);
       drawTargetRect();
     } else if (phase == GamePhase.IN_GAME) {
       drawTargetRect();
       this.drawCenteredString(this.fontRenderer,
-          ChatFormatting.BLACK.toString() + JavaUtil.round(30 - (System.currentTimeMillis() - startTime) / 1000.0, 2)
+          ChatFormatting.GRAY.toString() + JavaUtil.round(30 - (System.currentTimeMillis() - startTime) / 1000.0, 2)
               + " sec",
           this.width / 2, this.height / 2 - 16, 0xffffff);
     }
@@ -119,13 +125,13 @@ public class AimGameGui extends GuiScreen {
     this.drawCenteredString(this.fontRenderer, ChatFormatting.GREEN + "point : " + hightScore.point, this.width / 2,
         16 * 10, 0xffffff);
     this.drawCenteredString(this.fontRenderer, ChatFormatting.GREEN + "CriticalHit : " + hightScore.criticalHitCount
-        + " (" + JavaUtil.round(point.criticalHitCount * 100.0 / point.totalCount(), 2) + "%)", this.width / 2,
+        + " (" + JavaUtil.round(hightScore.criticalHitCount * 100.0 / point.totalCount(), 2) + "%)", this.width / 2,
         16 * 11, 0xffffff);
     this.drawCenteredString(this.fontRenderer, ChatFormatting.GREEN + "Hit : " + hightScore.hitCount
-        + " (" + JavaUtil.round(point.hitCount * 100.0 / point.totalCount(), 2) + "%)", this.width / 2,
+        + " (" + JavaUtil.round(hightScore.hitCount * 100.0 / point.totalCount(), 2) + "%)", this.width / 2,
         16 * 12, 0xffffff);
     this.drawCenteredString(this.fontRenderer, ChatFormatting.GREEN + "Miss : " + hightScore.missCount
-        + " (" + JavaUtil.round(point.missCount * 100.0 / point.totalCount(), 2) + "%)", this.width / 2,
+        + " (" + JavaUtil.round(hightScore.missCount * 100.0 / point.totalCount(), 2) + "%)", this.width / 2,
         16 * 13, 0xffffff);
   }
 
@@ -133,6 +139,7 @@ public class AimGameGui extends GuiScreen {
   protected void actionPerformed(GuiButton button) throws IOException {
     if (button.id == 1) {
       showStartGui();
+      point = new ResultData();
     }
   }
 
@@ -171,10 +178,18 @@ public class AimGameGui extends GuiScreen {
    * 的を描画する。
    */
   private void drawTargetRect() {
-    drawRect(targetX - outSize, targetY + outSize, targetX + outSize, targetY - outSize,
-        128, 0, 0, 0.8f);
-    drawRect(targetX - inSize, targetY + inSize, targetX + inSize, targetY - inSize,
-        254, 0, 0, 0.8f);
+
+    int x = (int) (targetPos.x - outsideRadius);
+    int y = (int) (targetPos.y - outsideRadius);
+    int size = outsideRadius * 2;
+
+    this.mc.getTextureManager().bindTexture(TARAGET_TEXTURE);
+    GlStateManager.color(1f, 1f, 1f, 1f);
+    drawModalRectWithCustomSizedTexture(x, y, 0, 0, size, size, size, size);
+    //        drawRect(targetX - outSize, targetY + outSize, targetX + outSize, targetY - outSize,
+    //            128, 0, 0, 0.8f);
+    //        drawRect(targetX - inSize, targetY + inSize, targetX + inSize, targetY - inSize,
+    //            254, 0, 0, 0.8f);
   }
 
   /**
@@ -204,13 +219,12 @@ public class AimGameGui extends GuiScreen {
     //結果画面の場合は何もしない
     if (phase == GamePhase.RESULT) { return; }
 
-    int distanceX = Math.abs(mouseX - targetX);
-    int distanceY = Math.abs(mouseY - targetY);
+    double distance = Math.hypot(this.targetPos.x - mouseX, this.targetPos.y - mouseY);
 
     HitType hitType;
-    if (distanceX < inSize && distanceY < inSize) {
+    if (distance < insideRadius) {
       hitType = HitType.CRITICAL;
-    } else if (distanceX < outSize && distanceY < outSize) {
+    } else if ( distance < outsideRadius) {
       hitType = HitType.HIT;
     } else {
       hitType = HitType.MISS;
@@ -230,8 +244,10 @@ public class AimGameGui extends GuiScreen {
       int centerX = resolution.getScaledWidth() / 2;
       int centerY = resolution.getScaledHeight() / 2;
 
-      targetX = random(centerX - BACKGROUND_SIZE + outSize, centerX + BACKGROUND_SIZE - outSize);
-      targetY = random(centerY - BACKGROUND_SIZE + outSize, centerY + BACKGROUND_SIZE - outSize);
+      float x = random(centerX - BACKGROUND_SIZE + outsideRadius, centerX + BACKGROUND_SIZE - outsideRadius);
+      float y = random(centerY - BACKGROUND_SIZE + outsideRadius, centerY + BACKGROUND_SIZE - outsideRadius);
+
+      targetPos.set(x, y);
     }
 
     //ポイントを加算
