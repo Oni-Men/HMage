@@ -40,6 +40,8 @@ public class AimGameGui extends GuiScreen {
 
   private int outsideRadius = 60;
 
+  private int redScreen = 0;
+
   private long startTime;
 
   public AimGameGui() {
@@ -120,7 +122,7 @@ public class AimGameGui extends GuiScreen {
         + " (" + JavaUtil.round(point.missCount * 100.0 / point.totalCount(), 2) + "%)", this.width / 2,
         16 * 5, 0xffffff);
 
-    this.drawCenteredString(this.fontRenderer, ChatFormatting.GOLD + "=========HIGHT SCORE=========", this.width / 2,
+    this.drawCenteredString(this.fontRenderer, ChatFormatting.GOLD + "=========HIGHEST SCORE=========", this.width / 2,
         16 * 9, 0xffffff);
     this.drawCenteredString(this.fontRenderer, ChatFormatting.GREEN + "point : " + hightScore.point, this.width / 2,
         16 * 10, 0xffffff);
@@ -186,10 +188,6 @@ public class AimGameGui extends GuiScreen {
     this.mc.getTextureManager().bindTexture(TARAGET_TEXTURE);
     GlStateManager.color(1f, 1f, 1f, 1f);
     drawModalRectWithCustomSizedTexture(x, y, 0, 0, size, size, size, size);
-    //        drawRect(targetX - outSize, targetY + outSize, targetX + outSize, targetY - outSize,
-    //            128, 0, 0, 0.8f);
-    //        drawRect(targetX - inSize, targetY + inSize, targetX + inSize, targetY - inSize,
-    //            254, 0, 0, 0.8f);
   }
 
   /**
@@ -200,8 +198,11 @@ public class AimGameGui extends GuiScreen {
     int centerX = resolution.getScaledWidth() / 2;
     int centerY = resolution.getScaledHeight() / 2;
 
-    drawRect(centerX - BACKGROUND_SIZE, centerY + BACKGROUND_SIZE, centerX + BACKGROUND_SIZE, centerY - BACKGROUND_SIZE,
-        230, 230, 230, 0.3f);
+    if (phase != GamePhase.RESULT) {
+      drawRect(centerX - BACKGROUND_SIZE, centerY + BACKGROUND_SIZE, centerX + BACKGROUND_SIZE,
+          centerY - BACKGROUND_SIZE,
+          230, 230, 230, 0.3f);
+    }
 
     //タイマー
     if (phase == GamePhase.IN_GAME) {
@@ -209,6 +210,14 @@ public class AimGameGui extends GuiScreen {
       int radius = (int) (BACKGROUND_SIZE * timeParcent);
       drawRect(centerX - radius, centerY + radius, centerX + radius, centerY - radius,
           176, 196, 222, 0.3f);
+    }
+
+    //Missのときの赤い画面
+    if (redScreen > 0) {
+      redScreen--;
+      drawRect(centerX - BACKGROUND_SIZE, centerY + BACKGROUND_SIZE, centerX + BACKGROUND_SIZE,
+          centerY - BACKGROUND_SIZE,
+          127, 0, 0, 0.2f);
     }
   }
 
@@ -224,10 +233,11 @@ public class AimGameGui extends GuiScreen {
     HitType hitType;
     if (distance < insideRadius) {
       hitType = HitType.CRITICAL;
-    } else if ( distance < outsideRadius) {
+    } else if (distance < outsideRadius) {
       hitType = HitType.HIT;
     } else {
       hitType = HitType.MISS;
+      redScreen = 3;
     }
 
     //開始前 かつ ミスの場合は何もしない
