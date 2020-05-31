@@ -13,7 +13,7 @@ public class HMageCoreLoader implements IFMLLoadingPlugin {
 
   @Override
   public String[] getASMTransformerClass() {
-    return new String[0];//new String[] { "onimen.anni.hmage.transformer.HMageClassTransformer" };
+    return new String[] { "onimen.anni.hmage.transformer.HMageClassTransformer" };
   }
 
   @Override
@@ -28,9 +28,11 @@ public class HMageCoreLoader implements IFMLLoadingPlugin {
 
   @Override
   public void injectData(Map<String, Object> data) {
-    if (data.containsKey("coremodLocation"))
+    if (data.containsKey("coremodLocation")) {
       location = (File) data.get("coremodLocation");
+    }
   }
+
 
   @Override
   public String getAccessTransformerClass() {

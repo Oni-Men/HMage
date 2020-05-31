@@ -35,6 +35,7 @@ import onimen.anni.hmage.command.NameCommand;
 import onimen.anni.hmage.command.PrefCommand;
 import onimen.anni.hmage.gui.GuiAnniServers;
 import onimen.anni.hmage.gui.GuiSettings;
+import onimen.anni.hmage.module.CustomGuiBackground;
 import onimen.anni.hmage.module.CpsCounter;
 import onimen.anni.hmage.module.InterfaceModule;
 import onimen.anni.hmage.module.RecipeBookRemover;
@@ -114,6 +115,7 @@ public class HMage {
     this.registerModule(cpsCounter);
     this.registerModule(new RecipeBookRemover());
     this.registerModule(new SpeedFovDisabler());
+    this.registerModule(new CustomGuiBackground());
 
     //HUD
     this.registerModule(new ArrowCounterHUD());
