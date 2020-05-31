@@ -1,5 +1,8 @@
 package onimen.anni.hmage.observer.data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
@@ -10,10 +13,15 @@ import onimen.anni.hmage.observer.GamePhase;
 public class GameInfo {
 
   private ClassType usingClassType;
+
   private GamePhase gamePhase;
-  private volatile int meleeKillCount;
-  private volatile int shotKillCount;
+
   private int nexusAttackCount;
+
+  private Map<String, KillCountData> killCountMap = new HashMap<>();
+
+  private KillCountData meKillCount = new KillCountData(Minecraft.getMinecraft().player.getName(),
+      AnniTeamColor.NO_JOIN);
 
   @Nullable
   private String mapName;
@@ -21,8 +29,6 @@ public class GameInfo {
   public GameInfo() {
     this.usingClassType = ClassType.CIVILIAN;
     this.gamePhase = GamePhase.UNKNOWN;
-    this.meleeKillCount = 0;
-    this.shotKillCount = 0;
     this.nexusAttackCount = 0;
   }
 
@@ -53,23 +59,15 @@ public class GameInfo {
   }
 
   public int getKillCount() {
-    return this.meleeKillCount + this.shotKillCount;
+    return meKillCount.getTotalKillCount();
   }
 
   public int getMeleeKillCount() {
-    return this.meleeKillCount;
-  }
-
-  public void incrementMeleeKill() {
-    this.meleeKillCount++;
+    return meKillCount.getMeleeCount();
   }
 
   public int getShotKillCount() {
-    return this.shotKillCount;
-  }
-
-  public void incrementShotKill() {
-    this.shotKillCount++;
+    return meKillCount.getBowCount();
   }
 
   public int getNexusAttackCount() {
@@ -90,12 +88,12 @@ public class GameInfo {
   public void addKillCount(String killer, AnniTeamColor killerTeam,
       String dead, AnniTeamColor deadTeam, AnniKillType killType) {
     //今は自身のキルログのみカウントする
-    if (!Minecraft.getMinecraft().player.getName().equals(killer)) { return; }
-
-    if (killType == AnniKillType.MELEE) {
-      meleeKillCount++;
+    if (Minecraft.getMinecraft().player.getName().equals(killer)) {
+      meKillCount.setTeamColor(killerTeam);
+      meKillCount.incrementCount(killType, deadTeam);
     } else {
-      shotKillCount++;
+      KillCountData countData = killCountMap.computeIfAbsent(killer, k -> new KillCountData(k, killerTeam));
+      countData.incrementCount(killType, deadTeam);
     }
   }
 }
