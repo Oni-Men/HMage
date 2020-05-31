@@ -12,7 +12,6 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.BossInfoClient;
 import net.minecraft.client.gui.GuiBossOverlay;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.text.ITextComponent;
@@ -24,14 +23,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.HMage;
 import onimen.anni.hmage.observer.data.GameInfo;
 import onimen.anni.hmage.util.ShotbowUtils;
-import scala.collection.mutable.StringBuilder;
 
 public class AnniObserver {
 
   private static final String MAP_PREFIX = ChatFormatting.GOLD.toString() + ChatFormatting.BOLD.toString() + "Map: ";
-  private static final String VOTING_TEXT = ChatFormatting.GREEN + "/vote [map name] to vote";
 
-  private static final String NEXUS_DAMAGE_LOG = ChatFormatting.DARK_GRAY.toString() + " has damaged the ";
+  private static final String VOTING_TEXT = ChatFormatting.GREEN + "/vote [map name] to vote";
 
   private Minecraft mc;
   private Map<UUID, BossInfoClient> bossInfoMap = null;
@@ -60,35 +57,41 @@ public class AnniObserver {
 
   @SideOnly(Side.CLIENT)
   public void onClientTick(ClientTickEvent event) {
-    if (mc.ingameGUI != null) {
+    if (mc.ingameGUI == null) { return; }
 
-      if (this.bossInfoMap == null) {
-        this.bossInfoMap = getBossInfoMap(mc.ingameGUI.getBossOverlay());
+    //ゲームをプレイ中ではない場合
+    if (mc.world == null) { return; }
+
+    if (this.bossInfoMap == null) {
+      this.bossInfoMap = getBossInfoMap(mc.ingameGUI.getBossOverlay());
+    }
+
+    Scoreboard scoreboard = mc.world.getScoreboard();
+
+    //Anniをプレイ中かどうか確認
+    if (scoreboard != null && isAnniScoreboard(scoreboard)) {
+      tickLeftWhileNoScoreboard = 0;
+    } else {
+      tickLeftWhileNoScoreboard++;
+      if (tickLeftWhileNoScoreboard > 100) {
+        HMage.anniObserverMap.unsetAnniObserver();
+        return;
       }
+    }
 
-      if (mc.world != null) {
-        Scoreboard scoreboard = mc.world.getScoreboard();
-
-        if (scoreboard != null && isAnniScoreboard(scoreboard)) {
-          tickLeftWhileNoScoreboard = 0;
-        } else {
-          tickLeftWhileNoScoreboard++;
-          if (tickLeftWhileNoScoreboard > 100) {
-            HMage.anniObserverMap.unsetAnniObserver();
-          }
+    //フェーズを取得
+    if (bossInfoMap != null) {
+      for (BossInfoClient bossInfo : bossInfoMap.values()) {
+        if (bossInfo.getColor() == Color.BLUE) {
+          String name = bossInfo.getName().getUnformattedText();
+          this.gameInfo.setGamePhase(GamePhase.getGamePhasebyText(name));
         }
       }
+    }
 
-      if (bossInfoMap != null) {
-        if (!bossInfoMap.isEmpty()) {
-          for (BossInfoClient bossInfo : bossInfoMap.values()) {
-            if (bossInfo.getColor() == Color.BLUE) {
-              String name = bossInfo.getName().getUnformattedText();
-              this.gameInfo.setGamePhase(GamePhase.getGamePhasebyText(name));
-            }
-          }
-        }
-      }
+    //Mapを取得
+    if (gameInfo.getMapName() == null && scoreboard != null) {
+      gameInfo.setMapName(getMapFromScoreboard(scoreboard));
     }
   }
 
@@ -102,112 +105,34 @@ public class AnniObserver {
     if (message.getUnformattedText().contentEquals(""))
       return;
 
-    switch (event.getType()) {
-    case CHAT:
-      AnniChatReciveExecutor.onReceiveChat(message);
-      break;
-    case GAME_INFO:
-      this.handleGameInfo(message);
-      break;
-    case SYSTEM:
-      this.handleSystemLog(message);
-      break;
-    default:
-      break;
-    }
-
-  }
-
-  /**
-   * 渡されたメッセージから選択したクラスの種類を特定します。
-   *
-   * @param message
-   * @return
-   */
-  private ClassType getClassType(ITextComponent message) {
-    if (message.getFormattedText().startsWith(ChatFormatting.GOLD + "[Class]")) {
-      String[] split = message.getUnformattedText().split(" ");
-      if (split.length == 3)
-        return ClassType.getClassTypeFromName(split[1]);
-    }
-    return null;
-  }
-
-  private void handleGameInfo(ITextComponent message) {
-    EntityPlayer player = this.mc.player;
-
-    if (player == null)
-      return;
-
-    String formattedName = removeTeamPrefix(player.getDisplayName().getFormattedText());
-
-    if (message.getFormattedText().startsWith(formattedName + NEXUS_DAMAGE_LOG)) {
-      this.gameInfo.incrementNexusDamage();
-    }
-  }
-
-  private void handleSystemLog(ITextComponent message) {
-    ClassType classType = getClassType(message);
-
-    if (classType != null) {
-      this.gameInfo.setClassType(classType);
-    }
-  }
-
-  /**
-   * Remove team prefix of anni from given string. for example, [R]Onimen ---> Onimen
-   *
-   * @param formatted formatted string
-   * @return
-   */
-  private String removeTeamPrefix(String formatted) {
-
-    final StringBuilder builder = new StringBuilder();
-    final char prefix = ChatFormatting.PREFIX_CODE;
-    final char[] chars = formatted.toCharArray();
-
-    boolean insideBracket = false;
-
-    for (int i = 0, len = chars.length; i < len; i++) {
-
-      if (chars[i] == prefix) {
-        if (i + 2 < len && chars[i + 1] == 'f') {
-          if (chars[i + 2] == '[') {
-            insideBracket = true;
-            i += 2;
-            continue;
-          }
-          if (chars[i + 2] == ']') {
-            insideBracket = false;
-            i += 2;
-            continue;
-          }
-        }
-      }
-
-      if (!insideBracket)
-        builder.append(chars[i]);
-    }
-
-    return builder.toString();
+    //チャットを元に処理を実行
+    AnniChatReciveExecutor.onReceiveChat(message, event.getType());
   }
 
   private boolean isAnniScoreboard(Scoreboard scoreboard) {
     ScoreObjective scoreobjective = scoreboard.getObjectiveInDisplaySlot(1);
 
-    if (scoreobjective != null) {
-      String displayName = scoreobjective.getDisplayName();
+    if (scoreobjective == null) { return false; }
+    String displayName = scoreobjective.getDisplayName();
 
-      if (displayName.contentEquals(VOTING_TEXT)) { return true; }
+    //Voteの場合
+    if (displayName.contentEquals(VOTING_TEXT)) { return true; }
 
-      for (int i = 0, len = Math.min(MAP_PREFIX.length(), displayName.length()); i < len; i++) {
-        if (MAP_PREFIX.charAt(i) != displayName.charAt(i))
-          return false;
-      }
+    //試合中の場合
+    if (displayName.contains(MAP_PREFIX)) { return true; }
 
-      return true;
-    }
     return false;
+  }
+
+  private String getMapFromScoreboard(Scoreboard scoreboard) {
+    ScoreObjective scoreobjective = scoreboard.getObjectiveInDisplaySlot(1);
+
+    if (scoreobjective == null) { return null; }
+    String displayName = scoreobjective.getDisplayName();
+
+    if (!displayName.contains(MAP_PREFIX)) { return null; }
+
+    return displayName.replace(MAP_PREFIX, "");
   }
 
   @SuppressWarnings("unchecked")

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import onimen.anni.hmage.observer.AnniKillType;
 
-public class KillCountData {
+public class AnniPlayerData {
 
   private AnniTeamColor teamColor;
 
@@ -15,16 +15,20 @@ public class KillCountData {
 
   private Map<AnniTeamColor, Integer> bowKillCount = new EnumMap<>(AnniTeamColor.class);
 
-  public KillCountData(String playerName, AnniTeamColor teamColor) {
-    this.playerName = playerName;
-    this.teamColor = teamColor;
-  }
-
   /** 近接攻撃のキル数 */
   private int meleeCount;
 
   /** 弓のキル数 */
   private int bowCount;
+
+  private int nexusDamageCount;
+
+  private Map<AnniTeamColor, Integer> nexusDamageMap = new EnumMap<>(AnniTeamColor.class);
+
+  public AnniPlayerData(String playerName, AnniTeamColor teamColor) {
+    this.playerName = playerName;
+    this.teamColor = teamColor;
+  }
 
   public int getMeleeCount() {
     return meleeCount;
@@ -47,6 +51,24 @@ public class KillCountData {
       bowCount++;
       bowKillCount.compute(teamColor, (k, v) -> v == null ? 1 : v.intValue() + 1);
     }
+  }
+
+  /**
+   * ネクサスダメージをカウントする。
+   *
+   * @param teamColor ネクサスを削ったチーム
+   */
+  public void nexusDamage(AnniTeamColor teamColor) {
+    nexusDamageMap.compute(teamColor, (k, v) -> v == null ? 1 : v.intValue() + 1);
+  }
+
+  /**
+   * 総ネクサスダメージを取得する。
+   *
+   * @return 総ネクサスダメージ
+   */
+  public int getNexusDamageCount() {
+    return nexusDamageCount;
   }
 
   /**

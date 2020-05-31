@@ -12,24 +12,30 @@ import onimen.anni.hmage.observer.GamePhase;
 
 public class GameInfo {
 
+  /** ゲーム開始時間 */
+  private long gameTimestamp;
+
+  /** プレイヤーが使っている職業 */
   private ClassType usingClassType;
 
+  /** 現在のフェーズ */
   private GamePhase gamePhase;
 
-  private int nexusAttackCount;
+  /** 他のプレイヤーのキル数 */
+  private Map<String, AnniPlayerData> killCountMap = new HashMap<>();
 
-  private Map<String, KillCountData> killCountMap = new HashMap<>();
-
-  private KillCountData meKillCount = new KillCountData(Minecraft.getMinecraft().player.getName(),
+  /** 自身のキル数 */
+  private AnniPlayerData mePlayerData = new AnniPlayerData(Minecraft.getMinecraft().player.getName(),
       AnniTeamColor.NO_JOIN);
 
+  /** Map名 */
   @Nullable
   private String mapName;
 
   public GameInfo() {
     this.usingClassType = ClassType.CIVILIAN;
     this.gamePhase = GamePhase.UNKNOWN;
-    this.nexusAttackCount = 0;
+    this.gameTimestamp = System.currentTimeMillis();
   }
 
   public ClassType getClassType() {
@@ -54,28 +60,48 @@ public class GameInfo {
     return this.mapName;
   }
 
+  public long getGameTimestamp() {
+    return gameTimestamp;
+  }
+
   public void setMapName(String mapName) {
     this.mapName = mapName;
   }
 
   public int getKillCount() {
-    return meKillCount.getTotalKillCount();
+    return mePlayerData.getTotalKillCount();
   }
 
   public int getMeleeKillCount() {
-    return meKillCount.getMeleeCount();
+    return mePlayerData.getMeleeCount();
   }
 
   public int getShotKillCount() {
-    return meKillCount.getBowCount();
+    return mePlayerData.getBowCount();
   }
 
   public int getNexusAttackCount() {
-    return this.nexusAttackCount;
+    return mePlayerData.getNexusDamageCount();
   }
 
-  public void incrementNexusDamage() {
-    this.nexusAttackCount++;
+  /**
+   * キル数をカウントする。
+   *
+   * @param killer 倒したプレイヤー
+   * @param dead 倒されたプレイヤー
+   * @param killType キルの方法
+   */
+  public void addNexusDamageCount(String attacker, AnniTeamColor attackerTeam,
+      AnniTeamColor damageTeam) {
+    if (Minecraft.getMinecraft().player.getName().equals(attacker)) {
+      //自身のデータを更新
+      mePlayerData.setTeamColor(attackerTeam);
+      mePlayerData.nexusDamage(damageTeam);
+    } else {
+      //自身以外のデータを更新
+      AnniPlayerData countData = killCountMap.computeIfAbsent(attacker, k -> new AnniPlayerData(k, attackerTeam));
+      countData.nexusDamage(damageTeam);
+    }
   }
 
   /**
@@ -87,12 +113,13 @@ public class GameInfo {
    */
   public void addKillCount(String killer, AnniTeamColor killerTeam,
       String dead, AnniTeamColor deadTeam, AnniKillType killType) {
-    //今は自身のキルログのみカウントする
     if (Minecraft.getMinecraft().player.getName().equals(killer)) {
-      meKillCount.setTeamColor(killerTeam);
-      meKillCount.incrementCount(killType, deadTeam);
+      //自身のデータを更新
+      mePlayerData.setTeamColor(killerTeam);
+      mePlayerData.incrementCount(killType, deadTeam);
     } else {
-      KillCountData countData = killCountMap.computeIfAbsent(killer, k -> new KillCountData(k, killerTeam));
+      //自身以外のデータを更新
+      AnniPlayerData countData = killCountMap.computeIfAbsent(killer, k -> new AnniPlayerData(k, killerTeam));
       countData.incrementCount(killType, deadTeam);
     }
   }

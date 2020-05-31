@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -15,6 +18,9 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.IClientCommand;
 import onimen.anni.hmage.cape.CapeResourceLoadTask;
 import onimen.anni.hmage.cape.GlobalPlayerUseCapeManager;
+import onimen.anni.hmage.observer.AnniObserver;
+import onimen.anni.hmage.observer.AnniObserverMap;
+import onimen.anni.hmage.observer.data.GameInfo;
 import onimen.anni.hmage.util.PositionHelper.PositionType;
 
 public class DebugCommand extends CommandBase implements IClientCommand {
@@ -46,6 +52,17 @@ public class DebugCommand extends CommandBase implements IClientCommand {
     switch (args[0]) {
     case "reload":
       new CapeResourceLoadTask().run();
+      break;
+    case "anni":
+      AnniObserver anniObserver = AnniObserverMap.getInstance().getAnniObserver();
+      if (anniObserver == null) { return; }
+      GameInfo gameInfo = anniObserver.getGameInfo();
+      Gson gson = new GsonBuilder().setPrettyPrinting().create();
+      String json = gson.toJson(gameInfo);
+      String[] split = json.split("\n");
+      for (String string : split) {
+        sender.sendMessage(new TextComponentString(string));
+      }
       break;
     case "clear":
       GlobalPlayerUseCapeManager.clear();

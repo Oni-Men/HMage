@@ -35,8 +35,8 @@ import onimen.anni.hmage.command.NameCommand;
 import onimen.anni.hmage.command.PrefCommand;
 import onimen.anni.hmage.gui.GuiAnniServers;
 import onimen.anni.hmage.gui.GuiSettings;
-import onimen.anni.hmage.module.CustomGuiBackground;
 import onimen.anni.hmage.module.CpsCounter;
+import onimen.anni.hmage.module.CustomGuiBackground;
 import onimen.anni.hmage.module.InterfaceModule;
 import onimen.anni.hmage.module.RecipeBookRemover;
 import onimen.anni.hmage.module.SpeedFovDisabler;
@@ -214,7 +214,6 @@ public class HMage {
 
   @SubscribeEvent
   public void onRecieveChat(ClientChatReceivedEvent event) {
-
     if (anniObserverMap.getAnniObserver() != null) {
       anniObserverMap.getAnniObserver().onRecieveChat(event);
     }
