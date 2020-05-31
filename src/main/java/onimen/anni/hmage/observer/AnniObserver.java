@@ -22,6 +22,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.HMage;
+import onimen.anni.hmage.observer.data.GameInfo;
 import onimen.anni.hmage.util.ShotbowUtils;
 import scala.collection.mutable.StringBuilder;
 
@@ -103,7 +104,7 @@ public class AnniObserver {
 
     switch (event.getType()) {
     case CHAT:
-      this.handleChatLog(message);
+      AnniChatReciveExecutor.onReceiveChat(message);
       break;
     case GAME_INFO:
       this.handleGameInfo(message);
@@ -132,38 +133,6 @@ public class AnniObserver {
     return null;
   }
 
-  /**
-   * チャットログを処理します。
-   *
-   * @param message
-   * @param player
-   * @return
-   */
-  private void handleChatLog(ITextComponent message) {
-
-    EntityPlayer player = this.mc.player;
-
-    if (player == null)
-      return;
-
-    String formattedName = removeTeamPrefix(player.getDisplayName().getFormattedText());
-
-    if (message.getFormattedText().startsWith(formattedName)) {
-      String[] split = message.getUnformattedText().split(" ");
-      if (split.length >= 3) {
-        switch (split[1]) {
-        case "killed":
-          this.gameInfo.incrementMeleeKill();
-          break;
-        case "shot":
-          this.gameInfo.incrementShotKill();
-          break;
-        }
-      }
-    }
-    return;
-  }
-
   private void handleGameInfo(ITextComponent message) {
     EntityPlayer player = this.mc.player;
 
@@ -171,10 +140,6 @@ public class AnniObserver {
       return;
 
     String formattedName = removeTeamPrefix(player.getDisplayName().getFormattedText());
-
-    if (message.getFormattedText().startsWith(formattedName)) {
-      System.out.println(message.getUnformattedText());
-    }
 
     if (message.getFormattedText().startsWith(formattedName + NEXUS_DAMAGE_LOG)) {
       this.gameInfo.incrementNexusDamage();

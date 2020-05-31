@@ -1,13 +1,18 @@
-package onimen.anni.hmage.observer;
+package onimen.anni.hmage.observer.data;
 
 import javax.annotation.Nullable;
+
+import net.minecraft.client.Minecraft;
+import onimen.anni.hmage.observer.AnniKillType;
+import onimen.anni.hmage.observer.ClassType;
+import onimen.anni.hmage.observer.GamePhase;
 
 public class GameInfo {
 
   private ClassType usingClassType;
   private GamePhase gamePhase;
-  private int meleeKillCount;
-  private int shotKillCount;
+  private volatile int meleeKillCount;
+  private volatile int shotKillCount;
   private int nexusAttackCount;
 
   @Nullable
@@ -73,5 +78,24 @@ public class GameInfo {
 
   public void incrementNexusDamage() {
     this.nexusAttackCount++;
+  }
+
+  /**
+   * キル数をカウントする。
+   *
+   * @param killer 倒したプレイヤー
+   * @param dead 倒されたプレイヤー
+   * @param killType キルの方法
+   */
+  public void addKillCount(String killer, AnniTeamColor killerTeam,
+      String dead, AnniTeamColor deadTeam, AnniKillType killType) {
+    //今は自身のキルログのみカウントする
+    if (!Minecraft.getMinecraft().player.getName().equals(killer)) { return; }
+
+    if (killType == AnniKillType.MELEE) {
+      meleeKillCount++;
+    } else {
+      shotKillCount++;
+    }
   }
 }

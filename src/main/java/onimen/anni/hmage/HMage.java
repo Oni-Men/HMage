@@ -47,6 +47,7 @@ import onimen.anni.hmage.module.hud.InterfaceHUD;
 import onimen.anni.hmage.module.hud.KillCounterHUD;
 import onimen.anni.hmage.module.hud.NexusDamageHUD;
 import onimen.anni.hmage.module.hud.StatusEffectHUD;
+import onimen.anni.hmage.observer.AnniChatReciveExecutor;
 import onimen.anni.hmage.observer.AnniObserverMap;
 import onimen.anni.hmage.transformer.HurtingArmorInjector;
 import onimen.anni.hmage.util.CustomMovementInput;
@@ -132,6 +133,9 @@ public class HMage {
     HurtingArmorInjector.replaceSkinMap(renderManager);
     //Capeをロード
     GlobalPlayerUseCapeManager.loadCape();
+
+    //Anni用スレッド開始
+    AnniChatReciveExecutor.startThread();
   }
 
   @SubscribeEvent
@@ -159,7 +163,6 @@ public class HMage {
         mc.displayGuiScreen(new GuiSettings(getModuleMap()));
       }
     }
-
   }
 
   @SubscribeEvent
@@ -209,6 +212,7 @@ public class HMage {
 
   @SubscribeEvent
   public void onRecieveChat(ClientChatReceivedEvent event) {
+
     if (anniObserverMap.getAnniObserver() != null) {
       anniObserverMap.getAnniObserver().onRecieveChat(event);
     }
