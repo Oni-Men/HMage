@@ -89,13 +89,14 @@ public class GuiGameHistory extends GuiScreen {
       GuiGameHistory guiGameHistory = GuiGameHistory.this;
       guiGameHistory.fontRenderer.setBidiFlag(true);
       GameInfo gameInfo = gameInfoList.get(slotIndex);
-      guiGameHistory.drawCenteredString(guiGameHistory.fontRenderer, gameInfo.getMapName(), xPos - 64, yPos, 0xffffff);
+      guiGameHistory.drawCenteredString(guiGameHistory.fontRenderer, gameInfo.getMapName(), this.width / 2 - 64, yPos,
+          0xffffff);
       guiGameHistory.drawCenteredString(guiGameHistory.fontRenderer,
-          gameInfo.getMeleeKillCount() + " Melee Kill", xPos, yPos, 0xffffff);
+          gameInfo.getMeleeKillCount() + " Melee Kill", this.width / 2, yPos, 0xffffff);
       guiGameHistory.drawCenteredString(guiGameHistory.fontRenderer,
-          gameInfo.getShotKillCount() + " Shot Kill", xPos, yPos + 8, 0xffffff);
+          gameInfo.getShotKillCount() + " Shot Kill", this.width / 2, yPos + 8, 0xffffff);
       guiGameHistory.drawCenteredString(guiGameHistory.fontRenderer,
-          gameInfo.getNexusAttackCount() + " Nexus Damage", xPos, yPos + 16, 0xffffff);
+          gameInfo.getNexusAttackCount() + " Nexus Damage", this.width / 2, yPos + 16, 0xffffff);
     }
   }
 }
