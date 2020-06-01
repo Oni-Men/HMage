@@ -2,6 +2,7 @@ package onimen.anni.hmage.observer.data;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -11,6 +12,9 @@ import onimen.anni.hmage.observer.ClassType;
 import onimen.anni.hmage.observer.GamePhase;
 
 public class GameInfo {
+
+  /** ゲーム開始時間 */
+  private UUID gameInfoId;
 
   /** ゲーム開始時間 */
   private long gameTimestamp;
@@ -36,6 +40,7 @@ public class GameInfo {
     this.usingClassType = ClassType.CIVILIAN;
     this.gamePhase = GamePhase.UNKNOWN;
     this.gameTimestamp = System.currentTimeMillis();
+    this.gameInfoId = UUID.randomUUID();
   }
 
   public ClassType getClassType() {
@@ -84,6 +89,10 @@ public class GameInfo {
     return mePlayerData.getNexusDamageCount();
   }
 
+  public UUID getGamenInfoId() {
+    return gameInfoId;
+  }
+
   /**
    * キル数をカウントする。
    *
@@ -123,4 +132,30 @@ public class GameInfo {
       countData.incrementCount(killType, deadTeam);
     }
   }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((gameInfoId == null) ? 0 : gameInfoId.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    GameInfo other = (GameInfo) obj;
+    if (gameInfoId == null) {
+      if (other.gameInfoId != null)
+        return false;
+    } else if (!gameInfoId.equals(other.gameInfoId))
+      return false;
+    return true;
+  }
+
 }

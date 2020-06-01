@@ -1,13 +1,21 @@
 package onimen.anni.hmage.gui;
 
+import java.io.IOException;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiSlot;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.observer.data.GameInfo;
 
 public class GuiGameHistory extends GuiScreen {
 
   private final List<GameInfo> gameInfoList;
+
+  private HistoryList historyList;
 
   public GuiGameHistory(List<GameInfo> gameInfoList) {
     this.gameInfoList = gameInfoList;
@@ -16,7 +24,19 @@ public class GuiGameHistory extends GuiScreen {
   @Override
   public void initGui() {
     super.initGui();
+    this.historyList = new HistoryList(Minecraft.getMinecraft(), gameInfoList);
+    this.historyList.registerScrollButtons(7, 8);
+  }
 
+  @Override
+  public void handleMouseInput() throws IOException {
+    super.handleMouseInput();
+    this.historyList.handleMouseInput();
+  }
+
+  @Override
+  protected void actionPerformed(GuiButton button) throws IOException {
+    this.historyList.actionPerformed(button);
   }
 
   @Override
@@ -27,19 +47,55 @@ public class GuiGameHistory extends GuiScreen {
 
     if (this.gameInfoList.isEmpty()) {
       this.drawCenteredString(this.fontRenderer, "No games", this.width / 2, this.height / 2, 0xdddddd);
-    } else {
-      int x = this.width / 2;
-      int y = 32;
-      for (GameInfo gameInfo : gameInfoList) {
-        this.drawCenteredString(this.fontRenderer, gameInfo.getMapName(), x - 64, y, 0xffffff);
-        this.drawCenteredString(this.fontRenderer, gameInfo.getMeleeKillCount() + " Melee Kill", x, y, 0xffffff);
-        this.drawCenteredString(this.fontRenderer, gameInfo.getShotKillCount() + " Shot Kill", x, y + 8, 0xffffff);
-        this.drawCenteredString(this.fontRenderer, gameInfo.getNexusAttackCount() + " Nexus Damage", x, y + 16,
-            0xffffff);
-
-        y += 32;
-      }
+      return;
     }
+    this.historyList.drawScreen(mouseX, mouseY, partialTicks);
   }
 
+  @SideOnly(Side.CLIENT)
+  class HistoryList extends GuiSlot {
+
+    private List<GameInfo> gameInfoList;
+
+    public HistoryList(Minecraft mcIn, List<GameInfo> gameInfoList) {
+      super(mcIn, GuiGameHistory.this.width, GuiGameHistory.this.height, 32, GuiGameHistory.this.height - 65 + 4, 43);
+      this.gameInfoList = gameInfoList;
+    }
+
+    @Override
+    protected int getSize() {
+      return gameInfoList.size();
+    }
+
+    @Override
+    protected void elementClicked(int slotIndex, boolean isDoubleClick, int mouseX, int mouseY) {
+      //      this.mc.displayGuiScreen((GuiScreen) null);
+      //      this.mc.setIngameFocus();
+    }
+
+    @Override
+    protected boolean isSelected(int slotIndex) {
+      return false;
+    }
+
+    @Override
+    protected void drawBackground() {
+      GuiGameHistory.this.drawDefaultBackground();
+    }
+
+    @Override
+    protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn,
+        float partialTicks) {
+      GuiGameHistory guiGameHistory = GuiGameHistory.this;
+      guiGameHistory.fontRenderer.setBidiFlag(true);
+      GameInfo gameInfo = gameInfoList.get(slotIndex);
+      guiGameHistory.drawCenteredString(guiGameHistory.fontRenderer, gameInfo.getMapName(), xPos - 64, yPos, 0xffffff);
+      guiGameHistory.drawCenteredString(guiGameHistory.fontRenderer,
+          gameInfo.getMeleeKillCount() + " Melee Kill", xPos, yPos, 0xffffff);
+      guiGameHistory.drawCenteredString(guiGameHistory.fontRenderer,
+          gameInfo.getShotKillCount() + " Shot Kill", xPos, yPos + 8, 0xffffff);
+      guiGameHistory.drawCenteredString(guiGameHistory.fontRenderer,
+          gameInfo.getNexusAttackCount() + " Nexus Damage", xPos, yPos + 16, 0xffffff);
+    }
+  }
 }

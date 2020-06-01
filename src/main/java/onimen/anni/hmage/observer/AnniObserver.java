@@ -1,12 +1,17 @@
 package onimen.anni.hmage.observer;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
 
+import com.google.common.io.Files;
+import com.google.gson.Gson;
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.Minecraft;
@@ -53,14 +58,30 @@ public class AnniObserver {
 
   public void onLeaveGame() {
     this.tickLeftWhileNoScoreboard = 0;
+    //gameInfoを保存
+    File historyDataDir = AnniObserverMap.getHistoryDataDir();
+    Gson gson = new Gson();
+    String json = gson.toJson(gameInfo);
+    try {
+      Files.write(json, new File(historyDataDir, gameInfo.getGameTimestamp() + ".txt"), StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      e.printStackTrace();
+      //握りつぶす
+    }
   }
 
   @SideOnly(Side.CLIENT)
   public void onClientTick(ClientTickEvent event) {
-    if (mc.ingameGUI == null) { return; }
+    if (mc.ingameGUI == null) {
+      HMage.anniObserverMap.unsetAnniObserver();
+      return;
+    }
 
     //ゲームをプレイ中ではない場合
-    if (mc.world == null) { return; }
+    if (mc.world == null) {
+      HMage.anniObserverMap.unsetAnniObserver();
+      return;
+    }
 
     if (this.bossInfoMap == null) {
       this.bossInfoMap = getBossInfoMap(mc.ingameGUI.getBossOverlay());

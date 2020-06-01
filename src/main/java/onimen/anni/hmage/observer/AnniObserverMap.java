@@ -1,12 +1,21 @@
 package onimen.anni.hmage.observer;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 
 import net.minecraft.client.Minecraft;
 import onimen.anni.hmage.HMage;
@@ -17,14 +26,18 @@ public class AnniObserverMap {
   private static AnniObserverMap instance = null;
 
   public static AnniObserverMap getInstance() {
-    if (instance == null)
+    if (instance == null) {
+      historyDataDir = new File(HMage.modConfigurationDirectory, "anni");
+      historyDataDir.mkdir();
       instance = new AnniObserverMap();
+    }
     return instance;
   }
 
   @Nullable
   private String playingServerName;
   private final Map<String, AnniObserver> anniObserverMap;
+  private static File historyDataDir;
 
   private AnniObserverMap() {
     anniObserverMap = Maps.newHashMap();
@@ -72,7 +85,33 @@ public class AnniObserverMap {
   }
 
   public List<GameInfo> getGameInfoList() {
-    return this.anniObserverMap.values().stream().map(o -> o.getGameInfo()).collect(Collectors.toList());
+    try {
+      Set<GameInfo> gameInfoMap = new TreeSet<>((f1, f2) -> Long.compare(f1.getGameTimestamp(), f2.getGameTimestamp()));
+
+      Gson gson = new Gson();
+
+      //ファイルから試合情報を読み込み
+      File[] listFiles = historyDataDir.listFiles();
+      List<File> collect = Arrays.stream(listFiles).sorted((f1, f2) -> f1.getName().compareTo(f2.getName())).limit(20)
+          .collect(Collectors.toList());
+      for (File file : collect) {
+        FileReader fileReader = new FileReader(file);
+        GameInfo fromJson = gson.fromJson(fileReader, GameInfo.class);
+        gameInfoMap.add(fromJson);
+      }
+
+      //監視中の試合を読み込み
+      AnniObserver anniObserver = getAnniObserver();
+      if (anniObserver != null) {
+        gameInfoMap.add(anniObserver.getGameInfo());
+      }
+      return new ArrayList<>(gameInfoMap);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 
+  public static File getHistoryDataDir() {
+    return historyDataDir;
+  }
 }

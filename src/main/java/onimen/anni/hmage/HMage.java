@@ -1,5 +1,6 @@
 package onimen.anni.hmage;
 
+import java.io.File;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
@@ -71,6 +72,7 @@ public class HMage {
   private static Map<String, InterfaceHUD> hudMap = Maps.newLinkedHashMap();
 
   public static AnniObserverMap anniObserverMap;
+  public static File modConfigurationDirectory;
 
   public void registerModule(InterfaceModule module) {
     if (module == null) { return; }
@@ -101,6 +103,8 @@ public class HMage {
     MinecraftForge.EVENT_BUS.register(this);
     logger = event.getModLog();
     Preferences.load(event);
+    modConfigurationDirectory = event.getModConfigurationDirectory();
+    anniObserverMap = AnniObserverMap.getInstance();
   }
 
   @SideOnly(Side.CLIENT)
@@ -108,7 +112,6 @@ public class HMage {
   public void init(FMLInitializationEvent event) {
 
     this.mc = Minecraft.getMinecraft();
-    anniObserverMap = AnniObserverMap.getInstance();
 
     CpsCounter cpsCounter = new CpsCounter();
     //Register Modules
