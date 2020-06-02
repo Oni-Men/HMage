@@ -18,7 +18,6 @@ import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import onimen.anni.hmage.transformer.hook.DrawBackgroundHook;
-import onimen.anni.hmage.transformer.hook.GetCapeTextureLocationHook;
 import onimen.anni.hmage.transformer.hook.HookInjector;
 
 public class HMageClassTransformer implements IClassTransformer, Opcodes {
@@ -34,7 +33,6 @@ public class HMageClassTransformer implements IClassTransformer, Opcodes {
 
   static {
     registerHookInjector(new DrawBackgroundHook());
-    registerHookInjector(new GetCapeTextureLocationHook());
   }
 
   @Override
@@ -54,7 +52,7 @@ public class HMageClassTransformer implements IClassTransformer, Opcodes {
             MethodNode methodNode = i.next();
 
             List<HookInjector> injectorsForMethod = injectorList.stream()
-                .filter(h -> h.methodName.equals(methodNode.name) && h.methodDesc.equals(methodNode.desc))
+                .filter(h -> h.methodNames.contains(methodNode.name) && h.methodDesc.equals(methodNode.desc))
                 .collect(Collectors.toList());
 
             for (HookInjector injector : injectorsForMethod) {
