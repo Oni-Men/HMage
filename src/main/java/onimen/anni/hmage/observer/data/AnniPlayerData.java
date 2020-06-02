@@ -63,6 +63,7 @@ public class AnniPlayerData {
    */
   public void nexusDamage(AnniTeamColor teamColor) {
     nexusDamageMap.compute(teamColor, (k, v) -> v == null ? 1 : v.intValue() + 1);
+    nexusDamageCount++;
   }
 
   /**
