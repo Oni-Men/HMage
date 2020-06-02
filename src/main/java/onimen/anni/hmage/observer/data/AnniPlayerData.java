@@ -23,6 +23,9 @@ public class AnniPlayerData {
 
   private int nexusDamageCount;
 
+  /** 死亡数 */
+  private int deathCount;
+
   private Map<AnniTeamColor, Integer> nexusDamageMap = new EnumMap<>(AnniTeamColor.class);
 
   public AnniPlayerData(String playerName, AnniTeamColor teamColor) {
@@ -92,4 +95,11 @@ public class AnniPlayerData {
     return playerName;
   }
 
+  public int getDeathCount() {
+    return deathCount;
+  }
+
+  public void incrementDeathCount() {
+    deathCount++;
+  }
 }

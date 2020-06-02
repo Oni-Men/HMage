@@ -5,8 +5,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import onimen.anni.hmage.HMage;
-import onimen.anni.hmage.gui.GuiGameHistory;
+import onimen.anni.hmage.gui.AnniHistoryList;
 
 public class GameHistoryButton implements ButtonObject {
 
@@ -25,7 +24,7 @@ public class GameHistoryButton implements ButtonObject {
 
   @Override
   public void actionPerformed(GuiButton button) {
-    Minecraft.getMinecraft().displayGuiScreen(new GuiGameHistory(HMage.anniObserverMap.getGameInfoList()));
+    Minecraft.getMinecraft().displayGuiScreen(new AnniHistoryList());
   }
 
   @Override

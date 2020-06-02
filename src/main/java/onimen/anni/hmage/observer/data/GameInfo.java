@@ -62,6 +62,7 @@ public class GameInfo {
   }
 
   public String getMapName() {
+    if (this.mapName == null || this.mapName.isEmpty()) { return "Voting"; }
     return this.mapName;
   }
 
@@ -87,6 +88,10 @@ public class GameInfo {
 
   public int getNexusAttackCount() {
     return mePlayerData.getNexusDamageCount();
+  }
+
+  public AnniPlayerData getMePlayerData() {
+    return mePlayerData;
   }
 
   public UUID getGamenInfoId() {
@@ -122,6 +127,11 @@ public class GameInfo {
    */
   public void addKillCount(String killer, AnniTeamColor killerTeam,
       String dead, AnniTeamColor deadTeam, AnniKillType killType) {
+
+    //殺したプレイヤーと死んだプレイヤーが同じである場合はカウントしない
+    if (killer.equals(dead)) { return; }
+
+    //キル数をカウント
     if (Minecraft.getMinecraft().player.getName().equals(killer)) {
       //自身のデータを更新
       mePlayerData.setTeamColor(killerTeam);
@@ -131,6 +141,18 @@ public class GameInfo {
       AnniPlayerData countData = killCountMap.computeIfAbsent(killer, k -> new AnniPlayerData(k, killerTeam));
       countData.incrementCount(killType, deadTeam);
     }
+
+    //デス数をカウント
+    if (Minecraft.getMinecraft().player.getName().equals(dead)) {
+      //自身のデータを更新
+      mePlayerData.setTeamColor(deadTeam);
+      mePlayerData.incrementDeathCount();
+    } else {
+      //自身以外のデータを更新
+      AnniPlayerData countData = killCountMap.computeIfAbsent(killer, k -> new AnniPlayerData(k, killerTeam));
+      countData.incrementDeathCount();
+    }
+
   }
 
   @Override

@@ -45,6 +45,7 @@ public class GuiSettings extends GuiScreen {
     buttonObjects.add(new CapeSelectButtonObject());
     //Aim Game
     buttonObjects.add(new AimGameButtonObject());
+    //    buttonObjects.add(new DebugButtonObject());
 
   }
 
