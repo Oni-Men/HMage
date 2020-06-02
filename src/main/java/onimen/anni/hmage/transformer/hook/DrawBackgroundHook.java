@@ -16,7 +16,7 @@ public class DrawBackgroundHook extends HookInjector {
    * d_
    */
   public DrawBackgroundHook() {
-    super("net.minecraft.client.gui.GuiScreen", "drawWorldBackground", "(I)V");
+    super("net.minecraft.client.gui.GuiScreen", "(I)V", "drawWorldBackground", "d_");
   }
 
   @Override

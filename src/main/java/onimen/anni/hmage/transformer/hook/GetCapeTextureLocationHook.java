@@ -25,9 +25,9 @@ public class GetCapeTextureLocationHook extends HookInjector {
    *    getLocationCape
    *    func_110303_q
    */
+
   public GetCapeTextureLocationHook() {
-    super("net.minecraft.client.entity.AbstractClientPlayer", "getLocationCape",
-        "()Lnet/minecraft/util/ResourceLocation;");
+    super("net.minecraft.client.entity.AbstractClientPlayer", "()Lnf;", "getLocationCape", "q");
   }
 
   @Override
@@ -36,13 +36,12 @@ public class GetCapeTextureLocationHook extends HookInjector {
 
     MethodInsnNode hook = new MethodInsnNode(Opcodes.INVOKESTATIC, "onimen/anni/hmage/HMageHooks",
         "onGetLocationCape",
-        "(Lnet/minecraft/client/entity/AbstractClientPlayer;)Lnet/minecraft/util/ResourceLocation;",
+        "(Lbua;)Lnf;",
         false);
 
     InsnNode returnNode = new InsnNode(Opcodes.ARETURN);
     LabelNode gotoNode = new LabelNode();
     JumpInsnNode ifnull = new JumpInsnNode(Opcodes.IFNULL, gotoNode);
-
 
     injectings.add(new VarInsnNode(Opcodes.ALOAD, 0));
     injectings.add(hook);
