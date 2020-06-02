@@ -1,9 +1,15 @@
 package onimen.anni.hmage.gui;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSlot;
@@ -16,6 +22,8 @@ public class GuiGameHistory extends GuiScreen {
   private final List<GameInfo> gameInfoList;
 
   private HistoryList historyList;
+
+  private DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss");
 
   public GuiGameHistory(List<GameInfo> gameInfoList) {
     this.gameInfoList = gameInfoList;
@@ -86,16 +94,24 @@ public class GuiGameHistory extends GuiScreen {
     @Override
     protected void drawSlot(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn,
         float partialTicks) {
-      GuiGameHistory guiGameHistory = GuiGameHistory.this;
-      guiGameHistory.fontRenderer.setBidiFlag(true);
+      GuiGameHistory gui = GuiGameHistory.this;
+      FontRenderer renderer = gui.fontRenderer;
+      renderer.setBidiFlag(true);
       GameInfo gameInfo = gameInfoList.get(slotIndex);
-      guiGameHistory.drawCenteredString(guiGameHistory.fontRenderer, gameInfo.getMapName(), this.width / 2 - 64, yPos,
-          0xffffff);
-      guiGameHistory.drawCenteredString(guiGameHistory.fontRenderer,
+
+      //試合時刻
+      ZoneOffset offset = ZoneId.systemDefault().getRules().getOffset(Instant.now());
+      LocalDateTime matchDateTime = LocalDateTime.ofEpochSecond(gameInfo.getGameTimestamp() / 1000, 0, offset);
+      gui.drawCenteredString(renderer, datePattern.format(matchDateTime), this.width / 2 - 64, yPos, 0xffffff);
+      //マップ
+      gui.drawCenteredString(renderer, "Map : " + gameInfo.getMapName(), this.width / 2, yPos, 0xffffff);
+
+      //Team
+      gui.drawCenteredString(renderer,
           gameInfo.getMeleeKillCount() + " Melee Kill", this.width / 2, yPos, 0xffffff);
-      guiGameHistory.drawCenteredString(guiGameHistory.fontRenderer,
+      gui.drawCenteredString(renderer,
           gameInfo.getShotKillCount() + " Shot Kill", this.width / 2, yPos + 8, 0xffffff);
-      guiGameHistory.drawCenteredString(guiGameHistory.fontRenderer,
+      gui.drawCenteredString(renderer,
           gameInfo.getNexusAttackCount() + " Nexus Damage", this.width / 2, yPos + 16, 0xffffff);
     }
   }
