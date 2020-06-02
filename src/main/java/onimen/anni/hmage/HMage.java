@@ -38,6 +38,7 @@ import onimen.anni.hmage.gui.GuiAnniServers;
 import onimen.anni.hmage.gui.GuiSettings;
 import onimen.anni.hmage.module.CpsCounter;
 import onimen.anni.hmage.module.CustomGuiBackground;
+import onimen.anni.hmage.module.HMageCape;
 import onimen.anni.hmage.module.InterfaceModule;
 import onimen.anni.hmage.module.RecipeBookRemover;
 import onimen.anni.hmage.module.SpeedFovDisabler;
@@ -119,6 +120,7 @@ public class HMage {
     this.registerModule(new RecipeBookRemover());
     this.registerModule(new SpeedFovDisabler());
     this.registerModule(new CustomGuiBackground());
+    this.registerModule(new HMageCape());
 
     //HUD
     this.registerModule(new ArrowCounterHUD());
