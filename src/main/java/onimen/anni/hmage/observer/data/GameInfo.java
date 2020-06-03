@@ -13,7 +13,7 @@ import onimen.anni.hmage.observer.GamePhase;
 
 public class GameInfo {
 
-  /** ゲーム開始時間 */
+  /** ゲームID */
   private UUID gameInfoId;
 
   /** ゲーム開始時間 */

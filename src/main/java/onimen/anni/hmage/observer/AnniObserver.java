@@ -123,7 +123,7 @@ public class AnniObserver {
 
     ITextComponent message = event.getMessage();
 
-    if (message.getUnformattedText().contentEquals(""))
+    if (message.getUnformattedText().isEmpty())
       return;
 
     //チャットを元に処理を実行
