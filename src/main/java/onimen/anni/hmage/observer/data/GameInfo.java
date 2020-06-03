@@ -26,7 +26,7 @@ public class GameInfo {
   private GamePhase gamePhase;
 
   /** 他のプレイヤーのキル数 */
-  private Map<String, AnniPlayerData> killCountMap = new HashMap<>();
+  private Map<String, AnniPlayerData> otherPlayerStatsMap = new HashMap<>();
 
   /** 自身のキル数 */
   private AnniPlayerData mePlayerData = new AnniPlayerData(Minecraft.getMinecraft().player.getName(),
@@ -90,6 +90,10 @@ public class GameInfo {
     return mePlayerData.getNexusDamageCount();
   }
 
+  public AnniTeamColor getMeTeamColor() {
+    return mePlayerData.getTeamColor();
+  }
+
   public AnniPlayerData getMePlayerData() {
     return mePlayerData;
   }
@@ -99,11 +103,11 @@ public class GameInfo {
   }
 
   /**
-   * キル数をカウントする。
+   * ネクサスを削った回数をカウントする
    *
-   * @param killer 倒したプレイヤー
-   * @param dead 倒されたプレイヤー
-   * @param killType キルの方法
+   * @param attacker
+   * @param attackerTeam
+   * @param damageTeam
    */
   public void addNexusDamageCount(String attacker, AnniTeamColor attackerTeam,
       AnniTeamColor damageTeam) {
@@ -113,7 +117,8 @@ public class GameInfo {
       mePlayerData.nexusDamage(damageTeam);
     } else {
       //自身以外のデータを更新
-      AnniPlayerData countData = killCountMap.computeIfAbsent(attacker, k -> new AnniPlayerData(k, attackerTeam));
+      AnniPlayerData countData = otherPlayerStatsMap.computeIfAbsent(attacker,
+          k -> new AnniPlayerData(k, attackerTeam));
       countData.nexusDamage(damageTeam);
     }
   }
@@ -138,7 +143,7 @@ public class GameInfo {
       mePlayerData.incrementCount(killType, deadTeam);
     } else {
       //自身以外のデータを更新
-      AnniPlayerData countData = killCountMap.computeIfAbsent(killer, k -> new AnniPlayerData(k, killerTeam));
+      AnniPlayerData countData = otherPlayerStatsMap.computeIfAbsent(killer, k -> new AnniPlayerData(k, killerTeam));
       countData.incrementCount(killType, deadTeam);
     }
 
@@ -149,10 +154,14 @@ public class GameInfo {
       mePlayerData.incrementDeathCount();
     } else {
       //自身以外のデータを更新
-      AnniPlayerData countData = killCountMap.computeIfAbsent(killer, k -> new AnniPlayerData(k, killerTeam));
+      AnniPlayerData countData = otherPlayerStatsMap.computeIfAbsent(killer, k -> new AnniPlayerData(k, killerTeam));
       countData.incrementDeathCount();
     }
 
+  }
+
+  public Map<String, AnniPlayerData> getOtherPlayerStatsMap() {
+    return this.otherPlayerStatsMap;
   }
 
   @Override
