@@ -9,7 +9,6 @@ import org.lwjgl.input.Mouse;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import onimen.anni.hmage.Preferences;
@@ -21,13 +20,11 @@ import onimen.anni.hmage.gui.button.ModEnabledButtonObject;
 import onimen.anni.hmage.gui.button.ModuleSettingButtonObject;
 import onimen.anni.hmage.module.InterfaceModule;
 
-public class GuiSettings extends GuiScreen {
+public class GuiSettings extends GuiScroll {
 
   private List<ButtonObject> buttonObjects = new ArrayList<ButtonObject>();
 
-  private int prevMouseY = 0;
-  private int scrollY = 0;
-  private int maxScrollY = 0;
+  private int maxScrollAmount;
 
   public GuiSettings(Map<String, InterfaceModule> moduleMap) {
     //mod 有効/無効の設定
@@ -54,7 +51,7 @@ public class GuiSettings extends GuiScreen {
 
     this.buttonList.clear();
 
-    ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+    ScaledResolution sr = new ScaledResolution(mc);
 
     int x = sr.getScaledWidth() / 2 + 30;
     int y = 32 + 24;
@@ -72,7 +69,12 @@ public class GuiSettings extends GuiScreen {
       y += 24;
     }
 
-    maxScrollY = this.buttonObjects.size() * 24 + 48 - sr.getScaledHeight();
+    maxScrollAmount = this.buttonObjects.size() * 24 + 48 - sr.getScaledHeight();
+  }
+
+  @Override
+  public int getMaxScroll() {
+    return maxScrollAmount;
   }
 
   @Override
@@ -107,15 +109,14 @@ public class GuiSettings extends GuiScreen {
 
   @Override
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-
+    super.drawScreen(mouseX, mouseY, partialTicks);
     ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
 
     this.drawDefaultBackground();
-
-    this.drawCenteredString(this.fontRenderer, "- HMage Settings -", this.width / 2, 16 - scrollY, 0xffffff);
+    this.drawCenteredString(this.fontRenderer, "- HMage Settings -", this.width / 2, 16 - amountScroll, 0xffffff);
 
     int x = sr.getScaledWidth() / 2 - 130;
-    int y = 32 - scrollY;
+    int y = 32 - amountScroll;
 
     y += 12;
 
@@ -127,11 +128,11 @@ public class GuiSettings extends GuiScreen {
     ButtonObject mouseOveredObject = null;
 
     GlStateManager.pushMatrix();
-    GlStateManager.translate(0D, -scrollY - 24, 0D);
+    GlStateManager.translate(0D, -amountScroll - 24, 0D);
     for (int i = 0; i < this.buttonList.size(); ++i) {
       //ボタンの描画
       GuiButton button = this.buttonList.get(i);
-      button.drawButton(this.mc, mouseX, mouseY + scrollY + 24, partialTicks);
+      button.drawButton(this.mc, mouseX, mouseY + amountScroll + 24, partialTicks);
 
       //マウスでかぶさっているボタンを取得
       if (button.isMouseOver()) {
@@ -157,35 +158,11 @@ public class GuiSettings extends GuiScreen {
   @Override
   protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
     super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
-
-    this.scroll(prevMouseY - mouseY);
-    prevMouseY = mouseY;
-
   }
 
   @Override
   protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-    prevMouseY = mouseY;
-    if (mouseButton == 0) {
-      for (int i = 0; i < this.buttonList.size(); ++i) {
-        GuiButton guibutton = this.buttonList.get(i);
-
-        if (guibutton.mousePressed(this.mc, mouseX, mouseY + scrollY + 24)) {
-          net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Pre event = new net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Pre(
-              this, guibutton, this.buttonList);
-          if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
-            break;
-          guibutton = event.getButton();
-          this.selectedButton = guibutton;
-          guibutton.playPressSound(this.mc.getSoundHandler());
-          this.actionPerformed(guibutton);
-          if (this.equals(this.mc.currentScreen))
-            net.minecraftforge.common.MinecraftForge.EVENT_BUS
-                .post(new net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Post(this,
-                    event.getButton(), this.buttonList));
-        }
-      }
-    }
+    super.mouseClicked(mouseX, mouseY, mouseButton);
   }
 
   /**
@@ -193,22 +170,7 @@ public class GuiSettings extends GuiScreen {
    */
   @Override
   protected void mouseReleased(int mouseX, int mouseY, int state) {
-    if (this.selectedButton != null && state == 0) {
-      this.selectedButton.mouseReleased(mouseX, mouseY + scrollY);
-      this.selectedButton = null;
-    }
+    super.mouseReleased(mouseX, mouseY, state);
   }
 
-  public void scroll(int delta) {
-    scrollY += delta;
-
-    if (scrollY < 0) {
-      scrollY = 0;
-    }
-
-    if (scrollY > maxScrollY) {
-      scrollY = maxScrollY;
-    }
-
-  }
 }
