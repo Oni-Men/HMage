@@ -3,6 +3,8 @@ package onimen.anni.hmage.observer.data;
 import java.util.Arrays;
 import java.util.Optional;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
+
 public enum AnniTeamColor {
 
   NO_JOIN("", "No Color"), RED("c", "Red"), GREEN("a", "Green"), BLUE("9", "Blue"), YELLOW("e", "Yellow");
@@ -22,5 +24,9 @@ public enum AnniTeamColor {
 
   public String getColorName() {
     return colorName;
+  }
+
+  public String getColoredName() {
+    return ChatFormatting.PREFIX_CODE + colorCode + getColorName();
   }
 }
