@@ -1,47 +1,57 @@
 package onimen.anni.hmage.gui;
 
-import java.awt.Dimension;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-
-import javax.annotation.Nullable;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
+
+import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiUtilRenderComponents;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.client.GuiScrollingList;
+import onimen.anni.hmage.observer.AnniKillType;
 import onimen.anni.hmage.observer.AnniObserverMap;
+import onimen.anni.hmage.observer.data.AnniPlayerData;
+import onimen.anni.hmage.observer.data.AnniTeamColor;
 import onimen.anni.hmage.observer.data.GameInfo;
+import onimen.anni.hmage.util.DateUtils;
 
 public class AnniHistoryList extends GuiScreen {
 
-  private AnniHistorySlot modList;
-  private GuiScrollingList modInfo;
+  private AnniHistorySlot gameList;
+  private GuiScrollingList gameInfoList;
   private int selected = -1;
-  private GameInfo selectedMod;
+  private GameInfo selectedInfo;
   private int listWidth;
-  private List<GameInfo> mods;
+  private List<GameInfo> gameInfos;
 
   /**
    * @param mainMenu
    */
   public AnniHistoryList() {
-    mods = AnniObserverMap.getInstance().getGameInfoList();
+    gameInfos = AnniObserverMap.getInstance().getGameInfoList();
+    for (int i = 0; i < 15; i++) {
+      GameInfo info = new GameInfo();
+      info.setMapName("Andorra 3.9.2");
+      info.getMePlayerData().setTeamColor(AnniTeamColor.YELLOW);
+
+      for (int p = 0, len = new Random().nextInt(100); p < len; p++) {
+        info.addNexusDamageCount("Onimen", AnniTeamColor.YELLOW, AnniTeamColor.GREEN);
+      }
+      for (int p = 0, len = new Random().nextInt(100); p < len; p++) {
+        info.addKillCount("Namiken", AnniTeamColor.YELLOW, "Onimen", AnniTeamColor.RED, AnniKillType.MELEE);
+      }
+      gameInfos.add(info);
+
+    }
   }
 
   /**
@@ -51,11 +61,10 @@ public class AnniHistoryList extends GuiScreen {
   public void initGui() {
     int slotHeight = 35;
     listWidth = getFontRenderer().getStringWidth("uuuu/MM/dd HH:mm:ss") + 10;
-    this.modList = new AnniHistorySlot(this, mods, listWidth, slotHeight);
+    this.gameList = new AnniHistorySlot(this, gameInfos, listWidth, slotHeight);
 
     this.buttonList
-        .add(
-            new GuiButton(6, ((modList.getRight() + this.width) / 2) - 100, this.height - 38, I18n.format("gui.done")));
+        .add(new GuiButton(6, this.width / 2 - 100, this.height - 38, I18n.format("gui.done")));
 
     updateCache();
   }
@@ -85,12 +94,12 @@ public class AnniHistoryList extends GuiScreen {
    */
   @Override
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-    this.modList.drawScreen(mouseX, mouseY, partialTicks);
-    if (this.modInfo != null)
-      this.modInfo.drawScreen(mouseX, mouseY, partialTicks);
+    this.gameList.drawScreen(mouseX, mouseY, partialTicks);
+    if (this.gameInfoList != null)
+      this.gameInfoList.drawScreen(mouseX, mouseY, partialTicks);
 
-    int left = ((this.width - this.listWidth - 38) / 2) + this.listWidth + 30;
-    this.drawCenteredString(this.fontRenderer, "Annihilation History", left, 16, 0xFFFFFF);
+    this.drawCenteredString(this.fontRenderer, ChatFormatting.UNDERLINE + "Annihilation History", this.width / 2, 16,
+        0xFFFFFF);
     super.drawScreen(mouseX, mouseY, partialTicks);
   }
 
@@ -103,9 +112,9 @@ public class AnniHistoryList extends GuiScreen {
     int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
 
     super.handleMouseInput();
-    if (this.modInfo != null)
-      this.modInfo.handleMouseInput(mouseX, mouseY);
-    this.modList.handleMouseInput(mouseX, mouseY);
+    if (this.gameInfoList != null)
+      this.gameInfoList.handleMouseInput(mouseX, mouseY);
+    this.gameList.handleMouseInput(mouseX, mouseY);
   }
 
   Minecraft getMinecraftInstance() {
@@ -120,7 +129,7 @@ public class AnniHistoryList extends GuiScreen {
     if (index == this.selected)
       return;
     this.selected = index;
-    this.selectedMod = (index >= 0 && index <= mods.size()) ? mods.get(selected) : null;
+    this.selectedInfo = (index >= 0 && index <= gameInfos.size()) ? gameInfos.get(selected) : null;
 
     updateCache();
   }
@@ -130,29 +139,18 @@ public class AnniHistoryList extends GuiScreen {
   }
 
   private void updateCache() {
-    modInfo = null;
+    gameInfoList = null;
 
-    if (selectedMod == null)
+    if (selectedInfo == null)
       return;
 
-    List<String> lines = new ArrayList<String>();
-
-    lines.add(selectedMod.getMapName());
-    lines.add(String.format("Date: %s", "2020/1/1 10:20"));
-    lines.add("Team: " + selectedMod.getMePlayerData().getTeamColor().getColorName());
-
-    lines.add(null);
-
-    modInfo = new Info(this.width - this.listWidth - 30, lines);
+    gameInfoList = new Info(this.width - this.listWidth - 30, selectedInfo);
   }
 
   private class Info extends GuiScrollingList {
-    @Nullable
-    private ResourceLocation logoPath;
-    private Dimension logoDims;
-    private List<ITextComponent> lines = null;
+    private GameInfo gameInfo;
 
-    public Info(int width, List<String> lines) {
+    public Info(int width, GameInfo gameInfo) {
       super(AnniHistoryList.this.getMinecraftInstance(),
           width,
           AnniHistoryList.this.height,
@@ -160,7 +158,7 @@ public class AnniHistoryList extends GuiScreen {
           AnniHistoryList.this.listWidth + 20, 60,
           AnniHistoryList.this.width,
           AnniHistoryList.this.height);
-      this.lines = resizeContent(lines);
+      this.gameInfo = gameInfo;
 
       this.setHeaderInfo(true, getHeaderHeight());
     }
@@ -187,101 +185,129 @@ public class AnniHistoryList extends GuiScreen {
     protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess) {
     }
 
-    private List<ITextComponent> resizeContent(List<String> lines) {
-      List<ITextComponent> ret = new ArrayList<ITextComponent>();
-      for (String line : lines) {
-        if (line == null) {
-          ret.add(null);
-          continue;
-        }
-
-        ITextComponent chat = ForgeHooks.newChatWithLinks(line, false);
-        int maxTextLength = this.listWidth - 8;
-        if (maxTextLength >= 0) {
-          ret.addAll(
-              GuiUtilRenderComponents.splitText(chat, maxTextLength, AnniHistoryList.this.fontRenderer, false, true));
-        }
-      }
-      return ret;
-    }
-
     private int getHeaderHeight() {
-      int height = 0;
-      if (logoPath != null) {
-        double scaleX = logoDims.width / 200.0;
-        double scaleY = logoDims.height / 65.0;
-        double scale = 1.0;
-        if (scaleX > 1 || scaleY > 1) {
-          scale = 1.0 / Math.max(scaleX, scaleY);
-        }
-        logoDims.width *= scale;
-        logoDims.height *= scale;
-
-        height += logoDims.height;
-        height += 10;
-      }
-      height += (lines.size() * 10);
-      if (height < this.bottom - this.top - 8)
-        height = this.bottom - this.top - 8;
-      return height;
+      return 292;
     }
 
     @Override
     protected void drawHeader(int entryRight, int relativeY, Tessellator tess) {
       int top = relativeY;
+      int left = this.left + 20;
+      int color = 0xFFFFFF;
+      int rank = 1;
 
-      if (logoPath != null) {
-        GlStateManager.enableBlend();
-        AnniHistoryList.this.mc.renderEngine.bindTexture(logoPath);
-        BufferBuilder wr = tess.getBuffer();
-        int offset = (this.left + this.listWidth / 2) - (logoDims.width / 2);
-        wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        wr.pos(offset, top + logoDims.height, zLevel).tex(0, 1).endVertex();
-        wr.pos(offset + logoDims.width, top + logoDims.height, zLevel).tex(1, 1).endVertex();
-        wr.pos(offset + logoDims.width, top, zLevel).tex(1, 0).endVertex();
-        wr.pos(offset, top, zLevel).tex(0, 0).endVertex();
-        tess.draw();
-        GlStateManager.disableBlend();
-        top += logoDims.height + 10;
-      }
+      FontRenderer fr = AnniHistoryList.this.fontRenderer;
 
-      for (ITextComponent line : lines) {
-        if (line != null) {
-          GlStateManager.enableBlend();
-          AnniHistoryList.this.fontRenderer.drawStringWithShadow(line.getFormattedText(), this.left + 4, top, 0xFFFFFF);
-          GlStateManager.disableAlpha();
-          GlStateManager.disableBlend();
-        }
+      String mapAndTeamText = gameInfo.getMapName() + " - " + gameInfo.getMeTeamColor().getColoredName();
+      //MAP NAME AND TEAM COLOR
+      fr.drawStringWithShadow(mapAndTeamText, left, top, color);
+      top += 12;
+
+      fr.drawStringWithShadow(DateUtils.getDateString(gameInfo.getGameTimestamp()), left, top, 0xCCCCCC);
+      top += 20;
+
+
+      //SECTION START - PLAYER STATS
+      fr.drawStringWithShadow(ChatFormatting.UNDERLINE + "Your Stats", left, top, color);
+      top += 12;
+      left += 8;
+      fr.drawStringWithShadow(gameInfo.getMeleeKillCount() + " Melee kills", left, top, color);
+      top += 10;
+      fr.drawStringWithShadow(gameInfo.getShotKillCount() + " Shot kills", left, top, color);
+      top += 10;
+      fr.drawStringWithShadow(gameInfo.getNexusAttackCount() + " Nexus damage", left, top, color);
+      top += 10;
+      left -= 8;
+      //SECTION END - PLAYER STATS
+
+      top += 10;
+
+      Collection<AnniPlayerData> statsMap = gameInfo.getOtherPlayerStatsMap().values();
+      //statsMap.add(gameInfo.getMePlayerData());
+
+      //SECTION START - TOP OF THE GAME
+      fr.drawStringWithShadow(ChatFormatting.UNDERLINE + "Top of the Game", left, top, color);
+      top += 20;
+      left += 8;
+
+      fr.drawStringWithShadow("Kill Count", left, top, color);
+      left += 8;
+      top += 12;
+      for (AnniPlayerData data : getTopPlayerKiller(statsMap, 5)) {
+        fr.drawStringWithShadow(String.format("%d. %s", rank, data.getPlayerName()), left, top, color);
+        fr.drawStringWithShadow(data.getTotalKillCount() + " kills", left + 100, top, color);
         top += 10;
+        rank++;
       }
+      left -= 8;
+      top += 10;
+      rank = 1;
+
+      fr.drawStringWithShadow("Death Count", left, top, color);
+      left += 8;
+      top += 12;
+      for (AnniPlayerData data : getTopDeathLover(statsMap, 5)) {
+        fr.drawStringWithShadow(String.format("%d. %s", rank, data.getPlayerName()), left, top, color);
+        fr.drawStringWithShadow(data.getDeathCount() + " deaths", left + 100, top, color);
+        top += 10;
+        rank++;
+      }
+      left -= 8;
+      top += 10;
+      rank = 1;
+
+      fr.drawStringWithShadow("Nexus Damage", left, top, color);
+      left += 8;
+      top += 12;
+      for (AnniPlayerData data : getTopNexusDamager(statsMap, 5)) {
+        fr.drawStringWithShadow(String.format("%d. %s", rank, data.getPlayerName()), left, top, color);
+        fr.drawStringWithShadow(data.getNexusDamageCount() + " damage", left + 100, top, color);
+        top += 10;
+        rank++;
+      }
+      left -= 8;
+      //SECTION END - TOP OF THE GAME
+
+    }
+
+    private List<AnniPlayerData> getTopPlayerKiller(Collection<AnniPlayerData> data, long limit) {
+      return data.stream()
+          .sorted((a, b) -> {
+            if (a.getTotalKillCount() < b.getTotalKillCount())
+              return 1;
+            else
+              return -1;
+          })
+          .limit(limit)
+          .collect(Collectors.toList());
+    }
+
+    private List<AnniPlayerData> getTopDeathLover(Collection<AnniPlayerData> data, long limit) {
+      return data.stream()
+          .sorted((a, b) -> {
+            if (a.getDeathCount() < b.getDeathCount())
+              return 1;
+            else
+              return -1;
+          })
+          .limit(limit)
+          .collect(Collectors.toList());
+    }
+
+    private List<AnniPlayerData> getTopNexusDamager(Collection<AnniPlayerData> data, long limit) {
+      return data.stream()
+          .sorted((a, b) -> {
+            if (a.getNexusDamageCount() < b.getNexusDamageCount())
+              return 1;
+            else
+              return -1;
+          })
+          .limit(limit)
+          .collect(Collectors.toList());
     }
 
     @Override
     protected void clickHeader(int x, int y) {
-      int offset = y;
-      if (logoPath != null) {
-        offset -= logoDims.height + 10;
-      }
-      if (offset <= 0)
-        return;
-
-      int lineIdx = offset / 10;
-      if (lineIdx >= lines.size())
-        return;
-
-      ITextComponent line = lines.get(lineIdx);
-      if (line != null) {
-        int k = -4;
-        for (ITextComponent part : line) {
-          if (!(part instanceof TextComponentString))
-            continue;
-          k += AnniHistoryList.this.fontRenderer.getStringWidth(((TextComponentString) part).getText());
-          if (k >= x) {
-            AnniHistoryList.this.handleComponentClick(part);
-            break;
-          }
-        }
-      }
     }
   }
 }

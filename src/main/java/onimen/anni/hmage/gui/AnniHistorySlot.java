@@ -1,29 +1,23 @@
 package onimen.anni.hmage.gui;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.fml.client.GuiScrollingList;
 import onimen.anni.hmage.observer.data.GameInfo;
+import onimen.anni.hmage.util.DateUtils;
 
 public class AnniHistorySlot extends GuiScrollingList {
 
-  private DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss");
-
   private AnniHistoryList parent;
-  private List<GameInfo> mods;
+  private List<GameInfo> gameInfos;
 
-  public AnniHistorySlot(AnniHistoryList parent, List<GameInfo> mods, int listWidth, int slotHeight) {
+  public AnniHistorySlot(AnniHistoryList parent, List<GameInfo> gameInfos, int listWidth, int slotHeight) {
     super(parent.getMinecraftInstance(), listWidth, parent.height, 32, parent.height - 88 + 4, 10, slotHeight,
         parent.width, parent.height);
     this.parent = parent;
-    this.mods = mods;
+    this.gameInfos = gameInfos;
   }
 
   public int getBottom() {
@@ -45,7 +39,7 @@ public class AnniHistorySlot extends GuiScrollingList {
 
   @Override
   protected int getSize() {
-    return mods.size();
+    return gameInfos.size();
   }
 
   @Override
@@ -69,23 +63,21 @@ public class AnniHistorySlot extends GuiScrollingList {
   }
 
   List<GameInfo> getMods() {
-    return mods;
+    return gameInfos;
   }
 
   @Override
   protected void drawSlot(int idx, int right, int top, int height, Tessellator tess) {
-    GameInfo mc = mods.get(idx);
+    GameInfo gameInfo = gameInfos.get(idx);
     FontRenderer font = this.parent.getFontRenderer();
 
-    ZoneOffset offset = ZoneId.systemDefault().getRules().getOffset(Instant.now());
-    LocalDateTime matchDateTime = LocalDateTime.ofEpochSecond(mc.getGameTimestamp() / 1000, 0, offset);
-
-    font.drawString(font.trimStringToWidth(datePattern.format(matchDateTime), listWidth), this.left + 3,
-        top, 0xFFFFFF);
-    font.drawString(font.trimStringToWidth("Map: " + mc.getMapName(), listWidth), this.left + 3,
-        top + 12, 0xCCCCCC);
+    font.drawString(font.trimStringToWidth("Map: " + gameInfo.getMapName(), listWidth), this.left + 3,
+        top, 0xCCCCCC);
     font.drawString(
-        font.trimStringToWidth("Color: " + mc.getMePlayerData().getTeamColor().getColorName(), listWidth - 10),
-        this.left + 3, top + 22, 0xCCCCCC);
+        font.trimStringToWidth(gameInfo.getMeTeamColor().getColoredName(), listWidth - 10),
+        this.left + 3, top + 12, 0xFFFFFF);
+    font.drawString(font.trimStringToWidth(DateUtils.getDateString(gameInfo.getGameTimestamp()), listWidth),
+        this.left + 3,
+        top + 22, 0xFFFFFF);
   }
 }
