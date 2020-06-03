@@ -34,13 +34,13 @@ public class CustomGuiBackground extends AbstractModule {
 
   @SubscribeEvent
   public void onDrawWorldBackground(DrawWorldBackgroundEvent event) {
-    if (!isEnable()) { return; }
-    event.setCanceled(true);
-
     Minecraft mc = Minecraft.getMinecraft();
 
     if (mc == null)
       return;
+
+    if (!isEnable() || mc.world == null) { return; }
+    event.setCanceled(true);
 
     ScaledResolution sr = new ScaledResolution(mc);
     double w = sr.getScaledWidth_double();
