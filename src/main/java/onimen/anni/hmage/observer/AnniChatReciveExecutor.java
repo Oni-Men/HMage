@@ -1,5 +1,7 @@
 package onimen.anni.hmage.observer;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +22,10 @@ public class AnniChatReciveExecutor {
   /** ネクサスダメージのパターン */
   private static Pattern nexusChatPattern = Pattern
       .compile("§(?<attackColor>.)(?<attacker>.+)§(.) has damaged the §(?<damageColor>.)(.+) team's nexus!.*");
+  private static Pattern nexusChatPattern2 = Pattern
+      .compile("§(?<damageColor>.)(.+) team's§(.) nexus is under attack by §(?<attackColor>.)(?<attacker>.+).*");
+
+  private static List<Pattern> nexusChatPatterns = Arrays.asList(nexusChatPattern, nexusChatPattern2);
 
   /** 職業変更のパターン */
   private static Pattern changeJobPattern = Pattern.compile("\\[Class\\] (?<job>.+) Selected");
@@ -75,9 +81,18 @@ public class AnniChatReciveExecutor {
             anniObserver.getGameInfo().addKillCount(matcher.group(2), killerTeam, matcher.group(7), deadTeam, killType);
           } else if (task.getChatType() == ChatType.GAME_INFO) {
 
-            //パターンにマッチすることを確認
-            Matcher matcher = nexusChatPattern.matcher(message);
-            if (!matcher.matches()) {
+            Matcher matcher = null;
+            //パターンに一致するかどうかを調べる
+            for (Pattern pattern : nexusChatPatterns) {
+              Matcher temp = pattern.matcher(message);
+              if (temp.matches()) {
+                matcher = temp;
+                break;
+              }
+            }
+
+            //一致しない場合
+            if (matcher == null) {
               continue;
             }
 
