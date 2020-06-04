@@ -26,6 +26,10 @@ public enum AnniTeamColor {
     return colorName;
   }
 
+  public String getColorCode() {
+    return ChatFormatting.PREFIX_CODE + colorCode;
+  }
+
   public String getColoredName() {
     return (this == NO_JOIN ? "" : ChatFormatting.PREFIX_CODE + colorCode) + getColorName();
   }

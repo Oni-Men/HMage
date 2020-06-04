@@ -1,6 +1,10 @@
 package onimen.anni.hmage.gui;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,10 +24,10 @@ import net.minecraftforge.fml.client.GuiScrollingList;
 import onimen.anni.hmage.observer.AnniObserverMap;
 import onimen.anni.hmage.observer.data.AnniPlayerData;
 import onimen.anni.hmage.observer.data.GameInfo;
-import onimen.anni.hmage.util.DateUtils;
 
 public class AnniHistoryList extends GuiScreen {
 
+  private static DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm:ss");
   private AnniHistorySlot gameList;
   private GuiScrollingList gameInfoList;
   private int selected = -1;
@@ -192,7 +196,9 @@ public class AnniHistoryList extends GuiScreen {
       fr.drawStringWithShadow(mapAndTeamText, left, top, color);
       top += 12;
 
-      fr.drawStringWithShadow(DateUtils.getDateString(gameInfo.getGameTimestamp()), left, top, 0xCCCCCC);
+      Instant instant = Instant.ofEpochMilli(gameInfo.getGameTimestamp());
+      LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+      fr.drawStringWithShadow(datePattern.format(matchDateTime), left, top, 0xCCCCCC);
       top += 20;
 
       //SECTION START - PLAYER STATS
@@ -225,7 +231,9 @@ public class AnniHistoryList extends GuiScreen {
       top += 12;
       List<AnniPlayerData> topPlayerKiller = getTopPlayerKiller(statsMap, 5);
       for (AnniPlayerData data : topPlayerKiller) {
-        fr.drawStringWithShadow(String.format("%d. %s", rank, data.getPlayerName()), left, top, color);
+        fr.drawStringWithShadow(
+            String.format("%d. %s%s", rank, data.getTeamColor().getColorCode(), data.getPlayerName()), left, top,
+            color);
         fr.drawStringWithShadow(data.getTotalKillCount() + " kills", left + 100, top, color);
         top += 10;
         rank++;
@@ -243,7 +251,9 @@ public class AnniHistoryList extends GuiScreen {
       top += 12;
       List<AnniPlayerData> topDeathLover = getTopDeathLover(statsMap, 5);
       for (AnniPlayerData data : topDeathLover) {
-        fr.drawStringWithShadow(String.format("%d. %s", rank, data.getPlayerName()), left, top, color);
+        fr.drawStringWithShadow(
+            String.format("%d. %s%s", rank, data.getTeamColor().getColorCode(), data.getPlayerName()), left, top,
+            color);
         fr.drawStringWithShadow(data.getDeathCount() + " deaths", left + 100, top, color);
         top += 10;
         rank++;
@@ -261,7 +271,9 @@ public class AnniHistoryList extends GuiScreen {
       top += 12;
       List<AnniPlayerData> topNexusDamager = getTopNexusDamager(statsMap, 5);
       for (AnniPlayerData data : topNexusDamager) {
-        fr.drawStringWithShadow(String.format("%d. %s", rank, data.getPlayerName()), left, top, color);
+        fr.drawStringWithShadow(
+            String.format("%d. %s%s", rank, data.getTeamColor().getColorCode(), data.getPlayerName()), left, top,
+            color);
         fr.drawStringWithShadow(data.getNexusDamageCount() + " damage", left + 100, top, color);
         top += 10;
         rank++;
