@@ -2,6 +2,7 @@ package onimen.anni.hmage;
 
 import java.io.File;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.logging.log4j.Logger;
 
@@ -14,6 +15,7 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.GameSettings.Options;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.MovementInputFromOptions;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -33,14 +35,15 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.cape.GlobalPlayerUseCapeManager;
+import onimen.anni.hmage.cape.SPPlayerUseCape;
 import onimen.anni.hmage.command.DebugCommand;
 import onimen.anni.hmage.command.NameCommand;
 import onimen.anni.hmage.command.PrefCommand;
+import onimen.anni.hmage.event.GetLocationCapeEvent;
 import onimen.anni.hmage.gui.GuiAnniServers;
 import onimen.anni.hmage.gui.GuiSettings;
 import onimen.anni.hmage.module.CpsCounter;
 import onimen.anni.hmage.module.CustomGuiBackground;
-import onimen.anni.hmage.module.HMageCape;
 import onimen.anni.hmage.module.InterfaceModule;
 import onimen.anni.hmage.module.RecipeBookRemover;
 import onimen.anni.hmage.module.SpeedFovDisabler;
@@ -126,7 +129,6 @@ public class HMage {
     this.registerModule(new RecipeBookRemover());
     this.registerModule(new SpeedFovDisabler());
     this.registerModule(new CustomGuiBackground());
-    this.registerModule(new HMageCape());
 
     //HUD
     this.registerModule(new ArrowCounterHUD());
@@ -239,5 +241,17 @@ public class HMage {
     while ((nextTask = SyncTaskQueue.getNextTask()) != null) {
       nextTask.run();
     }
+  }
+
+  @SubscribeEvent
+  public void onGetLocationCape(GetLocationCapeEvent event) {
+
+    //capeのリソースを取得
+    UUID uniqueID = event.getPlayer().getUniqueID();
+    boolean isMe = uniqueID.equals(Minecraft.getMinecraft().player.getUniqueID());
+    ResourceLocation locationCape = isMe ? SPPlayerUseCape.getResourceLocation()
+        : GlobalPlayerUseCapeManager.getCapeResource(uniqueID);
+
+    event.setCapeLocation(locationCape);
   }
 }
