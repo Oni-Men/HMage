@@ -5,6 +5,8 @@ import java.util.List;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.fml.client.GuiScrollingList;
+import onimen.anni.hmage.observer.AnniObserver;
+import onimen.anni.hmage.observer.AnniObserverMap;
 import onimen.anni.hmage.observer.data.GameInfo;
 import onimen.anni.hmage.util.DateUtils;
 
@@ -80,8 +82,12 @@ public class AnniHistorySlot extends GuiScrollingList {
     font.drawString(
         font.trimStringToWidth(gameInfo.getMeTeamColor().getColoredName(), listWidth),
         this.left + 3, top + 12, 0xFFFFFF);
-    font.drawString(font.trimStringToWidth(DateUtils.getDateString(gameInfo.getGameTimestamp()), listWidth),
-        this.left + 3,
-        top + 22, 0xFFFFFF);
+    AnniObserver anniObserver = AnniObserverMap.getInstance().getAnniObserver();
+    if (anniObserver == null || !anniObserver.getGameInfo().equals(gameInfo)) {
+      font.drawString(font.trimStringToWidth(DateUtils.getDateString(gameInfo.getGameTimestamp()), listWidth),
+          this.left + 3, top + 22, 0xFFFFFF);
+    } else {
+      font.drawString(font.trimStringToWidth("Playing Now", listWidth), this.left + 3, top + 22, 0xFFFFFF);
+    }
   }
 }

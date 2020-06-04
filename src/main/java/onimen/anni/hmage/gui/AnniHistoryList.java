@@ -290,36 +290,24 @@ public class AnniHistoryList extends GuiScreen {
 
     private List<AnniPlayerData> getTopPlayerKiller(Collection<AnniPlayerData> data, long limit) {
       return data.stream()
-          .sorted((a, b) -> {
-            if (a.getTotalKillCount() < b.getTotalKillCount())
-              return 1;
-            else
-              return -1;
-          }).filter(a -> a.getTotalKillCount() != 0)
+          .sorted((a, b) -> b.getTotalKillCount() - a.getTotalKillCount())
+          .filter(a -> a.getTotalKillCount() != 0)
           .limit(limit)
           .collect(Collectors.toList());
     }
 
     private List<AnniPlayerData> getTopDeathLover(Collection<AnniPlayerData> data, long limit) {
       return data.stream()
-          .sorted((a, b) -> {
-            if (a.getDeathCount() < b.getDeathCount())
-              return 1;
-            else
-              return -1;
-          }).filter(a -> a.getDeathCount() != 0)
+          .sorted((a, b) -> b.getDeathCount() - a.getDeathCount())
+          .filter(a -> a.getDeathCount() != 0)
           .limit(limit)
           .collect(Collectors.toList());
     }
 
     private List<AnniPlayerData> getTopNexusDamager(Collection<AnniPlayerData> data, long limit) {
       return data.stream()
-          .sorted((a, b) -> {
-            if (a.getNexusDamageCount() < b.getNexusDamageCount())
-              return 1;
-            else
-              return -1;
-          }).filter(a -> a.getNexusDamageCount() != 0)
+          .sorted((a, b) -> b.getNexusDamageCount() - a.getNexusDamageCount())
+          .filter(a -> a.getNexusDamageCount() != 0)
           .limit(limit)
           .collect(Collectors.toList());
     }
