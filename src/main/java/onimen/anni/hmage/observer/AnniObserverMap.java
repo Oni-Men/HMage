@@ -106,6 +106,7 @@ public class AnniObserverMap {
       //監視中の試合を読み込み
       AnniObserver anniObserver = getAnniObserver();
       if (anniObserver != null) {
+        gameInfoMap.remove(anniObserver.getGameInfo());
         gameInfoMap.add(anniObserver.getGameInfo());
       }
       return new ArrayList<>(gameInfoMap);
