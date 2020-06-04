@@ -10,6 +10,8 @@ import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.settings.GameSettings.Options;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.MovementInputFromOptions;
 import net.minecraft.util.text.ITextComponent;
@@ -106,6 +108,10 @@ public class HMage {
     Preferences.load(event);
     modConfigurationDirectory = event.getModConfigurationDirectory();
     anniObserverMap = AnniObserverMap.getInstance();
+
+    //明るさの設定を変更
+    Options options = GameSettings.Options.GAMMA;
+    options.setValueMax(15);
   }
 
   @SideOnly(Side.CLIENT)
