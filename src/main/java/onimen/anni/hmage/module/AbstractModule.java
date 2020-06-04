@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import onimen.anni.hmage.Preferences;
+import onimen.anni.hmage.gui.button.ButtonObject;
 
 public abstract class AbstractModule implements InterfaceModule {
 
@@ -21,6 +22,11 @@ public abstract class AbstractModule implements InterfaceModule {
   @Override
   public List<String> getPreferenceKeys() {
     return Lists.newArrayList("enabled");
+  }
+
+  @Override
+  public ButtonObject getPreferenceButton() {
+    return null;
   }
 
 }
