@@ -67,7 +67,7 @@ public class HMage {
   public static HMage INSTANCE;
   private Minecraft mc;
 
-  private CustomMovementInput customMovementInput = new CustomMovementInput(Minecraft.getMinecraft().gameSettings);
+  private CustomMovementInput customMovementInput;
 
   private static Map<String, InterfaceModule> moduleMap = Maps.newLinkedHashMap();
   private static Map<String, InterfaceHUD> hudMap = Maps.newLinkedHashMap();
@@ -143,6 +143,8 @@ public class HMage {
 
     //Anni用スレッド開始
     AnniChatReciveExecutor.startThread();
+
+    customMovementInput = new CustomMovementInput(Minecraft.getMinecraft().gameSettings);
   }
 
   @SubscribeEvent
@@ -150,7 +152,7 @@ public class HMage {
     if (mc == null)
       return;
 
-    if (mc.player != null) {
+    if (mc.player != null && customMovementInput != null) {
       //If player uses vanilla MovementInput. use togglesneak input
       if (mc.player.movementInput instanceof MovementInputFromOptions)
         mc.player.movementInput = customMovementInput;

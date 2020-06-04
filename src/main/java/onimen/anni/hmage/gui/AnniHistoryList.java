@@ -41,6 +41,12 @@ public class AnniHistoryList extends GuiScreen {
   public AnniHistoryList() {
     gameInfos = AnniObserverMap.getInstance().getGameInfoList();
     gameInfos.sort((g1, g2) -> (int) (g2.getGameTimestamp() - g1.getGameTimestamp()));
+
+    //一番新しいものを選択する
+    if (!gameInfos.isEmpty()) {
+      selected = 0;
+      selectedInfo = gameInfos.get(selected);
+    }
   }
 
   /**

@@ -2,6 +2,8 @@ package onimen.anni.hmage.gui;
 
 import java.util.List;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.fml.client.GuiScrollingList;
@@ -87,7 +89,8 @@ public class AnniHistorySlot extends GuiScrollingList {
       font.drawString(font.trimStringToWidth(DateUtils.getDateString(gameInfo.getGameTimestamp()), listWidth),
           this.left + 3, top + 22, 0xFFFFFF);
     } else {
-      font.drawString(font.trimStringToWidth("Playing Now", listWidth), this.left + 3, top + 22, 0xFFFFFF);
+      font.drawString(font.trimStringToWidth(ChatFormatting.GOLD + "Playing Now", listWidth), this.left + 3, top + 22,
+          0xFFFFFF);
     }
   }
 }

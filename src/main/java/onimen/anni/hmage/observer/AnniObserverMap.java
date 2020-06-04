@@ -92,6 +92,9 @@ public class AnniObserverMap {
 
       //ファイルから試合情報を読み込み
       File[] listFiles = historyDataDir.listFiles();
+      if (listFiles == null) {
+        listFiles = new File[0];
+      }
       List<File> collect = Arrays.stream(listFiles).sorted((f1, f2) -> f1.getName().compareTo(f2.getName())).limit(20)
           .collect(Collectors.toList());
       for (File file : collect) {
