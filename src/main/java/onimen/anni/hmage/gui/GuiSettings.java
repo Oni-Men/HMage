@@ -109,7 +109,7 @@ public class GuiSettings extends GuiScroll {
 
   @Override
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-    super.drawScreen(mouseX, mouseY, partialTicks);
+    //    super.drawScreen(mouseX, mouseY, partialTicks);
     ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
 
     this.drawDefaultBackground();
