@@ -34,7 +34,12 @@ public class GuiSettings extends GuiScroll {
     //各モジュールの有効/無効の設定
     for (InterfaceModule module : moduleMap.values()) {
       if (module.isShowMenu()) {
-        buttonObjects.add(new ModuleSettingButtonObject(module));
+        ButtonObject prefButton = module.getPreferenceButton();
+        if (prefButton != null) {
+          buttonObjects.add(prefButton);
+        } else {
+          buttonObjects.add(new ModuleSettingButtonObject(module));
+        }
       }
     }
 
