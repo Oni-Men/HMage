@@ -71,10 +71,14 @@ public class AnniHistorySlot extends GuiScrollingList {
     GameInfo gameInfo = gameInfos.get(idx);
     FontRenderer font = this.parent.getFontRenderer();
 
-    font.drawString(font.trimStringToWidth("Map: " + gameInfo.getMapName(), listWidth), this.left + 3,
+    String mapName = gameInfo.getMapName();
+    if (mapName == null || mapName.isEmpty()) {
+      mapName = "Voting";
+    }
+    font.drawString(font.trimStringToWidth("Map: " + mapName, listWidth), this.left + 3,
         top, 0xCCCCCC);
     font.drawString(
-        font.trimStringToWidth(gameInfo.getMeTeamColor().getColoredName(), listWidth - 10),
+        font.trimStringToWidth(gameInfo.getMeTeamColor().getColoredName(), listWidth),
         this.left + 3, top + 12, 0xFFFFFF);
     font.drawString(font.trimStringToWidth(DateUtils.getDateString(gameInfo.getGameTimestamp()), listWidth),
         this.left + 3,

@@ -3,7 +3,6 @@ package onimen.anni.hmage.gui;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.lwjgl.input.Mouse;
@@ -17,10 +16,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.client.GuiScrollingList;
-import onimen.anni.hmage.observer.AnniKillType;
 import onimen.anni.hmage.observer.AnniObserverMap;
 import onimen.anni.hmage.observer.data.AnniPlayerData;
-import onimen.anni.hmage.observer.data.AnniTeamColor;
 import onimen.anni.hmage.observer.data.GameInfo;
 import onimen.anni.hmage.util.DateUtils;
 
@@ -38,20 +35,7 @@ public class AnniHistoryList extends GuiScreen {
    */
   public AnniHistoryList() {
     gameInfos = AnniObserverMap.getInstance().getGameInfoList();
-    for (int i = 0; i < 15; i++) {
-      GameInfo info = new GameInfo();
-      info.setMapName("Andorra 3.9.2");
-      info.getMePlayerData().setTeamColor(AnniTeamColor.YELLOW);
-
-      for (int p = 0, len = new Random().nextInt(100); p < len; p++) {
-        info.addNexusDamageCount("Onimen", AnniTeamColor.YELLOW, AnniTeamColor.GREEN);
-      }
-      for (int p = 0, len = new Random().nextInt(100); p < len; p++) {
-        info.addKillCount("Namiken", AnniTeamColor.YELLOW, "Onimen", AnniTeamColor.RED, AnniKillType.MELEE);
-      }
-      gameInfos.add(info);
-
-    }
+    gameInfos.sort((g1, g2) -> (int) (g1.getGameTimestamp() - g2.getGameTimestamp()));
   }
 
   /**
@@ -198,14 +182,17 @@ public class AnniHistoryList extends GuiScreen {
 
       FontRenderer fr = AnniHistoryList.this.fontRenderer;
 
-      String mapAndTeamText = gameInfo.getMapName() + " - " + gameInfo.getMeTeamColor().getColoredName();
+      String mapName = gameInfo.getMapName();
+      if (mapName == null || mapName.isEmpty()) {
+        mapName = "Voting";
+      }
+      String mapAndTeamText = mapName + " - " + gameInfo.getMeTeamColor().getColoredName();
       //MAP NAME AND TEAM COLOR
       fr.drawStringWithShadow(mapAndTeamText, left, top, color);
       top += 12;
 
       fr.drawStringWithShadow(DateUtils.getDateString(gameInfo.getGameTimestamp()), left, top, 0xCCCCCC);
       top += 20;
-
 
       //SECTION START - PLAYER STATS
       fr.drawStringWithShadow(ChatFormatting.UNDERLINE + "Your Stats", left, top, color);

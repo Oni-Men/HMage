@@ -62,7 +62,6 @@ public class GameInfo {
   }
 
   public String getMapName() {
-    if (this.mapName == null || this.mapName.isEmpty()) { return "Voting"; }
     return this.mapName;
   }
 
