@@ -153,7 +153,7 @@ public class GameInfo {
       mePlayerData.incrementDeathCount();
     } else {
       //自身以外のデータを更新
-      AnniPlayerData countData = otherPlayerStatsMap.computeIfAbsent(dead, k -> new AnniPlayerData(k, killerTeam));
+      AnniPlayerData countData = otherPlayerStatsMap.computeIfAbsent(dead, k -> new AnniPlayerData(k, deadTeam));
       countData.incrementDeathCount();
     }
 
