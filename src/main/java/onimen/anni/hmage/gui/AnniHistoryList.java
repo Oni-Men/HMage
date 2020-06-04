@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.lwjgl.input.Mouse;
 
+import com.google.common.collect.Lists;
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.Minecraft;
@@ -209,8 +210,8 @@ public class AnniHistoryList extends GuiScreen {
 
       top += 10;
 
-      Collection<AnniPlayerData> statsMap = gameInfo.getOtherPlayerStatsMap().values();
-      //statsMap.add(gameInfo.getMePlayerData());
+      Collection<AnniPlayerData> statsMap = Lists.newArrayList(gameInfo.getOtherPlayerStatsMap().values());
+      statsMap.add(gameInfo.getMePlayerData());
 
       //SECTION START - TOP OF THE GAME
       fr.drawStringWithShadow(ChatFormatting.UNDERLINE + "Top of the Game", left, top, color);
