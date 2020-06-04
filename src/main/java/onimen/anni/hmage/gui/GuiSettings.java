@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.lwjgl.input.Mouse;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
@@ -75,6 +73,9 @@ public class GuiSettings extends GuiScroll {
     }
 
     maxScrollAmount = this.buttonObjects.size() * 24 + 48 - sr.getScaledHeight();
+    if (maxScrollAmount < 0) {
+      maxScrollAmount = 0;
+    }
   }
 
   @Override
@@ -85,19 +86,6 @@ public class GuiSettings extends GuiScroll {
   @Override
   public void handleMouseInput() throws IOException {
     super.handleMouseInput();
-    int delta = Mouse.getEventDWheel();
-
-    if (delta != 0) {
-      if (delta > 1) {
-        delta = 1;
-      }
-
-      if (delta < -1) {
-        delta = -1;
-      }
-
-      this.scroll(-delta * 8);
-    }
   }
 
   @Override
@@ -108,8 +96,8 @@ public class GuiSettings extends GuiScroll {
 
   @Override
   public void onGuiClosed() {
-    Preferences.save();
     super.onGuiClosed();
+    Preferences.save();
   }
 
   @Override

@@ -2,6 +2,8 @@ package onimen.anni.hmage.gui;
 
 import java.io.IOException;
 
+import org.lwjgl.input.Mouse;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 
@@ -14,6 +16,24 @@ public class GuiScroll extends GuiScreen {
     super.drawScreen(mouseX, mouseY, partialTicks);
     this.mouseX = mouseX;
     this.mouseY = mouseY;
+  }
+
+  @Override
+  public void handleMouseInput() throws IOException {
+    super.handleMouseInput();
+    int delta = Mouse.getEventDWheel();
+
+    if (delta != 0) {
+      if (delta > 1) {
+        delta = 1;
+      }
+
+      if (delta < -1) {
+        delta = -1;
+      }
+
+      this.scroll(-delta * 8);
+    }
   }
 
   @Override
@@ -75,5 +95,6 @@ public class GuiScroll extends GuiScreen {
     if (amountScroll > getMaxScroll()) {
       amountScroll = getMaxScroll();
     }
+
   }
 }
