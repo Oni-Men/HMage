@@ -36,7 +36,7 @@ public class AnniHistoryList extends GuiScreen {
    */
   public AnniHistoryList() {
     gameInfos = AnniObserverMap.getInstance().getGameInfoList();
-    gameInfos.sort((g1, g2) -> (int) (g1.getGameTimestamp() - g2.getGameTimestamp()));
+    gameInfos.sort((g1, g2) -> (int) (g2.getGameTimestamp() - g1.getGameTimestamp()));
   }
 
   /**
@@ -139,7 +139,7 @@ public class AnniHistoryList extends GuiScreen {
       super(AnniHistoryList.this.getMinecraftInstance(),
           width,
           AnniHistoryList.this.height,
-          32, AnniHistoryList.this.height - 88 + 4,
+          32, AnniHistoryList.this.height - 50,
           AnniHistoryList.this.listWidth + 20, 60,
           AnniHistoryList.this.width,
           AnniHistoryList.this.height);
@@ -205,6 +205,8 @@ public class AnniHistoryList extends GuiScreen {
       top += 10;
       fr.drawStringWithShadow(gameInfo.getNexusAttackCount() + " Nexus damage", left, top, color);
       top += 10;
+      fr.drawStringWithShadow(gameInfo.getMePlayerData().getDeathCount() + " Deaths", left, top, color);
+      top += 10;
       left -= 8;
       //SECTION END - PLAYER STATS
 
@@ -221,11 +223,16 @@ public class AnniHistoryList extends GuiScreen {
       fr.drawStringWithShadow("Kill Count", left, top, color);
       left += 8;
       top += 12;
-      for (AnniPlayerData data : getTopPlayerKiller(statsMap, 5)) {
+      List<AnniPlayerData> topPlayerKiller = getTopPlayerKiller(statsMap, 5);
+      for (AnniPlayerData data : topPlayerKiller) {
         fr.drawStringWithShadow(String.format("%d. %s", rank, data.getPlayerName()), left, top, color);
         fr.drawStringWithShadow(data.getTotalKillCount() + " kills", left + 100, top, color);
         top += 10;
         rank++;
+      }
+      if (topPlayerKiller.isEmpty()) {
+        fr.drawStringWithShadow("No Result", left, top, color);
+        top += 10;
       }
       left -= 8;
       top += 10;
@@ -234,11 +241,16 @@ public class AnniHistoryList extends GuiScreen {
       fr.drawStringWithShadow("Death Count", left, top, color);
       left += 8;
       top += 12;
-      for (AnniPlayerData data : getTopDeathLover(statsMap, 5)) {
+      List<AnniPlayerData> topDeathLover = getTopDeathLover(statsMap, 5);
+      for (AnniPlayerData data : topDeathLover) {
         fr.drawStringWithShadow(String.format("%d. %s", rank, data.getPlayerName()), left, top, color);
         fr.drawStringWithShadow(data.getDeathCount() + " deaths", left + 100, top, color);
         top += 10;
         rank++;
+      }
+      if (topDeathLover.isEmpty()) {
+        fr.drawStringWithShadow("No Result", left, top, color);
+        top += 10;
       }
       left -= 8;
       top += 10;
@@ -247,12 +259,18 @@ public class AnniHistoryList extends GuiScreen {
       fr.drawStringWithShadow("Nexus Damage", left, top, color);
       left += 8;
       top += 12;
-      for (AnniPlayerData data : getTopNexusDamager(statsMap, 5)) {
+      List<AnniPlayerData> topNexusDamager = getTopNexusDamager(statsMap, 5);
+      for (AnniPlayerData data : topNexusDamager) {
         fr.drawStringWithShadow(String.format("%d. %s", rank, data.getPlayerName()), left, top, color);
         fr.drawStringWithShadow(data.getNexusDamageCount() + " damage", left + 100, top, color);
         top += 10;
         rank++;
       }
+      if (topNexusDamager.isEmpty()) {
+        fr.drawStringWithShadow("No Result", left, top, color);
+        top += 10;
+      }
+
       left -= 8;
       //SECTION END - TOP OF THE GAME
 
@@ -265,7 +283,7 @@ public class AnniHistoryList extends GuiScreen {
               return 1;
             else
               return -1;
-          })
+          }).filter(a -> a.getTotalKillCount() != 0)
           .limit(limit)
           .collect(Collectors.toList());
     }
@@ -277,7 +295,7 @@ public class AnniHistoryList extends GuiScreen {
               return 1;
             else
               return -1;
-          })
+          }).filter(a -> a.getDeathCount() != 0)
           .limit(limit)
           .collect(Collectors.toList());
     }
@@ -289,7 +307,7 @@ public class AnniHistoryList extends GuiScreen {
               return 1;
             else
               return -1;
-          })
+          }).filter(a -> a.getNexusDamageCount() != 0)
           .limit(limit)
           .collect(Collectors.toList());
     }
