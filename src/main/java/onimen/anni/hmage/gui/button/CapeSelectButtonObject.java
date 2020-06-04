@@ -5,7 +5,6 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.resources.I18n;
 import onimen.anni.hmage.gui.CapeSetting;
 
 public class CapeSelectButtonObject implements ButtonObject {
@@ -27,7 +26,6 @@ public class CapeSelectButtonObject implements ButtonObject {
 
   @Override
   public List<String> getDescription() {
-    return Arrays.asList(I18n.format("hmage.setting.desc.capeselect"));
+    return Arrays.asList("使用するCapeを選択できます。ここで選択したCapeは他のプレイヤーには表示されません。");
   }
-
 }

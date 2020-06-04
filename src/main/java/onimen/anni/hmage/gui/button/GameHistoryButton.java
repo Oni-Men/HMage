@@ -29,6 +29,6 @@ public class GameHistoryButton implements ButtonObject {
 
   @Override
   public List<String> getDescription() {
-    return Arrays.asList("試合履歴を表示します");
+    return Arrays.asList("Annihilation試合履歴を表示します");
   }
 }

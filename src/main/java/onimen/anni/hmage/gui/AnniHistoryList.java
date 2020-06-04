@@ -93,7 +93,8 @@ public class AnniHistoryList extends GuiScreen {
     if (this.gameInfoList != null)
       this.gameInfoList.drawScreen(mouseX, mouseY, partialTicks);
 
-    this.drawCenteredString(this.fontRenderer, ChatFormatting.UNDERLINE + "Annihilation History", this.width / 2, 16,
+    this.drawCenteredString(this.fontRenderer, ChatFormatting.UNDERLINE + "Annihilation Match History", this.width / 2,
+        16,
         0xFFFFFF);
     super.drawScreen(mouseX, mouseY, partialTicks);
   }

@@ -26,7 +26,7 @@ public class AimGameButtonObject implements ButtonObject {
 
   @Override
   public List<String> getDescription() {
-    return Arrays.asList("AIMを鍛えるゲームを開始する。");
+    return Arrays.asList("AIMを鍛えるゲームを開始します。");
   }
 
 }
