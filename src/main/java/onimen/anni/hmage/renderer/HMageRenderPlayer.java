@@ -39,6 +39,6 @@ public class HMageRenderPlayer extends RenderPlayer {
 
   @SuppressWarnings("unchecked")
   public <V extends EntityLivingBase, U extends LayerRenderer<V>> void setLayer(int index, U layer) {
-    this.layerRenderers.set(index, (LayerRenderer<AbstractClientPlayer>) layer);
+    this.layerRenderers.add(index, (LayerRenderer<AbstractClientPlayer>) layer);
   }
 }
