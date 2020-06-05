@@ -24,6 +24,7 @@ public class GetCapeTextureLocationHook extends HookInjector {
    * Method name might be
    *    getLocationCape
    *    func_110303_q
+   *    q
    */
 
   public GetCapeTextureLocationHook() {
