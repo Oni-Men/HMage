@@ -208,7 +208,6 @@ public class GuiColorPicker extends GuiScreen {
     } else if (mouseX >= alphaLeft && mouseX <= alphaRight &&
         mouseY >= alphaTop && mouseY <= alphaBottom) {
       alpha = (mouseY - alphaTop) / (alphaBottom - alphaTop);
-      System.out.println(alpha);
     }
   }
 
