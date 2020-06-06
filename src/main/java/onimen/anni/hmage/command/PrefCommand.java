@@ -80,14 +80,11 @@ public class PrefCommand extends CommandBase implements IClientCommand {
       String value = args[2];
 
       if (args[1].contentEquals("position")) {
-        System.out.println("args 2 is position");
-        System.out.println("unformatted value: " + value);
         try {
           Integer.parseInt(value);
         } catch (NumberFormatException error) {
           value = String.valueOf(PositionHelper.getPositionBitFromString(value));
         }
-        System.out.println("formatted value: " + value);
       }
 
       List<String> keys = getModuleByName(args[0]).getPreferenceKeys();
