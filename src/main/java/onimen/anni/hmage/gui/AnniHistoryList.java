@@ -7,11 +7,12 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.lwjgl.input.Mouse;
 
-import com.google.common.collect.Lists;
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.Minecraft;
@@ -145,6 +146,13 @@ public class AnniHistoryList extends GuiScreen {
 
   private class Info extends GuiScrollingList {
     private GameInfo gameInfo;
+    private int rankingHashCode = 0;
+    private int rankingValueOffset = 0;
+
+    private int killRankingLimit = 10;
+    private int nexusRankingLimit = 5;
+
+    int color = 0xFFFFFF;
 
     public Info(int width, GameInfo gameInfo) {
       super(AnniHistoryList.this.getMinecraftInstance(),
@@ -182,15 +190,34 @@ public class AnniHistoryList extends GuiScreen {
     }
 
     private int getHeaderHeight() {
-      return 292;
+      int height = 0;
+
+      height += 32; //Map name + date + space
+
+      height += 62; //Player stats
+
+      height += 22; //Top of the Game
+
+      height += 22; //Kill Count
+
+      int killRankingSize = gameInfo.getTotalKillRanking(killRankingLimit).size();
+      height += (killRankingSize == 0 ? 10 : killRankingSize * 10);
+
+      height += 22;
+
+      int nexusRankingSize = gameInfo.getNexusRanking(nexusRankingLimit).size();
+      height += (nexusRankingSize == 0 ? 10 : nexusRankingSize * 10);
+
+      if (height < this.bottom - this.top - 8)
+        height = this.bottom - this.top - 8;
+
+      return height;
     }
 
     @Override
     protected void drawHeader(int entryRight, int relativeY, Tessellator tess) {
       int top = relativeY;
       int left = this.left + 20;
-      int color = 0xFFFFFF;
-      int rank = 1;
 
       FontRenderer fr = AnniHistoryList.this.fontRenderer;
 
@@ -219,76 +246,82 @@ public class AnniHistoryList extends GuiScreen {
       fr.drawStringWithShadow(gameInfo.getNexusAttackCount() + " Nexus damage", left, top, color);
       top += 10;
       fr.drawStringWithShadow(gameInfo.getMePlayerData().getDeathCount() + " Deaths", left, top, color);
-      top += 10;
+      top += 20;
       left -= 8;
       //SECTION END - PLAYER STATS
 
-      top += 10;
+      List<AnniPlayerData> killRanking = gameInfo.getTotalKillRanking(killRankingLimit);
+      List<AnniPlayerData> nexusRanking = gameInfo.getNexusRanking(nexusRankingLimit);
+      List<AnniPlayerData> meleeKillRanking = gameInfo.getMeleeKillRanking(5);
+      List<AnniPlayerData> shotKillRanking = gameInfo.getShotKillRanking(5);
 
-      Collection<AnniPlayerData> statsMap = Lists.newArrayList(gameInfo.getOtherPlayerStatsMap().values());
-      statsMap.add(gameInfo.getMePlayerData());
+      List<AnniPlayerData> allCurrentRankers = Stream.of(killRanking, nexusRanking, meleeKillRanking, shotKillRanking)
+          .flatMap(Collection::stream)
+          .collect(Collectors.toList());
+
+      if (rankingHashCode != allCurrentRankers.hashCode()) {
+        rankingValueOffset = getMaxPlayerNameWidth(allCurrentRankers);
+        rankingValueOffset += 8;
+        rankingHashCode = allCurrentRankers.hashCode();
+      }
 
       //SECTION START - TOP OF THE GAME
       fr.drawStringWithShadow(ChatFormatting.UNDERLINE + "Top of the Game", left, top, color);
-      top += 20;
+      top += 22;
       left += 8;
 
-      fr.drawStringWithShadow("Kill Count", left, top, color);
-      left += 8;
-      top += 12;
-      List<AnniPlayerData> topPlayerKiller = getTopPlayerKiller(statsMap, 5);
-      for (AnniPlayerData data : topPlayerKiller) {
-        fr.drawStringWithShadow(
-            String.format("%d. %s%s", rank, data.getTeamColor().getColorCode(), data.getPlayerName()), left, top,
-            color);
-        fr.drawStringWithShadow(data.getTotalKillCount() + " kills", left + 100, top, color);
-        top += 10;
-        rank++;
-      }
-      if (topPlayerKiller.isEmpty()) {
-        fr.drawStringWithShadow("No Result", left, top, color);
-        top += 10;
-      }
-      left -= 8;
-      top += 10;
-      rank = 1;
+      //TODO GUIスケールAUTOではみ出すバグ直す
+      int underMeleeRanking = drawRanking("Melee Kill", meleeKillRanking, fr, top, left + 200, color,
+          p -> p.getMeleeCount() + " Kills");
+      drawRanking("Shot Kill", shotKillRanking, fr, underMeleeRanking, left + 200, color,
+          p -> p.getBowCount() + " Kills");
 
-      fr.drawStringWithShadow("Nexus Damage", left, top, color);
-      left += 8;
-      top += 12;
-      List<AnniPlayerData> topNexusDamager = getTopNexusDamager(statsMap, 5);
-      for (AnniPlayerData data : topNexusDamager) {
-        fr.drawStringWithShadow(
-            String.format("%d. %s%s", rank, data.getTeamColor().getColorCode(), data.getPlayerName()), left, top,
-            color);
-        fr.drawStringWithShadow(data.getNexusDamageCount() + " damage", left + 100, top, color);
-        top += 10;
-        rank++;
-      }
-      if (topNexusDamager.isEmpty()) {
-        fr.drawStringWithShadow("No Result", left, top, color);
-        top += 10;
-      }
+      top = drawRanking("Total Kill", killRanking, fr, top, left, color, p -> p.getTotalKillCount() + " Kills");
+      top = drawRanking("Nexus Damage", nexusRanking, fr, top, left, color, p -> p.getNexusDamageCount() + " Damage");
 
       left -= 8;
       //SECTION END - TOP OF THE GAME
 
+      this.setHeaderInfo(true, this.getHeaderHeight());
     }
 
-    private List<AnniPlayerData> getTopPlayerKiller(Collection<AnniPlayerData> data, long limit) {
-      return data.stream()
-          .sorted((a, b) -> b.getTotalKillCount() - a.getTotalKillCount())
-          .filter(a -> a.getTotalKillCount() != 0)
-          .limit(limit)
-          .collect(Collectors.toList());
+    private int drawRanking(String title, List<AnniPlayerData> ranking, FontRenderer fr, int top,
+        int left, int color, Function<AnniPlayerData, String> value) {
+      fr.drawStringWithShadow(title, left, top, color);
+      left += 8;
+      top += 12;
+
+      if (ranking.isEmpty()) {
+        fr.drawStringWithShadow("No Result", left, top, color);
+        top += 10;
+        return top;
+      }
+
+      String rankText;
+      int rank = 1;
+      for (AnniPlayerData data : ranking) {
+        rankText = rank + ".";
+        fr.drawStringWithShadow(rankText, left - fr.getStringWidth(rankText), top, color);
+        fr.drawStringWithShadow(
+            String.format(" %s%s", data.getTeamColor().getColorCode(), data.getPlayerName()), left, top,
+            color);
+        fr.drawStringWithShadow(value.apply(data), left + rankingValueOffset, top, color);
+        top += 10;
+        rank++;
+      }
+      top += 10;
+      return top;
     }
 
-    private List<AnniPlayerData> getTopNexusDamager(Collection<AnniPlayerData> data, long limit) {
-      return data.stream()
-          .sorted((a, b) -> b.getNexusDamageCount() - a.getNexusDamageCount())
-          .filter(a -> a.getNexusDamageCount() != 0)
-          .limit(limit)
-          .collect(Collectors.toList());
+    private int getMaxPlayerNameWidth(Collection<AnniPlayerData> datas) {
+      int width = 0;
+      for (AnniPlayerData data : datas) {
+        int nameWidth = AnniHistoryList.this.fontRenderer.getStringWidth(data.getPlayerName());
+        if (nameWidth > width) {
+          width = nameWidth;
+        }
+      }
+      return width;
     }
 
     @Override

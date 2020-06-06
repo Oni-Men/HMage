@@ -1,8 +1,13 @@
 package onimen.anni.hmage.observer.data;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -35,6 +40,18 @@ public class GameInfo {
   /** Map名 */
   @Nullable
   private String mapName;
+
+  /** Kill数のランキング */
+  private List<AnniPlayerData> totalKillRanking = null;
+
+  /** 近接キル数のランキング */
+  private List<AnniPlayerData> meleeKillRanking = null;
+
+  /** 射撃キル数のランキング */
+  private List<AnniPlayerData> shotKillRanking = null;
+
+  /** Nexusを削った回数のランキング */
+  private List<AnniPlayerData> nexusRanking = null;
 
   public GameInfo() {
     this.usingClassType = ClassType.CIVILIAN;
@@ -120,6 +137,7 @@ public class GameInfo {
           k -> new AnniPlayerData(k, attackerTeam));
       countData.nexusDamage(damageTeam);
     }
+    nexusRanking = null;
   }
 
   /**
@@ -157,10 +175,52 @@ public class GameInfo {
       countData.incrementDeathCount();
     }
 
+    totalKillRanking = null;
   }
 
-  public Map<String, AnniPlayerData> getOtherPlayerStatsMap() {
-    return this.otherPlayerStatsMap;
+  public Collection<AnniPlayerData> getAllPlayerStats() {
+    Collection<AnniPlayerData> data = new ArrayList<>(this.otherPlayerStatsMap.values());
+    data.add(mePlayerData);
+    return data;
+  }
+
+  public List<AnniPlayerData> getTotalKillRanking(long limit) {
+    if (totalKillRanking == null || limit > totalKillRanking.size()) {
+      totalKillRanking = getAllPlayerStats().stream()
+          .sorted((a, b) -> b.getTotalKillCount() - a.getTotalKillCount())
+          .filter(a -> a.getTotalKillCount() != 0)
+          .limit(limit)
+          .collect(Collectors.toList());
+    }
+    return this.totalKillRanking.subList(0, (int) limit);
+  }
+
+  public List<AnniPlayerData> getMeleeKillRanking(long limit) {
+    if (meleeKillRanking == null || limit > meleeKillRanking.size()) {
+      meleeKillRanking = getSortedPlayerData((a, b) -> b.getMeleeCount() - a.getMeleeCount(), limit);
+    }
+    return this.meleeKillRanking.subList(0, (int) limit);
+  }
+
+  public List<AnniPlayerData> getShotKillRanking(long limit) {
+    if (shotKillRanking == null || limit > shotKillRanking.size()) {
+      shotKillRanking = getSortedPlayerData((a, b) -> b.getBowCount() - a.getBowCount(), limit);
+    }
+    return this.shotKillRanking.subList(0, (int) limit);
+  }
+
+  public List<AnniPlayerData> getNexusRanking(long limit) {
+    if (nexusRanking == null || limit > nexusRanking.size()) {
+      nexusRanking = getSortedPlayerData((a, b) -> b.getNexusDamageCount() - a.getNexusDamageCount(), limit);
+    }
+    return this.nexusRanking.subList(0, (int) limit);
+  }
+
+  private List<AnniPlayerData> getSortedPlayerData(Comparator<? super AnniPlayerData> comparator, long limit) {
+    return getAllPlayerStats().stream()
+        .sorted(comparator)
+        .limit(limit)
+        .collect(Collectors.toList());
   }
 
   @Override
