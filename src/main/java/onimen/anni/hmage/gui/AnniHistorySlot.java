@@ -80,14 +80,14 @@ public class AnniHistorySlot extends GuiScrollingList {
       mapName = "Voting";
     }
     font.drawString(font.trimStringToWidth("Map: " + mapName, listWidth), this.left + 3,
-        top, 0xCCCCCC);
+        top + 2, 0xCCCCCC);
     font.drawString(
         font.trimStringToWidth(gameInfo.getMeTeamColor().getColoredName(), listWidth),
-        this.left + 3, top + 12, 0xFFFFFF);
+        this.left + 3, top + 11, 0xFFFFFF);
     AnniObserver anniObserver = AnniObserverMap.getInstance().getAnniObserver();
     if (anniObserver == null || !anniObserver.getGameInfo().equals(gameInfo)) {
       font.drawString(font.trimStringToWidth(DateUtils.getDateString(gameInfo.getGameTimestamp()), listWidth),
-          this.left + 3, top + 22, 0xFFFFFF);
+          this.left + 3, top + 20, 0xFFFFFF);
     } else {
       font.drawString(font.trimStringToWidth(ChatFormatting.GOLD + "Playing Now", listWidth), this.left + 3, top + 22,
           0xFFFFFF);
