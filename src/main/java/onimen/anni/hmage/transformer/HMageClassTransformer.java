@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -15,29 +14,32 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import onimen.anni.hmage.transformer.hook.DrawBackgroundHook;
+import onimen.anni.hmage.transformer.hook.GetCapeTextureLocationHook;
 import onimen.anni.hmage.transformer.hook.HookInjector;
 
-public class HMageClassTransformer implements IClassTransformer, Opcodes {
+public class HMageClassTransformer implements IClassTransformer {
 
   private static HashMap<String, List<HookInjector>> hookInjectorMap = Maps.newHashMap();
 
   public static void registerHookInjector(HookInjector injector) {
-    if (!hookInjectorMap.containsKey(injector.owner)) {
-      hookInjectorMap.put(injector.owner, Lists.newArrayList());
-    }
-    hookInjectorMap.get(injector.owner).add(injector);
+    hookInjectorMap
+        .computeIfAbsent(injector.owner, k -> Lists.newArrayList())
+        .add(injector);
   }
 
   static {
+    FMLLog.log.info("[HMage CORE]Registering Hook injector");
     registerHookInjector(new DrawBackgroundHook());
+    registerHookInjector(new GetCapeTextureLocationHook());
   }
 
   @Override
   public byte[] transform(String name, String transformedName, byte[] bytes) {
-    if (FMLLaunchHandler.side().equals(Side.CLIENT)) {
+    if (FMLLaunchHandler.side().equals(Side.CLIENT) && transformedName.startsWith("net.minecraft.")) {
       if (hookInjectorMap.containsKey(transformedName)) {
         try {
 
@@ -57,6 +59,7 @@ public class HMageClassTransformer implements IClassTransformer, Opcodes {
 
             for (HookInjector injector : injectorsForMethod) {
               injector.injectHook(methodNode.instructions);
+              FMLLog.log.info(String.format("[HMage CORE] Hook was injected into %s", injector.owner));
             }
 
           }

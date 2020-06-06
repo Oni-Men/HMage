@@ -36,9 +36,7 @@ public class GetCapeTextureLocationHook extends HookInjector {
     InsnList injectings = new InsnList();
 
     MethodInsnNode hook = new MethodInsnNode(Opcodes.INVOKESTATIC, "onimen/anni/hmage/HMageHooks",
-        "onGetLocationCape",
-        "(Lbua;)Lnf;",
-        false);
+        "onGetLocationCape", "(Lbua;)Lnf;", false);
 
     InsnNode returnNode = new InsnNode(Opcodes.ARETURN);
     LabelNode gotoNode = new LabelNode();
@@ -53,7 +51,6 @@ public class GetCapeTextureLocationHook extends HookInjector {
     injectings.add(returnNode);
     injectings.add(gotoNode);
     list.insert(injectings);
-    System.out.println("Hook for locationCape was injected");
   }
 
 }
