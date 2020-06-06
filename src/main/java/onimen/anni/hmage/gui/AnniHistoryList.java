@@ -253,26 +253,6 @@ public class AnniHistoryList extends GuiScreen {
       top += 10;
       rank = 1;
 
-      fr.drawStringWithShadow("Death Count", left, top, color);
-      left += 8;
-      top += 12;
-      List<AnniPlayerData> topDeathLover = getTopDeathLover(statsMap, 5);
-      for (AnniPlayerData data : topDeathLover) {
-        fr.drawStringWithShadow(
-            String.format("%d. %s%s", rank, data.getTeamColor().getColorCode(), data.getPlayerName()), left, top,
-            color);
-        fr.drawStringWithShadow(data.getDeathCount() + " deaths", left + 100, top, color);
-        top += 10;
-        rank++;
-      }
-      if (topDeathLover.isEmpty()) {
-        fr.drawStringWithShadow("No Result", left, top, color);
-        top += 10;
-      }
-      left -= 8;
-      top += 10;
-      rank = 1;
-
       fr.drawStringWithShadow("Nexus Damage", left, top, color);
       left += 8;
       top += 12;
@@ -299,14 +279,6 @@ public class AnniHistoryList extends GuiScreen {
       return data.stream()
           .sorted((a, b) -> b.getTotalKillCount() - a.getTotalKillCount())
           .filter(a -> a.getTotalKillCount() != 0)
-          .limit(limit)
-          .collect(Collectors.toList());
-    }
-
-    private List<AnniPlayerData> getTopDeathLover(Collection<AnniPlayerData> data, long limit) {
-      return data.stream()
-          .sorted((a, b) -> b.getDeathCount() - a.getDeathCount())
-          .filter(a -> a.getDeathCount() != 0)
           .limit(limit)
           .collect(Collectors.toList());
     }
