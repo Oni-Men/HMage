@@ -216,8 +216,8 @@ public class GameInfo {
     if (nexusRanking == null || limit > nexusRanking.size()) {
       nexusRanking = getSortedPlayerData((a, b) -> b.getNexusDamageCount() - a.getNexusDamageCount(), limit);
     }
-    if (nexusRanking.size() > limit) { return .nexusRanking.subList(0, (int) limit); }
-    return nexusRanking
+    if (nexusRanking.size() > limit) { return nexusRanking.subList(0, (int) limit); }
+    return nexusRanking;
   }
 
   private List<AnniPlayerData> getSortedPlayerData(Comparator<? super AnniPlayerData> comparator, long limit) {
