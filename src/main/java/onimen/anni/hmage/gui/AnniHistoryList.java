@@ -252,7 +252,7 @@ public class AnniHistoryList extends GuiScreen {
 
       List<AnniPlayerData> killRanking = gameInfo.getTotalKillRanking(killRankingLimit);
       List<AnniPlayerData> nexusRanking = gameInfo.getNexusRanking(nexusRankingLimit);
-      List<AnniPlayerData> meleeKillRanking = gameInfo.getMeleeKillRanking(5);
+      List<AnniPlayerData> meleeKillRanking = gameInfo.getMeleeKillRanking(10);
       List<AnniPlayerData> shotKillRanking = gameInfo.getShotKillRanking(5);
 
       List<AnniPlayerData> allCurrentRankers = Stream.of(killRanking, nexusRanking, meleeKillRanking, shotKillRanking)

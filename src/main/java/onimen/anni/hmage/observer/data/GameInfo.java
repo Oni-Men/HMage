@@ -192,28 +192,32 @@ public class GameInfo {
           .limit(limit)
           .collect(Collectors.toList());
     }
-    return this.totalKillRanking.subList(0, (int) limit);
+    if (totalKillRanking.size() > limit) { return totalKillRanking.subList(0, (int) limit); }
+    return totalKillRanking;
   }
 
   public List<AnniPlayerData> getMeleeKillRanking(long limit) {
     if (meleeKillRanking == null || limit > meleeKillRanking.size()) {
       meleeKillRanking = getSortedPlayerData((a, b) -> b.getMeleeCount() - a.getMeleeCount(), limit);
     }
-    return this.meleeKillRanking.subList(0, (int) limit);
+    if (meleeKillRanking.size() > limit) { return meleeKillRanking.subList(0, (int) limit); }
+    return meleeKillRanking;
   }
 
   public List<AnniPlayerData> getShotKillRanking(long limit) {
     if (shotKillRanking == null || limit > shotKillRanking.size()) {
       shotKillRanking = getSortedPlayerData((a, b) -> b.getBowCount() - a.getBowCount(), limit);
     }
-    return this.shotKillRanking.subList(0, (int) limit);
+    if (shotKillRanking.size() > limit) { return shotKillRanking.subList(0, (int) limit); }
+    return shotKillRanking;
   }
 
   public List<AnniPlayerData> getNexusRanking(long limit) {
     if (nexusRanking == null || limit > nexusRanking.size()) {
       nexusRanking = getSortedPlayerData((a, b) -> b.getNexusDamageCount() - a.getNexusDamageCount(), limit);
     }
-    return this.nexusRanking.subList(0, (int) limit);
+    if (nexusRanking.size() > limit) { return .nexusRanking.subList(0, (int) limit); }
+    return nexusRanking
   }
 
   private List<AnniPlayerData> getSortedPlayerData(Comparator<? super AnniPlayerData> comparator, long limit) {
