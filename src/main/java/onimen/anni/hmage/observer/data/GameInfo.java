@@ -2,7 +2,6 @@ package onimen.anni.hmage.observer.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -187,8 +186,8 @@ public class GameInfo {
   public List<AnniPlayerData> getTotalKillRanking(long limit) {
     if (totalKillRanking == null || limit > totalKillRanking.size()) {
       totalKillRanking = getAllPlayerStats().stream()
-          .sorted((a, b) -> b.getTotalKillCount() - a.getTotalKillCount())
           .filter(a -> a.getTotalKillCount() != 0)
+          .sorted((a, b) -> b.getTotalKillCount() - a.getTotalKillCount())
           .limit(limit)
           .collect(Collectors.toList());
     }
@@ -198,7 +197,11 @@ public class GameInfo {
 
   public List<AnniPlayerData> getMeleeKillRanking(long limit) {
     if (meleeKillRanking == null || limit > meleeKillRanking.size()) {
-      meleeKillRanking = getSortedPlayerData((a, b) -> b.getMeleeCount() - a.getMeleeCount(), limit);
+      meleeKillRanking = getAllPlayerStats().stream()
+          .filter(a -> a.getMeleeCount() != 0)
+          .sorted((a, b) -> b.getMeleeCount() - a.getMeleeCount())
+          .limit(limit)
+          .collect(Collectors.toList());
     }
     if (meleeKillRanking.size() > limit) { return meleeKillRanking.subList(0, (int) limit); }
     return meleeKillRanking;
@@ -206,7 +209,11 @@ public class GameInfo {
 
   public List<AnniPlayerData> getShotKillRanking(long limit) {
     if (shotKillRanking == null || limit > shotKillRanking.size()) {
-      shotKillRanking = getSortedPlayerData((a, b) -> b.getBowCount() - a.getBowCount(), limit);
+      shotKillRanking = getAllPlayerStats().stream()
+          .filter(a -> a.getBowCount() != 0)
+          .sorted((a, b) -> b.getBowCount() - a.getBowCount())
+          .limit(limit)
+          .collect(Collectors.toList());
     }
     if (shotKillRanking.size() > limit) { return shotKillRanking.subList(0, (int) limit); }
     return shotKillRanking;
@@ -214,18 +221,16 @@ public class GameInfo {
 
   public List<AnniPlayerData> getNexusRanking(long limit) {
     if (nexusRanking == null || limit > nexusRanking.size()) {
-      nexusRanking = getSortedPlayerData((a, b) -> b.getNexusDamageCount() - a.getNexusDamageCount(), limit);
+      nexusRanking = getAllPlayerStats().stream()
+          .filter(a -> a.getNexusDamageCount() != 0)
+          .sorted((a, b) -> b.getNexusDamageCount() - a.getNexusDamageCount())
+          .limit(limit)
+          .collect(Collectors.toList());
     }
     if (nexusRanking.size() > limit) { return nexusRanking.subList(0, (int) limit); }
     return nexusRanking;
   }
 
-  private List<AnniPlayerData> getSortedPlayerData(Comparator<? super AnniPlayerData> comparator, long limit) {
-    return getAllPlayerStats().stream()
-        .sorted(comparator)
-        .limit(limit)
-        .collect(Collectors.toList());
-  }
 
   @Override
   public int hashCode() {
