@@ -20,6 +20,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import onimen.anni.hmage.transformer.hook.DrawBackgroundHook;
 import onimen.anni.hmage.transformer.hook.GetCapeTextureLocationHook;
 import onimen.anni.hmage.transformer.hook.HookInjector;
+import onimen.anni.hmage.transformer.hook.ParticleHandleHook;
 
 public class HMageClassTransformer implements IClassTransformer {
 
@@ -35,6 +36,7 @@ public class HMageClassTransformer implements IClassTransformer {
     FMLLog.log.info("[HMage CORE]Registering Hook injector");
     registerHookInjector(new DrawBackgroundHook());
     registerHookInjector(new GetCapeTextureLocationHook());
+    registerHookInjector(new ParticleHandleHook());
   }
 
   @Override
@@ -61,7 +63,6 @@ public class HMageClassTransformer implements IClassTransformer {
               injector.injectHook(methodNode.instructions);
               FMLLog.log.info(String.format("[HMage CORE] Hook was injected into %s", injector.owner));
             }
-
           }
 
           ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
