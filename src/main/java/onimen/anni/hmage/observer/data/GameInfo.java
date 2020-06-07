@@ -174,6 +174,14 @@ public class GameInfo {
       countData.incrementDeathCount();
     }
 
+    switch (killType) {
+    case MELEE:
+      meleeKillRanking = null;
+      break;
+    case SHOT:
+      shotKillRanking = null;
+      break;
+    }
     totalKillRanking = null;
   }
 
@@ -230,7 +238,6 @@ public class GameInfo {
     if (nexusRanking.size() > limit) { return nexusRanking.subList(0, (int) limit); }
     return nexusRanking;
   }
-
 
   @Override
   public int hashCode() {
