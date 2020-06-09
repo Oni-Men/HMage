@@ -14,6 +14,7 @@ import onimen.anni.hmage.gui.button.AimGameButtonObject;
 import onimen.anni.hmage.gui.button.ButtonObject;
 import onimen.anni.hmage.gui.button.CapeSelectButtonObject;
 import onimen.anni.hmage.gui.button.GameHistoryButton;
+import onimen.anni.hmage.gui.button.HUDLayoutButton;
 import onimen.anni.hmage.gui.button.HurtingArmorColorButton;
 import onimen.anni.hmage.gui.button.ModEnabledButtonObject;
 import onimen.anni.hmage.gui.button.ModuleSettingButtonObject;
@@ -29,6 +30,8 @@ public class GuiSettings extends GuiScroll {
     //mod 有効/無効の設定
     buttonObjects.add(new ModEnabledButtonObject());
     buttonObjects.add(new GameHistoryButton());
+
+    buttonObjects.add(new HUDLayoutButton());
 
     //各モジュールの有効/無効の設定
     for (InterfaceModule module : moduleMap.values()) {
