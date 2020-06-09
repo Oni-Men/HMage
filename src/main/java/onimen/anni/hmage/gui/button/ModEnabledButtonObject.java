@@ -3,6 +3,7 @@ package onimen.anni.hmage.gui.button;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.resources.I18n;
 import onimen.anni.hmage.Preferences;
 
 public class ModEnabledButtonObject implements ButtonObject {
@@ -14,7 +15,7 @@ public class ModEnabledButtonObject implements ButtonObject {
 
   @Override
   public String getButtonText() {
-    return Preferences.enabled ? "Enable" : "Disable";
+    return I18n.format(Preferences.enabled ? "hmage.enable" : "hmage.disable");
   }
 
   @Override

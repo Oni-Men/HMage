@@ -1,2 +1,5 @@
 hmage.key.settings=Open HMage Preferences
 hmage.setting.desc.capeselect=Select the Cape to use. Only you can see the selected Cape.
+hmage.enable=ON
+hmage.disable=OFF
+hmage.matchHistory=Match History
