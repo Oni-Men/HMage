@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.I18n;
+import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.module.hud.InterfaceHUD;
 import onimen.anni.hmage.module.hud.layout.Layout;
 
@@ -39,7 +40,8 @@ public class GuiHUDLayout extends GuiScreen {
 
     initGuides();
 
-    addButton(new GuiButton(0, this.width / 2 - 50, this.height - 38, 100, 20, I18n.format("hmage.reset")));
+    addButton(new GuiButton(0, this.width / 2 + 10, this.height - 38, 100, 20, I18n.format("hmage.reset")));
+    addButton(new GuiButton(1, this.width / 2 - 110, this.height - 38, 100, 20, I18n.format("gui.done")));
   }
 
   @Override
@@ -48,6 +50,10 @@ public class GuiHUDLayout extends GuiScreen {
     case 0:
       resetAllPosition();
       break;
+    case 1:
+      Preferences.save();
+      mc.displayGuiScreen((GuiScreen) null);
+      mc.setIngameFocus();
     }
   }
 
