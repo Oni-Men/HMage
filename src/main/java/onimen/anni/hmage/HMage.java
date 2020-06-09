@@ -42,7 +42,6 @@ import onimen.anni.hmage.command.PrefCommand;
 import onimen.anni.hmage.event.GetLocationCapeEvent;
 import onimen.anni.hmage.gui.GuiAnniServers;
 import onimen.anni.hmage.gui.GuiSettings;
-import onimen.anni.hmage.module.CpsCounter;
 import onimen.anni.hmage.module.CustomGuiBackground;
 import onimen.anni.hmage.module.InterfaceModule;
 import onimen.anni.hmage.module.RecipeBookRemover;
@@ -123,9 +122,7 @@ public class HMage {
 
     this.mc = Minecraft.getMinecraft();
 
-    CpsCounter cpsCounter = new CpsCounter();
     //Register Modules
-    this.registerModule(cpsCounter);
     this.registerModule(new RecipeBookRemover());
     this.registerModule(new SpeedFovDisabler());
     this.registerModule(new CustomGuiBackground());
@@ -134,7 +131,7 @@ public class HMage {
     this.registerModule(new ArrowCounterHUD());
     this.registerModule(new StatusEffectHUD());
     this.registerModule(new ArmorDurabilityHUD());
-    this.registerModule(new CpsCounterHUD(cpsCounter));
+    this.registerModule(new CpsCounterHUD());
     this.registerModule(new AcroJumpHUD());
     this.registerModule(new KillCounterHUD(this.mc.fontRenderer));
     this.registerModule(new NexusDamageHUD(this.mc.fontRenderer));

@@ -4,16 +4,22 @@
 
 package onimen.anni.hmage.module.hud;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
+import org.lwjgl.input.Mouse;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import onimen.anni.hmage.module.CpsCounter;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent.MouseInputEvent;
+import onimen.anni.hmage.Preferences;
 
 public class CpsCounterHUD extends AbstractHUD {
+  private final CPSCounter counter;
 
-  private final CpsCounter counter;
-
-  public CpsCounterHUD(CpsCounter counter) {
-    this.counter = counter;
+  public CpsCounterHUD() {
+    this.counter = new CPSCounter();
   }
 
   @Override
@@ -71,6 +77,36 @@ public class CpsCounterHUD extends AbstractHUD {
 
     mc.fontRenderer.drawString(text, x + 2 + offset, y + 1, 0xffffff);
 
+  }
+
+  @SubscribeEvent
+  public void onMouseInputEvent(MouseInputEvent event) {
+    if (!Preferences.enabled)
+      return;
+
+    if (!Mouse.getEventButtonState())
+      return;
+
+    if (Mouse.getEventButton() != 0)
+      return;
+
+    this.counter.clicked();
+  }
+
+  static class CPSCounter {
+    private final Queue<Long> clicks = new LinkedList<>();
+
+    public int getCurrentCPS() {
+      long now = System.currentTimeMillis();
+      while (!clicks.isEmpty() && clicks.peek() < now) {
+        clicks.remove();
+      }
+      return clicks.size();
+    }
+
+    public void clicked() {
+      this.clicks.add(System.currentTimeMillis() + 1000L);
+    }
   }
 
 }
