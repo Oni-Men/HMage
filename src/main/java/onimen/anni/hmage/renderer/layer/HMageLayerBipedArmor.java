@@ -161,11 +161,17 @@ public class HMageLayerBipedArmor extends LayerBipedArmor {
     GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.GL_PREVIOUS);
     GlStateManager.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA);
 
+    int color = Preferences.hurtingArmorColor;
+    float a = (float) (color >> 24 & 255) / 255F;
+    float r = (float) (color >> 16 & 255) / 255F;
+    float g = (float) (color >> 8 & 255) / 255F;
+    float b = (float) (color >> 0 & 255) / 255F;
+
     this.brightnessBuffer.position(0);
-    this.brightnessBuffer.put(255F / 255F);
-    this.brightnessBuffer.put(51F / 255F);
-    this.brightnessBuffer.put(51F / 255F);
-    this.brightnessBuffer.put(1F);
+    this.brightnessBuffer.put(r);
+    this.brightnessBuffer.put(g);
+    this.brightnessBuffer.put(b);
+    this.brightnessBuffer.put(a);
     this.brightnessBuffer.flip();
 
     GlStateManager.glTexEnv(8960, GL11.GL_TEXTURE_ENV_COLOR, this.brightnessBuffer);
