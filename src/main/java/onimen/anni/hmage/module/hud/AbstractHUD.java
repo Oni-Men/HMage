@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -13,8 +14,8 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.module.AbstractModule;
-import onimen.anni.hmage.util.PositionHelper;
-import onimen.anni.hmage.util.PositionHelper.Position;
+import onimen.anni.hmage.module.hud.layout.Layout;
+import onimen.anni.hmage.module.hud.layout.Layout.LayoutType;
 
 public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD {
 
@@ -41,33 +42,35 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
   }
 
   @Override
-  public void setPositionFlag(int position) {
-    Preferences.setInt(getName() + ".position", position);
+  public void setLayout(Layout layout) {
+    Preferences.setInt(this.getName() + ".layout", layout.getCode());
   }
 
   @Override
-  public int getPositionFlag() {
-    return Preferences.getInt(getName() + ".position", getDefaultPosition());
-  }
-
-  @Override
-  public Position getPosition() {
-    return new Position(getPositionFlag());
+  public Layout getLayout() {
+    return Layout.getLayout(Preferences.getInt(this.getName() + ".layout", 0));
   }
 
   @Override
   public boolean isHorizontal() {
-    return getPosition().isHorizontal();
+    return getLayout().getDirection() == LayoutType.HORIZONTAL;
   }
 
   @Override
   public int getComputedX(ScaledResolution sr) {
     int x = getX();
-    Position pos = new PositionHelper.Position(getPositionFlag());
-    if (pos.centerx) {
-      x += sr.getScaledWidth() / 2 - getWidth() / 2;
-    } else {
-      x += (pos.right ? sr.getScaledWidth() - getWidth() : 0);
+    switch (getLayout().getLayoutX()) {
+    case LEFT:
+      break;
+    case RIGHT:
+      x *= -1;
+      x += sr.getScaledWidth() - getWidth();
+      break;
+    case CENTERX:
+      x += (sr.getScaledWidth() - getWidth()) / 2;
+      break;
+    default:
+      break;
     }
     return x;
   }
@@ -75,13 +78,25 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
   @Override
   public int getComputedY(ScaledResolution sr) {
     int y = getY();
-    Position pos = new PositionHelper.Position(getPositionFlag());
-    if (pos.centery) {
-      y += sr.getScaledHeight() / 2 - getHeight() / 2;
-    } else {
-      y += pos.bottom ? sr.getScaledHeight() - getHeight() : 0;
+    switch(getLayout().getLayoutY()) {
+    case TOP:
+      break;
+    case BOTTOM:
+      y *= -1;
+      y += sr.getScaledHeight() - getHeight();
+      break;
+    case CENTERY:
+      y += (sr.getScaledHeight() - getHeight())/2;
+      break;
+    default:
+      break;
     }
     return y;
+  }
+
+  @Override
+  public void drawItem(Minecraft mc) {
+    this.drawItem(mc, false);
   }
 
   @Override
@@ -128,5 +143,11 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
 
     GlStateManager.disableBlend();
     GlStateManager.enableTexture2D();
+  }
+
+  public boolean isInside(ScaledResolution sr, int x, int y) {
+    int left = this.getComputedX(sr);
+    int top = this.getComputedY(sr);
+    return (x >= left && x <= left + getWidth() && y >= top && y <= top + getHeight());
   }
 }

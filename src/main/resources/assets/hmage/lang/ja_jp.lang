@@ -3,3 +3,7 @@ hmage.setting.desc.capeselect=使用するCapeを選択する。ここで選択�
 hmage.enable=オン
 hmage.disable=オフ
 hmage.matchHistory=試合履歴
+hmage.reset=リセット
+hmage.gui.guihudlayout.desc1=左のマウスボタンでドラッグすることで移動できます
+hmage.gui.guihudlayout.desc2=右のマウスボタンでドラッグすることで基準位置を変更できます。
+hmage.gui.guihudlayout.desc3=マウスホイールをクリックで水平/垂直の切り替えができます。

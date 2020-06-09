@@ -14,6 +14,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.MouseInputEvent;
 import onimen.anni.hmage.Preferences;
+import onimen.anni.hmage.module.hud.layout.Layout;
 
 public class CpsCounterHUD extends AbstractHUD {
   private final CPSCounter counter;
@@ -33,8 +34,8 @@ public class CpsCounterHUD extends AbstractHUD {
   }
 
   @Override
-  public int getDefaultPosition() {
-    return 0;
+  public Layout getDefaultLayout() {
+    return Layout.getLayout().top().left();
   }
 
   @Override
@@ -58,7 +59,7 @@ public class CpsCounterHUD extends AbstractHUD {
   }
 
   @Override
-  public void drawItem(Minecraft mc) {
+  public void drawItem(Minecraft mc, boolean layoutMode) {
     int currentCPS = this.counter.getCurrentCPS();
 
     String text = String.format("%2d CPS", currentCPS);

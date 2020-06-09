@@ -38,7 +38,6 @@ import onimen.anni.hmage.cape.GlobalPlayerUseCapeManager;
 import onimen.anni.hmage.cape.SPPlayerUseCape;
 import onimen.anni.hmage.command.DebugCommand;
 import onimen.anni.hmage.command.NameCommand;
-import onimen.anni.hmage.command.PrefCommand;
 import onimen.anni.hmage.event.GetLocationCapeEvent;
 import onimen.anni.hmage.gui.GuiAnniServers;
 import onimen.anni.hmage.gui.GuiSettings;
@@ -136,7 +135,6 @@ public class HMage {
     this.registerModule(new KillCounterHUD(this.mc.fontRenderer));
     this.registerModule(new NexusDamageHUD(this.mc.fontRenderer));
 
-    ClientCommandHandler.instance.registerCommand(new PrefCommand());
     ClientCommandHandler.instance.registerCommand(new DebugCommand());
     ClientCommandHandler.instance.registerCommand(new NameCommand());
     ClientRegistry.registerKeyBinding(Preferences.openSettingsKey);

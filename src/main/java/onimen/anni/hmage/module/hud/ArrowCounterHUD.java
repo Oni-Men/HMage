@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import onimen.anni.hmage.module.hud.layout.Layout;
 
 public class ArrowCounterHUD extends AbstractHUD {
 
@@ -21,8 +22,8 @@ public class ArrowCounterHUD extends AbstractHUD {
   }
 
   @Override
-  public int getDefaultPosition() {
-    return 11;
+  public Layout getDefaultLayout() {
+    return Layout.getLayout().bottom().centerx();
   }
 
   @Override
@@ -63,16 +64,16 @@ public class ArrowCounterHUD extends AbstractHUD {
   }
 
   @Override
-  public void drawItem(Minecraft mc) {
+  public void drawItem(Minecraft mc, boolean layoutMode) {
 
     ItemStack stackInHand = mc.player.getHeldItemMainhand();
     int itemId = Item.getIdFromItem(stackInHand.getItem());
     //If item that's in player's main hand wasn't arrow or bow.
-    if (itemId != 262 && itemId != 261)
+    if (itemId != 262 && itemId != 261 && !layoutMode)
       return;
 
     InventoryPlayer inventory = mc.player.inventory;
-    int arrowCount = this.countArrows(inventory);
+    int arrowCount = layoutMode ? 64 : this.countArrows(inventory);
 
     if (arrowCount == 0)
       return;

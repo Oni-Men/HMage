@@ -3,3 +3,7 @@ hmage.setting.desc.capeselect=Select the Cape to use. Only you can see the selec
 hmage.enable=ON
 hmage.disable=OFF
 hmage.matchHistory=Match History
+hmage.reset=Reset
+hmage.gui.guihudlayout.desc1=Drag with left mouse button to move.
+hmage.gui.guihudlayout.desc2=Drag with right mouse button to change base position.
+hmage.gui.guihudlayout.desc3=Click middle mouse button to toggle horizontal/vertical mode;

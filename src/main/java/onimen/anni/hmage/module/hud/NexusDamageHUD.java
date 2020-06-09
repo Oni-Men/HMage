@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import onimen.anni.hmage.HMage;
+import onimen.anni.hmage.module.hud.layout.Layout;
 import onimen.anni.hmage.util.ShotbowUtils;
 
 public class NexusDamageHUD extends AbstractHUD {
@@ -18,8 +19,8 @@ public class NexusDamageHUD extends AbstractHUD {
   }
 
   @Override
-  public int getDefaultPosition() {
-    return 0;
+  public Layout getDefaultLayout() {
+    return Layout.getLayout().top().left();
   }
 
   @Override
@@ -33,15 +34,20 @@ public class NexusDamageHUD extends AbstractHUD {
   }
 
   @Override
-  public void drawItem(Minecraft mc) {
+  public void drawItem(Minecraft mc, boolean layoutMode) {
 
-    if (!ShotbowUtils.isShotbow(mc))
-      return;
+    String nexusDamageText = "Nexus 39";
 
-    if (HMage.anniObserverMap.getAnniObserver() == null)
-      return;
+    if (!layoutMode) {
 
-    String nexusDamageText = "Nexus " + HMage.anniObserverMap.getAnniObserver().getGameInfo().getNexusAttackCount();
+      if (!ShotbowUtils.isShotbow(mc))
+        return;
+
+      if (HMage.anniObserverMap.getAnniObserver() == null)
+        return;
+
+      nexusDamageText = "Nexus " + HMage.anniObserverMap.getAnniObserver().getGameInfo().getNexusAttackCount();
+    }
 
     if (!this.text.contentEquals(nexusDamageText)) {
       this.text = nexusDamageText;

@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import onimen.anni.hmage.HMage;
+import onimen.anni.hmage.module.hud.layout.Layout;
 import onimen.anni.hmage.util.ShotbowUtils;
 
 public class KillCounterHUD extends AbstractHUD {
@@ -22,8 +23,8 @@ public class KillCounterHUD extends AbstractHUD {
   }
 
   @Override
-  public int getDefaultPosition() {
-    return 0;
+  public Layout getDefaultLayout() {
+    return Layout.getLayout().top().left();
   }
 
   @Override
@@ -52,15 +53,18 @@ public class KillCounterHUD extends AbstractHUD {
   }
 
   @Override
-  public void drawItem(Minecraft mc) {
+  public void drawItem(Minecraft mc, boolean layoutMode) {
 
-    if (!ShotbowUtils.isShotbow(mc))
-      return;
+    String killCountText = "Kills 79";
 
-    if (HMage.anniObserverMap.getAnniObserver() == null)
-      return;
+    if (!layoutMode) {
+      if (!ShotbowUtils.isShotbow(mc))
+        return;
 
-    String killCountText = "Kills " + HMage.anniObserverMap.getAnniObserver().getGameInfo().getKillCount();
+      if (HMage.anniObserverMap.getAnniObserver() == null)
+        return;
+      killCountText = "Kills " + HMage.anniObserverMap.getAnniObserver().getGameInfo().getKillCount();
+    }
 
     if (!this.text.contentEquals(killCountText)) {
       this.text = killCountText;
@@ -77,6 +81,5 @@ public class KillCounterHUD extends AbstractHUD {
     mc.fontRenderer.drawString(text, x + 2 + offset, y, 0xffffff);
 
   }
-
 
 }

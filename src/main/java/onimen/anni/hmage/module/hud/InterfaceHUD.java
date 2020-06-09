@@ -3,7 +3,7 @@ package onimen.anni.hmage.module.hud;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import onimen.anni.hmage.module.InterfaceModule;
-import onimen.anni.hmage.util.PositionHelper.Position;
+import onimen.anni.hmage.module.hud.layout.Layout;
 
 public interface InterfaceHUD extends InterfaceModule {
 
@@ -15,17 +15,19 @@ public interface InterfaceHUD extends InterfaceModule {
 
   public int getY();
 
-  public void setPositionFlag(int position);
+  public void setLayout(Layout layout);
 
-  public int getPositionFlag();
+  public Layout getLayout();
 
-  public int getDefaultPosition();
+  public Layout getDefaultLayout();
 
   public int getDefaultX();
 
   public int getDefaultY();
 
   public void drawItem(Minecraft mc);
+
+  public void drawItem(Minecraft mc, boolean layoutMode);
 
   public int getWidth();
 
@@ -35,7 +37,8 @@ public interface InterfaceHUD extends InterfaceModule {
 
   public int getComputedY(ScaledResolution sr);
 
-  public Position getPosition();
 
   public boolean isHorizontal();
+
+  public boolean isInside(ScaledResolution sr, int x, int y);
 }

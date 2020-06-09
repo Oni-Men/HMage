@@ -5,6 +5,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import onimen.anni.hmage.HMage;
+import onimen.anni.hmage.module.hud.layout.Layout;
 import onimen.anni.hmage.observer.ClassType;
 
 public class AcroJumpHUD extends AbstractHUD {
@@ -50,12 +51,20 @@ public class AcroJumpHUD extends AbstractHUD {
   }
 
   @Override
-  public void drawItem(Minecraft mc) {
+  public Layout getDefaultLayout() {
+    return Layout.getLayout().top().centerx();
+  }
 
-    if (!this.isAcrobat()) { return; }
+  @Override
+  public void drawItem(Minecraft mc, boolean layoutMode) {
+
+    if (!layoutMode) {
+      if (!this.isAcrobat()) { return; }
+    }
 
     ScaledResolution sr = new ScaledResolution(mc);
-    mc.fontRenderer.drawStringWithShadow(cooldownText, getComputedX(sr), getComputedY(sr), 0xffffff);
+    mc.fontRenderer.drawStringWithShadow(layoutMode ? "Jump Ready!" : cooldownText, getComputedX(sr), getComputedY(sr),
+        0xffffff);
   }
 
   @SubscribeEvent
@@ -83,11 +92,6 @@ public class AcroJumpHUD extends AbstractHUD {
       return String.format("Jump %dsec", cooltime);
     }
     return "Jump Ready!";
-  }
-
-  @Override
-  public int getDefaultPosition() {
-    return 7;
   }
 
 }

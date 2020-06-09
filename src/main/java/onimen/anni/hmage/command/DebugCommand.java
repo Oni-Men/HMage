@@ -1,7 +1,5 @@
 package onimen.anni.hmage.command;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -21,19 +19,8 @@ import onimen.anni.hmage.cape.GlobalPlayerUseCapeManager;
 import onimen.anni.hmage.observer.AnniObserver;
 import onimen.anni.hmage.observer.AnniObserverMap;
 import onimen.anni.hmage.observer.data.GameInfo;
-import onimen.anni.hmage.util.PositionHelper.PositionType;
 
 public class DebugCommand extends CommandBase implements IClientCommand {
-
-  public static List<String> getPositionTypeTabCompletions() {
-    List<String> tabCompletions = new ArrayList<>();
-
-    for (PositionType positionType : PositionType.values()) {
-      tabCompletions.add(positionType.getText());
-    }
-
-    return tabCompletions;
-  }
 
   @Override
   public String getName() {

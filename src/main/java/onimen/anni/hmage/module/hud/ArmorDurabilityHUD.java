@@ -1,5 +1,6 @@
 package onimen.anni.hmage.module.hud;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -16,12 +17,22 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
-import onimen.anni.hmage.util.PositionHelper;
-import onimen.anni.hmage.util.PositionHelper.Position;
+import onimen.anni.hmage.module.hud.layout.Layout;
 
 public class ArmorDurabilityHUD extends AbstractHUD {
 
+  private static final List<ItemStack> armorListForLayoutMode = new ArrayList<>();
+
   private List<ItemStack> armorList = Lists.newArrayList();
+
+  public ArmorDurabilityHUD() {
+    armorListForLayoutMode.add(new ItemStack(Item.getItemById(276)));
+    armorListForLayoutMode.add(new ItemStack(Item.getItemById(360)));
+    armorListForLayoutMode.add(new ItemStack(Item.getItemById(313)));
+    armorListForLayoutMode.add(new ItemStack(Item.getItemById(312)));
+    armorListForLayoutMode.add(new ItemStack(Item.getItemById(311)));
+    armorListForLayoutMode.add(new ItemStack(Item.getItemById(310)));
+  }
 
   @Override
   public String getName() {
@@ -34,8 +45,8 @@ public class ArmorDurabilityHUD extends AbstractHUD {
   }
 
   @Override
-  public int getDefaultPosition() {
-    return 0;
+  public Layout getDefaultLayout() {
+    return Layout.getLayout().top().left();
   }
 
   @Override
@@ -105,26 +116,28 @@ public class ArmorDurabilityHUD extends AbstractHUD {
   }
 
   @Override
-  public void drawItem(Minecraft mc) {
+  public void drawItem(Minecraft mc, boolean layoutMode) {
 
     ScaledResolution sr = new ScaledResolution(mc);
     EntityPlayerSP player = mc.player;
     FontRenderer fontRenderer = mc.fontRenderer;
 
     armorList.clear();
-
-    //手持ちのアイテム
-    armorList.add(player.getHeldItem(EnumHand.OFF_HAND));
-    armorList.add(player.getHeldItem(EnumHand.MAIN_HAND));
-    //装備
-    Iterator<ItemStack> iterator = player.getArmorInventoryList().iterator();
-    while (iterator.hasNext()) {
-      armorList.add(iterator.next());
+    if (layoutMode) {
+      armorList.addAll(armorListForLayoutMode);
+    } else {
+      //手持ちのアイテム
+      armorList.add(player.getHeldItem(EnumHand.OFF_HAND));
+      armorList.add(player.getHeldItem(EnumHand.MAIN_HAND));
+      //装備
+      Iterator<ItemStack> iterator = player.getArmorInventoryList().iterator();
+      while (iterator.hasNext()) {
+        armorList.add(iterator.next());
+      }
     }
 
     Collections.reverse(armorList);
-
-    Position position = new PositionHelper.Position(getPositionFlag());
+    Layout layout = getLayout();
 
     int x = getComputedX(sr);
     int y = getComputedY(sr);
@@ -138,7 +151,7 @@ public class ArmorDurabilityHUD extends AbstractHUD {
       String text = getTextForItemStack(armor);
       int stringWidth = fontRenderer.getStringWidth(text);
 
-      if (position.right && !position.isHorizontal()) {
+      if (layout.isRight() && !layout.isHorizontal()) {
         drawLightedItem(mc, armor, x + stringWidth + 2, y + 2);
         mc.fontRenderer.drawString(text, x, y + 10 - mc.fontRenderer.FONT_HEIGHT / 2, color);
       } else {
@@ -146,7 +159,7 @@ public class ArmorDurabilityHUD extends AbstractHUD {
         mc.fontRenderer.drawString(text, x + 20, y + 10 - mc.fontRenderer.FONT_HEIGHT / 2, color);
       }
 
-      if (position.isHorizontal()) {
+      if (layout.isHorizontal()) {
         x += 20 + stringWidth;
       } else {
         y += 20;
