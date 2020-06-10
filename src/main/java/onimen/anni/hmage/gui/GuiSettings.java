@@ -13,7 +13,6 @@ import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.gui.button.AimGameButtonObject;
 import onimen.anni.hmage.gui.button.ButtonObject;
 import onimen.anni.hmage.gui.button.CapeSelectButtonObject;
-import onimen.anni.hmage.gui.button.DebugButtonObject;
 import onimen.anni.hmage.gui.button.GameHistoryButton;
 import onimen.anni.hmage.gui.button.HUDLayoutButton;
 import onimen.anni.hmage.gui.button.HurtingArmorColorButton;
@@ -52,7 +51,7 @@ public class GuiSettings extends GuiScroll {
     buttonObjects.add(new AimGameButtonObject());
     buttonObjects.add(new HurtingArmorColorButton());
 
-    buttonObjects.add(new DebugButtonObject());
+    //    buttonObjects.add(new DebugButtonObject());
   }
 
   @Override
