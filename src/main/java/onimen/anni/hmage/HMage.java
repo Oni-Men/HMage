@@ -39,6 +39,7 @@ import onimen.anni.hmage.cape.SPPlayerUseCape;
 import onimen.anni.hmage.command.DebugCommand;
 import onimen.anni.hmage.command.NameCommand;
 import onimen.anni.hmage.event.GetLocationCapeEvent;
+import onimen.anni.hmage.event.PlayParticleEvent;
 import onimen.anni.hmage.gui.GuiAnniServers;
 import onimen.anni.hmage.gui.GuiSettings;
 import onimen.anni.hmage.module.CustomGuiBackground;
@@ -55,9 +56,11 @@ import onimen.anni.hmage.module.hud.NexusDamageHUD;
 import onimen.anni.hmage.module.hud.StatusEffectHUD;
 import onimen.anni.hmage.observer.AnniChatReciveExecutor;
 import onimen.anni.hmage.observer.AnniObserverMap;
+import onimen.anni.hmage.observer.killeffect.AnniKillEffectManager;
 import onimen.anni.hmage.transformer.HurtingArmorInjector;
 import onimen.anni.hmage.util.CustomMovementInput;
 import onimen.anni.hmage.util.GuiScreenUtils;
+import onimen.anni.hmage.util.ShotbowUtils;
 import onimen.anni.hmage.util.scheduler.SyncTaskQueue;
 
 @Mod(modid = HMage.MODID, name = HMage.NAME, version = HMage.VERSION)
@@ -235,6 +238,14 @@ public class HMage {
     Runnable nextTask;
     while ((nextTask = SyncTaskQueue.getNextTask()) != null) {
       nextTask.run();
+    }
+  }
+
+  @SideOnly(Side.CLIENT)
+  @SubscribeEvent
+  public void onPlayParticleEvent(PlayParticleEvent event) {
+    if (ShotbowUtils.isShotbow(Minecraft.getMinecraft())) {
+      AnniKillEffectManager.getInstance().executeKillEffect(event.getParticle());
     }
   }
 

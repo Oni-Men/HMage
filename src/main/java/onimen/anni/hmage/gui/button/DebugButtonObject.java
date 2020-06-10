@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import onimen.anni.hmage.gui.AnniHistoryList;
+import onimen.anni.hmage.gui.AnniKillEffectSetting;
 
 public class DebugButtonObject implements ButtonObject {
 
@@ -20,7 +20,7 @@ public class DebugButtonObject implements ButtonObject {
 
   @Override
   public void actionPerformed(GuiButton button) {
-    Minecraft.getMinecraft().displayGuiScreen(new AnniHistoryList());
+    Minecraft.getMinecraft().displayGuiScreen(new AnniKillEffectSetting());
   }
 
   @Override

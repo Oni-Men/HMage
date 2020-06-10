@@ -13,8 +13,6 @@ public enum AnniKillEffectParticles {
       new AnniParticleData(EnumParticleTypes.BLOCK_CRACK, 0.2f, 0.8f, 0.2f, 0.01f, 500, true, new int[] { 152 })),
   /** CONFETTI */
   CONFETTI(new AnniParticleData(EnumParticleTypes.REDSTONE, 0.4f, 1.0f, 0.4f, 2.0f, 200, true, null)),
-  /** CLOUD_HELIX */
-  CLOUD_HELIX(new AnniParticleData(EnumParticleTypes.CLOUD, 0.0f, 0.0f, 0.0f, 0.0f, 1, true, null)),
   /** FLAME */
   FLAME(new AnniParticleData(EnumParticleTypes.FLAME, 0.4f, 1.0f, 0.4f, 0.1f, 200, true, null));
 

@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import onimen.anni.hmage.observer.AnniKillType;
 import onimen.anni.hmage.observer.ClassType;
 import onimen.anni.hmage.observer.GamePhase;
+import onimen.anni.hmage.observer.killeffect.AnniKillEffectManager;
 
 public class GameInfo {
 
@@ -157,6 +158,8 @@ public class GameInfo {
       //自身のデータを更新
       mePlayerData.setTeamColor(killerTeam);
       mePlayerData.incrementCount(killType, deadTeam);
+      //キルエフェクト情報を設定
+      AnniKillEffectManager.getInstance().onKillPlayer();
     } else {
       //自身以外のデータを更新
       AnniPlayerData countData = otherPlayerStatsMap.computeIfAbsent(killer, k -> new AnniPlayerData(k, killerTeam));

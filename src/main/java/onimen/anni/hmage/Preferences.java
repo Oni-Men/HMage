@@ -102,13 +102,25 @@ public class Preferences {
   public static boolean getBoolean(String key, boolean defaultValue) {
     if (cfg == null)
       return defaultValue;
-    return Boolean.valueOf(cfg.getProperty(key, String.valueOf(defaultValue)));
+    return Boolean.parseBoolean(cfg.getProperty(key, String.valueOf(defaultValue)));
   }
 
   public static void setBoolean(String key, boolean value) {
     if (cfg == null)
       return;
     cfg.setProperty(key, String.valueOf(value));
+  }
+
+  public static String getString(String key, String defaultValue) {
+    if (cfg == null)
+      return defaultValue;
+    return cfg.getProperty(key, String.valueOf(defaultValue));
+  }
+
+  public static void setString(String key, String value) {
+    if (cfg == null)
+      return;
+    cfg.setProperty(key, value);
   }
 
   public static int getInt(String key, int defaultValue) {
