@@ -150,19 +150,52 @@ public class GuiColorPicker extends GuiScreen {
 
     tessellator.draw();
 
-    double left = centerX + hueCircleRadius + 10;
-    double right = left + lineWidth;
-    double top = centerY - hueCircleRadius;
-    double bottom = centerY + hueCircleRadius;
+    double alphaSliderLeft = centerX + hueCircleRadius + 10;
+    double alphaSliderRight = alphaSliderLeft + lineWidth;
+    double alphaSliderTop = centerY - hueCircleRadius;
+    double alhpaSliderBottom = centerY + hueCircleRadius;
     builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    builder.pos(right, top, this.zLevel).color(0F, 0F, 0F, 1F).endVertex();
-    builder.pos(left, top, this.zLevel).color(0F, 0F, 0F, 1F).endVertex();
-    builder.pos(left, bottom, this.zLevel).color(1F, 1F, 1F, 1F).endVertex();
-    builder.pos(right, bottom, this.zLevel).color(1F, 1F, 1F, 1F).endVertex();
+    builder.pos(alphaSliderRight, alphaSliderTop, this.zLevel).color(0F, 0F, 0F, 1F).endVertex();
+    builder.pos(alphaSliderLeft, alphaSliderTop, this.zLevel).color(0F, 0F, 0F, 1F).endVertex();
+    builder.pos(alphaSliderLeft, alhpaSliderBottom, this.zLevel).color(1F, 1F, 1F, 1F).endVertex();
+    builder.pos(alphaSliderRight, alhpaSliderBottom, this.zLevel).color(1F, 1F, 1F, 1F).endVertex();
+
+    tessellator.draw();
+
+    double px = centerX + 2 * sat * boxSize - boxSize;
+    double py = centerY - 2 * val * boxSize + boxSize;
+    GlStateManager.glLineWidth(2F);
+    builder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+    builder.pos(px - 2, py, this.zLevel).color(1F, 1F, 1F, 1F).endVertex();
+    builder.pos(px + 2, py, this.zLevel).color(1F, 1F, 1F, 1F).endVertex();
+    builder.pos(px, py - 2, this.zLevel).color(1F, 1F, 1F, 1F).endVertex();
+    builder.pos(px, py + 2, this.zLevel).color(1F, 1F, 1F, 1F).endVertex();
+    tessellator.draw();
+
+    GlStateManager.glLineWidth(2F);
+    GlStateManager.pushMatrix();
+    GlStateManager.translate(centerX, centerY, 0);
+    GlStateManager.rotate((float) (hue * 360), 0f, 0f, 1f);
+    GlStateManager.translate(hueCircleRadius, 0, 0);
+
+    builder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+
+    builder.pos(lineWidth * 0.25, 0, 0).color(1F, 1F, 1F, 1F).endVertex();
+    builder.pos(-lineWidth * 0.75, 0, 0).color(1F, 1F, 1F, 1F).endVertex();
+
+    tessellator.draw();
+    GlStateManager.popMatrix();
+    GlStateManager.glLineWidth(2F);
+    builder.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+
+    double alphaY = centerY + (alpha - 0.5) * hueCircleRadius * 2;
+    builder.pos(alphaSliderLeft, alphaY, 0).color(1F, 1F, 1F, 1F).endVertex();
+    builder.pos(alphaSliderRight, alphaY, 0).color(1F, 1F, 1F, 1F).endVertex();
 
     tessellator.draw();
 
     GlStateManager.shadeModel(7424);
+    GlStateManager.glLineWidth(1);
     GlStateManager.enableTexture2D();
   }
 
