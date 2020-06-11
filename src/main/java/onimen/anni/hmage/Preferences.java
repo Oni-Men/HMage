@@ -24,6 +24,7 @@ public class Preferences {
   public static boolean hurtingArmor = true;
   public static int hurtingArmorColor = 0xFFFF0000;
 
+
   public static KeyBinding openSettingsKey = new KeyBinding("hmage.key.settings", Keyboard.KEY_P,
       "key.categories.misc");
 
@@ -57,11 +58,14 @@ public class Preferences {
     setBoolean("hurtingArmor.enabled", hurtingArmor);
     setInt("hurtingArmor.color", hurtingArmorColor);
 
-    try {
-      cfg.store(Files.newBufferedWriter(configPath, StandardCharsets.UTF_8), "Created by HMage");
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    new Thread(() ->{
+      try {
+        cfg.store(Files.newBufferedWriter(configPath, StandardCharsets.UTF_8), "Created by HMage");
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }).start();
+
   }
 
   /**
