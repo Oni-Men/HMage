@@ -35,7 +35,7 @@ public class StatusEffectHUD extends AbstractHUD {
 
   @Override
   public String getId() {
-    return "module.hud.status-effect";
+    return "hmage.module.hud.status-effect";
   }
 
   @Override

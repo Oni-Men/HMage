@@ -22,7 +22,7 @@ public class AcroJumpHUD extends AbstractHUD {
 
   @Override
   public String getId() {
-    return "module.hud.acrojump-ct";
+    return "hmage.module.hud.acrojump-ct";
   }
 
   @Override

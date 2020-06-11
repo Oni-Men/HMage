@@ -27,7 +27,7 @@ public class CustomGuiBackground extends AbstractModule {
 
   @Override
   public String getId() {
-    return "module.custom-gui-bg";
+    return "hmage.module.custom-gui-bg";
   }
 
   @Override

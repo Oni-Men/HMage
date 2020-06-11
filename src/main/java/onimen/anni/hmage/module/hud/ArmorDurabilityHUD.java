@@ -36,7 +36,7 @@ public class ArmorDurabilityHUD extends AbstractHUD {
 
   @Override
   public String getId() {
-    return "module.hud.equipment-info";
+    return "hmage.module.hud.equipment-info";
   }
 
   @Override

@@ -15,7 +15,7 @@ public class NexusDamageHUD extends LabelHUD {
 
   @Override
   public String getId() {
-    return "module.hud.nexus-damage-counter";
+    return "hmage.module.hud.nexus-damage-counter";
   }
 
   @Override

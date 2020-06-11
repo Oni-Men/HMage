@@ -27,7 +27,7 @@ public class CpsCounterHUD extends LabelHUD {
 
   @Override
   public String getId() {
-    return "module.hud.cps-counter";
+    return "hmage.module.hud.cps-counter";
   }
 
   @Override

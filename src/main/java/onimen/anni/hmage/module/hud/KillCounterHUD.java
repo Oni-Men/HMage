@@ -14,7 +14,7 @@ public class KillCounterHUD extends LabelHUD {
 
   @Override
   public String getId() {
-    return "module.hud.kill-counter";
+    return "hmage.module.hud.kill-counter";
   }
 
   @Override

@@ -13,7 +13,7 @@ public class ArrowCounterHUD extends AbstractHUD {
 
   @Override
   public String getId() {
-    return "module.hud.arrorw-couter";
+    return "hmage.module.hud.arrorw-couter";
   }
 
   @Override

@@ -14,7 +14,7 @@ public class FixedFOV extends AbstractModule {
 
   @Override
   public String getId() {
-    return "module.unaffected-fov";
+    return "hmage.module.unaffected-fov";
   }
 
   @SubscribeEvent

@@ -12,7 +12,7 @@ public class RecipeBookRemover extends AbstractModule {
 
   @Override
   public String getId() {
-    return "module.hide-recipebook";
+    return "hmage.module.hide-recipebook";
   }
 
   @SubscribeEvent
