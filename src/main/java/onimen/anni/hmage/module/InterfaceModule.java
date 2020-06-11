@@ -14,6 +14,8 @@ public interface InterfaceModule {
 
   public void setEnable(boolean value);
 
+  public boolean canBehaivor();
+
   public String getId();
 
   public String getName();

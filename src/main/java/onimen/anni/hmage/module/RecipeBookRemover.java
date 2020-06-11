@@ -17,7 +17,7 @@ public class RecipeBookRemover extends AbstractModule {
 
   @SubscribeEvent
   public void onInitGuiEvent(GuiScreenEvent.InitGuiEvent event) {
-    if (!isEnable()) { return; }
+    if (!canBehaivor()) { return; }
 
     if (event.getGui() instanceof GuiInventory) {
       for (Iterator<GuiButton> itr = event.getButtonList().iterator(); itr.hasNext();) {

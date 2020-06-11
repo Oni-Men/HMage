@@ -18,7 +18,12 @@ public abstract class AbstractModule implements InterfaceModule {
 
   @Override
   public boolean isEnable() {
-    return Preferences.enabled && Preferences.getBoolean(this.getId() + ".enabled", true);
+    return Preferences.getBoolean(this.getId() + ".enabled", true);
+  }
+
+  @Override
+  public boolean canBehaivor() {
+    return Preferences.enabled && isEnable();
   }
 
   @Override

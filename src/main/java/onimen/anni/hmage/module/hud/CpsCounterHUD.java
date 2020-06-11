@@ -12,7 +12,6 @@ import org.lwjgl.input.Mouse;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.MouseInputEvent;
-import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.module.hud.layout.Layout;
 
 public class CpsCounterHUD extends LabelHUD {
@@ -57,7 +56,7 @@ public class CpsCounterHUD extends LabelHUD {
 
   @SubscribeEvent
   public void onMouseInputEvent(MouseInputEvent event) {
-    if (!Preferences.enabled)
+    if (!canBehaivor())
       return;
 
     if (!Mouse.getEventButtonState())

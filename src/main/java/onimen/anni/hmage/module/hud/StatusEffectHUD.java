@@ -144,7 +144,7 @@ public class StatusEffectHUD extends AbstractHUD {
   @SubscribeEvent
   public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
     if (event.getType() == ElementType.POTION_ICONS) {
-      if (this.isEnable())
+      if (this.canBehaivor())
         event.setCanceled(true);
     }
   }

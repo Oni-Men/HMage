@@ -14,12 +14,6 @@ public class AcroJumpHUD extends AbstractHUD {
   private String cooldownText = "Cannot Jump now...";
   private boolean prevAllowFlying = false;
 
-
-  @Override
-  public boolean isEnable() {
-    return true;
-  }
-
   @Override
   public String getId() {
     return "hmage.module.hud.acrojump-ct";
@@ -54,7 +48,7 @@ public class AcroJumpHUD extends AbstractHUD {
   public void drawItem(Minecraft mc, boolean layoutMode) {
 
     if (!layoutMode) {
-      if (!this.isAcrobat()) { return; }
+      if (!canBehaivor() || !this.isAcrobat()) { return; }
     }
 
     ScaledResolution sr = new ScaledResolution(mc);
