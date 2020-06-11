@@ -19,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.client.GuiScrollingList;
@@ -154,6 +155,8 @@ public class AnniHistoryList extends GuiScreen {
 
     int color = 0xFFFFFF;
 
+    private ScaledResolution sr;
+
     public Info(int width, GameInfo gameInfo) {
       super(AnniHistoryList.this.getMinecraftInstance(),
           width,
@@ -163,6 +166,8 @@ public class AnniHistoryList extends GuiScreen {
           AnniHistoryList.this.width,
           AnniHistoryList.this.height);
       this.gameInfo = gameInfo;
+
+      this.sr = new ScaledResolution(mc);
 
       this.setHeaderInfo(true, getHeaderHeight());
     }
@@ -207,6 +212,19 @@ public class AnniHistoryList extends GuiScreen {
 
       int nexusRankingSize = gameInfo.getNexusRanking(nexusRankingLimit).size();
       height += (nexusRankingSize == 0 ? 10 : nexusRankingSize * 10);
+
+      if (sr.getScaleFactor() == 4) {
+
+        height += 22;
+
+        int meleeKillRankingSize = gameInfo.getMeleeKillRanking(10).size();
+        height += (meleeKillRankingSize == 0 ? 10 : meleeKillRankingSize * 10);
+
+        height += 22;
+
+        int shotKillRankingSize = gameInfo.getShotKillRanking(5).size();
+        height += (shotKillRankingSize == 0 ? 10 : shotKillRankingSize * 10);
+      }
 
       if (height < this.bottom - this.top - 8)
         height = this.bottom - this.top - 8;
@@ -270,11 +288,17 @@ public class AnniHistoryList extends GuiScreen {
       top += 22;
       left += 8;
 
-      //TODO GUIスケールAUTOではみ出すバグ直す
-      int underMeleeRanking = drawRanking("Melee Kill", meleeKillRanking, fr, top, left + 200, color,
-          p -> p.getMeleeCount() + " Kills");
-      drawRanking("Shot Kill", shotKillRanking, fr, underMeleeRanking, left + 200, color,
-          p -> p.getBowCount() + " Kills");
+      if (sr.getScaleFactor() == 4) {
+        top = drawRanking("Melee Kill", meleeKillRanking, fr, top, left, color,
+            p -> p.getMeleeCount() + " Kills");
+        top = drawRanking("Shot Kill", shotKillRanking, fr, top, left, color,
+            p -> p.getBowCount() + " Kills");
+      } else {
+        int underMeleeRanking = drawRanking("Melee Kill", meleeKillRanking, fr, top, left + 200, color,
+            p -> p.getMeleeCount() + " Kills");
+        drawRanking("Shot Kill", shotKillRanking, fr, underMeleeRanking, left + 200, color,
+            p -> p.getBowCount() + " Kills");
+      }
 
       top = drawRanking("Total Kill", killRanking, fr, top, left, color, p -> p.getTotalKillCount() + " Kills");
       top = drawRanking("Nexus Damage", nexusRanking, fr, top, left, color, p -> p.getNexusDamageCount() + " Damage");
