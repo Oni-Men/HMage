@@ -9,7 +9,7 @@ public abstract class LabelHUD extends AbstractHUD {
   protected FontRenderer fr;
   protected String text;
   protected int color = 0xFFFFFFFF;
-  protected int background = 0x33333333;
+  protected int background = 0x33000000;
   protected int paddingX, paddingY = 0;
 
   public LabelHUD() {
