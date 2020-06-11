@@ -10,16 +10,11 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class SpeedFovDisabler extends AbstractModule {
+public class FixedFOV extends AbstractModule {
 
   @Override
-  public String getName() {
-    return "DisableSpeedFOV";
-  }
-
-  @Override
-  public String getDescription() {
-    return "スピード効果時の視野を通常時に戻す";
+  public String getId() {
+    return "module.unaffected-fov";
   }
 
   @SubscribeEvent
@@ -45,10 +40,16 @@ public class SpeedFovDisabler extends AbstractModule {
     IAttributeInstance iattributeinstance = player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
     double baseSpeed = iattributeinstance.getAttributeValue();
 
-    PotionEffect activepotioneffect = player.getActivePotionEffect(Potion.getPotionFromResourceLocation("speed"));
+    PotionEffect activeSpeedEffect = player.getActivePotionEffect(Potion.getPotionFromResourceLocation("speed"));
+    PotionEffect activeSlownessEffect = player.getActivePotionEffect(Potion.getPotionFromResourceLocation("slowness"));
 
-    if (activepotioneffect != null) {
-      baseSpeed = iattributeinstance.getAttributeValue() * (5.0D / (6.0D + activepotioneffect.getAmplifier()));
+    if (activeSpeedEffect != null) {
+      baseSpeed *= 5.0D / (6.0D + activeSpeedEffect.getAmplifier());
+    }
+
+    //TODO 移動速度低下レベル6以上で効果がない。いつか修正
+    if (activeSlownessEffect != null) {
+      baseSpeed /= 1.0D - (0.15D * (1.0D + activeSlownessEffect.getAmplifier()));
     }
 
     f = (float) ((double) f * ((baseSpeed / (double) player.capabilities.getWalkSpeed() + 1.0D) / 2.0D));

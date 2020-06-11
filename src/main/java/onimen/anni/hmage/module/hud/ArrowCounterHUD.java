@@ -12,13 +12,8 @@ import onimen.anni.hmage.module.hud.layout.Layout;
 public class ArrowCounterHUD extends AbstractHUD {
 
   @Override
-  public String getName() {
-    return "ArrowCountHUD";
-  }
-
-  @Override
-  public String getDescription() {
-    return "インベントリ内の残りの矢を表示";
+  public String getId() {
+    return "module.hud.arrorw-couter";
   }
 
   @Override
@@ -33,7 +28,7 @@ public class ArrowCounterHUD extends AbstractHUD {
 
   @Override
   public int getDefaultY() {
-    return -1;
+    return 1;
   }
 
   @Override

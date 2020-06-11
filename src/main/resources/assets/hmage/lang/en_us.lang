@@ -9,3 +9,26 @@ hmage.gui.guihudlayout.desc2=Drag with right mouse button to change base positio
 hmage.gui.guihudlayout.desc3=Click middle mouse button to toggle horizontal/vertical mode;
 hmage.gui.button.hudlayoutbutton.title=Layout of HUD
 hmage.gui.button.hudlayoutbutton.buttontext=Customize layout
+
+# Modules
+
+module.hide-recipebook.name=Hide Recipe Book
+module.hide-recipebook.description=Remove recipe book from survival inventory
+module.unaffected-fov.name=Fixed FOV
+module.unaffected-fov.description=Unaffected by Status Effect.%n(such as Swiftness, Slowness)
+module.custom-gui-bg.name=Custom GUI Background
+module.custom-gui-bg.description=You can pick your favorite color with Color picker.
+module.hud.arrorw-couter.name=Arrow Counter
+module.hud.arrorw-couter.description=Count arrows in your inventory
+module.hud.status-effect.name=Status Effect HUD
+module.hud.status-effect.description=Display information of active status effects
+module.hud.equipment-info.name=Equipment Info HUD
+module.hud.equipment-info.description=Display information of your equipment
+module.hud.cps-counter.name=CPS Counter
+module.hud.cps-counter.description=Display your CPS
+module.hud.acrojump-ct.name=Double Jump HUD
+module.hud.acrojump-ct.description=Display cooltime of double jump.%n(Only avaiable when you using Acrobat)
+module.hud.kill-counter.name=Kill Counter
+module.hud.kill-counter.description=Display your kill count.%n(Only avaiable when you playing Annihilation)
+module.hud.nexus-damage-counter.name=Nexus Damage Counter
+module.hud.nexus-damage-counter.description=Display your nexus damage.%n(Only avaiable when you playing Annihilation)

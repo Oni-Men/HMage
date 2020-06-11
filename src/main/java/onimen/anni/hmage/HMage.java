@@ -43,9 +43,9 @@ import onimen.anni.hmage.event.PlayParticleEvent;
 import onimen.anni.hmage.gui.GuiAnniServers;
 import onimen.anni.hmage.gui.GuiSettings;
 import onimen.anni.hmage.module.CustomGuiBackground;
+import onimen.anni.hmage.module.FixedFOV;
 import onimen.anni.hmage.module.InterfaceModule;
 import onimen.anni.hmage.module.RecipeBookRemover;
-import onimen.anni.hmage.module.SpeedFovDisabler;
 import onimen.anni.hmage.module.hud.AcroJumpHUD;
 import onimen.anni.hmage.module.hud.ArmorDurabilityHUD;
 import onimen.anni.hmage.module.hud.ArrowCounterHUD;
@@ -126,7 +126,7 @@ public class HMage {
 
     //Register Modules
     this.registerModule(new RecipeBookRemover());
-    this.registerModule(new SpeedFovDisabler());
+    this.registerModule(new FixedFOV());
     this.registerModule(new CustomGuiBackground());
 
     //HUD
@@ -135,8 +135,8 @@ public class HMage {
     this.registerModule(new ArmorDurabilityHUD());
     this.registerModule(new CpsCounterHUD());
     this.registerModule(new AcroJumpHUD());
-    this.registerModule(new KillCounterHUD(this.mc.fontRenderer));
-    this.registerModule(new NexusDamageHUD(this.mc.fontRenderer));
+    this.registerModule(new KillCounterHUD());
+    this.registerModule(new NexusDamageHUD());
 
     ClientCommandHandler.instance.registerCommand(new DebugCommand());
     ClientCommandHandler.instance.registerCommand(new NameCommand());
@@ -181,30 +181,21 @@ public class HMage {
   }
 
   @SubscribeEvent
-  public void onRenderGameOverlay(RenderGameOverlayEvent event) {
+  public void onRenderGameOverlay(RenderGameOverlayEvent.Post event) {
 
     if (!Preferences.enabled)
       return;
 
-    ElementType type = event.getType();
-
     if (mc.gameSettings.showDebugInfo)
       return;
 
-    if (type == ElementType.TEXT) {
-
+    if (event.getType() == ElementType.TEXT) {
       if (mc.currentScreen == null) {
-
         for (InterfaceHUD item : hudMap.values()) {
           if (item.isEnable())
             item.drawItem(mc);
         }
-
       }
-
-    } else if (type == ElementType.POTION_ICONS) {
-      if (event.isCancelable() && Preferences.getBoolean("StatusEffectHUD.enabled", true))
-        event.setCanceled(true);
     }
   }
 

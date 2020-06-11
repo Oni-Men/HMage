@@ -1,10 +1,6 @@
 package onimen.anni.hmage.module.hud;
 
-import java.util.List;
-
 import org.lwjgl.opengl.GL11;
-
-import com.google.common.collect.Lists;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -21,34 +17,39 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
 
   protected float zLevel = 0.0f;
 
+  protected int widthHashCode, heightHashCode;
+  protected int cachedWidth, cachedHeight;
+
   @Override
   public void setX(int value) {
-    Preferences.setInt(getName() + ".x", value);
+    Preferences.setInt(this.getId() + ".x", value);
   }
 
   @Override
   public int getX() {
-    return Preferences.getInt(getName() + ".x", getDefaultX());
+    return Preferences.getInt(this.getId() + ".x", getDefaultX());
   }
 
   @Override
   public void setY(int value) {
-    Preferences.setInt(getName() + ".y", value);
+    Preferences.setInt(this.getId() + ".y", value);
   }
 
   @Override
   public int getY() {
-    return Preferences.getInt(getName() + ".y", getDefaultY());
+    return Preferences.getInt(this.getId() + ".y", getDefaultY());
   }
 
   @Override
   public void setLayout(Layout layout) {
-    Preferences.setInt(this.getName() + ".layout", layout.getCode());
+    widthHashCode = 0;
+    heightHashCode = 0;
+    Preferences.setInt(this.getId() + ".layout", layout.getCode());
   }
 
   @Override
   public Layout getLayout() {
-    return Layout.getLayout(Preferences.getInt(this.getName() + ".layout", 0));
+    return Layout.getLayout(Preferences.getInt(this.getId() + ".layout", 0));
   }
 
   @Override
@@ -78,7 +79,7 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
   @Override
   public int getComputedY(ScaledResolution sr) {
     int y = getY();
-    switch(getLayout().getLayoutY()) {
+    switch (getLayout().getLayoutY()) {
     case TOP:
       break;
     case BOTTOM:
@@ -86,7 +87,7 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
       y += sr.getScaledHeight() - getHeight();
       break;
     case CENTERY:
-      y += (sr.getScaledHeight() - getHeight())/2;
+      y += (sr.getScaledHeight() - getHeight()) / 2;
       break;
     default:
       break;
@@ -97,13 +98,6 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
   @Override
   public void drawItem(Minecraft mc) {
     this.drawItem(mc, false);
-  }
-
-  @Override
-  public List<String> getPreferenceKeys() {
-    List<String> preferenceKeys = super.getPreferenceKeys();
-    preferenceKeys.addAll(Lists.newArrayList("x", "y", "position"));
-    return preferenceKeys;
   }
 
   public void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height) {
@@ -125,13 +119,18 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
     tessellator.draw();
   }
 
-  public void drawRect(int x, int y, int width, int height) {
+  public void drawRect(int x, int y, int width, int height, int color) {
+
+    float a = (float) (color >> 24 & 255) / 255F;
+    float r = (float) (color >> 16 & 255) / 255F;
+    float g = (float) (color >> 8 & 255) / 255F;
+    float b = (float) (color & 255) / 255F;
 
     GlStateManager.disableTexture2D();
     GlStateManager.enableBlend();
 
     GlStateManager.pushMatrix();
-    GlStateManager.color(0f, 0f, 0f, 0.3f);
+    GlStateManager.color(r, g, b, a);
     GlStateManager.translate(x, y, 0);
     GlStateManager.glBegin(GL11.GL_QUADS);
     GlStateManager.glVertex3f(0, height, 0);

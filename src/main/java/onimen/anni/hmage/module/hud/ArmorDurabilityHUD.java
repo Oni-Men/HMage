@@ -35,13 +35,8 @@ public class ArmorDurabilityHUD extends AbstractHUD {
   }
 
   @Override
-  public String getName() {
-    return "ArmorDurabilityHUD";
-  }
-
-  @Override
-  public String getDescription() {
-    return "装備と持っているアイテムを表示";
+  public String getId() {
+    return "module.hud.equipment-info";
   }
 
   @Override
@@ -73,33 +68,37 @@ public class ArmorDurabilityHUD extends AbstractHUD {
 
   @Override
   public int getWidth() {
-    int width = 0;
-    for (ItemStack armor : armorList) {
-      if (Item.getIdFromItem(armor.getItem()) == 0)
-        continue;
+    if (widthHashCode != armorList.hashCode()) {
+      int width = 0;
+      for (ItemStack armor : armorList) {
+        if (Item.getIdFromItem(armor.getItem()) == 0)
+          continue;
 
-      int durabilityTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(getTextForItemStack(armor));
+        int durabilityTextWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(getTextForItemStack(armor));
 
-      if (isHorizontal()) {
-        width += 20 + durabilityTextWidth;
-      } else {
-        width = Math.max(width, 20 + durabilityTextWidth);
+        if (isHorizontal()) {
+          width += 20 + durabilityTextWidth;
+        } else {
+          width = Math.max(width, 20 + durabilityTextWidth);
+        }
       }
+      cachedWidth = width;
+      widthHashCode = armorList.hashCode();
     }
-
-    return width;
+    return cachedWidth;
   }
 
   @Override
   public int getHeight() {
-
     if (isHorizontal()) { return 20; }
-
-    return armorList.stream()
-        .filter(armor -> Item.getIdFromItem(armor.getItem()) != 0)
-        .collect(Collectors.toList())
-        .size() * (20);
-
+    if (heightHashCode != armorList.hashCode()) {
+      cachedHeight = armorList.stream()
+          .filter(armor -> Item.getIdFromItem(armor.getItem()) != 0)
+          .collect(Collectors.toList())
+          .size() * (20);
+      heightHashCode = armorList.hashCode();
+    }
+    return cachedHeight;
   }
 
   public int getDurabilityColor(ItemStack stack) {

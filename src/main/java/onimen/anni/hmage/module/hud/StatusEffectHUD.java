@@ -15,6 +15,9 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import onimen.anni.hmage.module.hud.layout.Layout;
 
 public class StatusEffectHUD extends AbstractHUD {
@@ -31,13 +34,8 @@ public class StatusEffectHUD extends AbstractHUD {
   }
 
   @Override
-  public String getName() {
-    return "StatusEffectHUD";
-  }
-
-  @Override
-  public String getDescription() {
-    return "ステータス効果と残り時間を表示";
+  public String getId() {
+    return "module.hud.status-effect";
   }
 
   @Override
@@ -57,29 +55,35 @@ public class StatusEffectHUD extends AbstractHUD {
 
   @Override
   public int getWidth() {
-    int width = 0;
-
-
-    for (PotionEffect potionEffect : potionEffectList) {
-      int durationStringWidth = Minecraft.getMinecraft().fontRenderer
-          .getStringWidth(Potion.getPotionDurationString(potionEffect, 1F));
-      if (isHorizontal()) {
-        width += 20 + durationStringWidth;
-      } else {
-        width = Math.max(width, 20 + durationStringWidth);
+    if (widthHashCode != potionEffectList.hashCode()) {
+      int width = 0;
+      for (PotionEffect potionEffect : potionEffectList) {
+        int durationStringWidth = Minecraft.getMinecraft().fontRenderer
+            .getStringWidth(Potion.getPotionDurationString(potionEffect, 1F));
+        if (isHorizontal()) {
+          width += 20 + durationStringWidth;
+        } else {
+          width = Math.max(width, 20 + durationStringWidth);
+        }
       }
+      cachedWidth = width;
+      widthHashCode = potionEffectList.hashCode();
     }
 
-    return width;
+    return this.cachedWidth;
   }
 
   @Override
   public int getHeight() {
     if (isHorizontal()) { return 20; }
-    return potionEffectList.stream()
-        .filter(p -> p.getPotion().hasStatusIcon() && p.doesShowParticles())
-        .collect(Collectors.toList())
-        .size() * (20);
+    if (heightHashCode != potionEffectList.hashCode()) {
+      cachedHeight = potionEffectList.stream()
+          .filter(p -> p.getPotion().hasStatusIcon() && p.doesShowParticles())
+          .collect(Collectors.toList())
+          .size() * (20);
+      heightHashCode = potionEffectList.hashCode();
+    }
+    return cachedHeight;
   }
 
   @Override
@@ -137,4 +141,11 @@ public class StatusEffectHUD extends AbstractHUD {
 
   }
 
+  @SubscribeEvent
+  public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
+    if (event.getType() == ElementType.POTION_ICONS) {
+      if (this.isEnable())
+        event.setCanceled(true);
+    }
+  }
 }

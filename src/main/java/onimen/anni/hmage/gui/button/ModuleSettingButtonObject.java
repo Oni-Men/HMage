@@ -1,6 +1,5 @@
 package onimen.anni.hmage.gui.button;
 
-import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
@@ -33,6 +32,6 @@ public class ModuleSettingButtonObject implements ButtonObject {
 
   @Override
   public List<String> getDescription() {
-    return Arrays.asList(module.getDescription());
+    return module.getDescription();
   }
 }

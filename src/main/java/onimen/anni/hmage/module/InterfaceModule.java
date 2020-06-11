@@ -14,11 +14,11 @@ public interface InterfaceModule {
 
   public void setEnable(boolean value);
 
+  public String getId();
+
   public String getName();
 
-  public String getDescription();
-
-  public List<String> getPreferenceKeys();
+  public List<String> getDescription();
 
   public ButtonObject getPreferenceButton();
 

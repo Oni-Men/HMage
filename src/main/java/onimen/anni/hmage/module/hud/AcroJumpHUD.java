@@ -21,13 +21,8 @@ public class AcroJumpHUD extends AbstractHUD {
   }
 
   @Override
-  public String getDescription() {
-    return "アクロジャンプのクールタイムを表示";
-  }
-
-  @Override
-  public String getName() {
-    return "AcroJumpHUD";
+  public String getId() {
+    return "module.hud.acrojump-ct";
   }
 
   @Override

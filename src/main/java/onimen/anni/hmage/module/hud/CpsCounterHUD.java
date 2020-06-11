@@ -10,27 +10,24 @@ import java.util.Queue;
 import org.lwjgl.input.Mouse;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.MouseInputEvent;
 import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.module.hud.layout.Layout;
 
-public class CpsCounterHUD extends AbstractHUD {
+public class CpsCounterHUD extends LabelHUD {
   private final CPSCounter counter;
 
   public CpsCounterHUD() {
     this.counter = new CPSCounter();
+    this.paddingX = 2;
+    this.paddingY = 1;
+    this.text = this.getCPSText(0);
   }
 
   @Override
-  public String getName() {
-    return "CPSCountHUD";
-  }
-
-  @Override
-  public String getDescription() {
-    return "計測したCPSを表示";
+  public String getId() {
+    return "module.hud.cps-counter";
   }
 
   @Override
@@ -48,36 +45,14 @@ public class CpsCounterHUD extends AbstractHUD {
     return 5;
   }
 
-  @Override
-  public int getWidth() {
-    return Minecraft.getMinecraft().fontRenderer.getStringWidth("00 CPS");
-  }
-
-  @Override
-  public int getHeight() {
-    return Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT;
+  private String getCPSText(int cps) {
+    return String.format("%2d CPS", cps);
   }
 
   @Override
   public void drawItem(Minecraft mc, boolean layoutMode) {
-    int currentCPS = this.counter.getCurrentCPS();
-
-    String text = String.format("%2d CPS", currentCPS);
-
-    ScaledResolution sr = new ScaledResolution(mc);
-
-    int offset = getWidth() - mc.fontRenderer.getStringWidth(text);
-
-    int width = getWidth() + 4;
-    int height = getHeight();
-
-    int x = getComputedX(sr);
-    int y = getComputedY(sr);
-
-    drawRect(x, y - 1, width, height + 2);
-
-    mc.fontRenderer.drawString(text, x + 2 + offset, y + 1, 0xffffff);
-
+    text = this.getCPSText(this.counter.getCurrentCPS());
+    super.drawItem(mc, layoutMode);
   }
 
   @SubscribeEvent

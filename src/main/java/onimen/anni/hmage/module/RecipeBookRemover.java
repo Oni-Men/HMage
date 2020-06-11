@@ -11,13 +11,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class RecipeBookRemover extends AbstractModule {
 
   @Override
-  public String getName() {
-    return "HideRecipeBook";
-  }
-
-  @Override
-  public String getDescription() {
-    return "レシピブックを表示しない";
+  public String getId() {
+    return "module.hide-recipebook";
   }
 
   @SubscribeEvent

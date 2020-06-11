@@ -26,13 +26,8 @@ public class CustomGuiBackground extends AbstractModule {
   };
 
   @Override
-  public String getName() {
-    return "CustomGuiBackground";
-  }
-
-  @Override
-  public String getDescription() {
-    return "GUIの背景を変更します";
+  public String getId() {
+    return "module.custom-gui-bg";
   }
 
   @Override
