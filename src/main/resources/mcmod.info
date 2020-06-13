@@ -2,13 +2,13 @@
 {
   "modid": "hmage",
   "name": "HMage",
-  "description": "Better minecraft pvp life for HMage players",
+  "description": "NIHONJIN HA HMAGE DE ATTOTEKI SEICHO",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "https://hmage123456.github.io/hmgemod/",
   "updateUrl": "",
-  "authorList": ["onimen"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": ["Onimen", "Namiken"],
+  "credits": "Thank you for all Users and Contributors!!!",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
