@@ -13,8 +13,10 @@ import java.util.stream.Collectors;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 
-import net.minecraft.client.resources.I18n;
-import net.minecraft.command.*;
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
