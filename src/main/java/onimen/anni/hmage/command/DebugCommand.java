@@ -10,6 +10,7 @@ import com.google.gson.GsonBuilder;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
@@ -34,7 +35,9 @@ public class DebugCommand extends CommandBase implements IClientCommand {
 
   @Override
   public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-    if (args.length == 0) { return; }
+    if (args.length == 0) {
+      throw new WrongUsageException(getUsage(sender));
+    }
 
     switch (args[0]) {
     case "reload":
