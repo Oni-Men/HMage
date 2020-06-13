@@ -40,17 +40,19 @@ public abstract class LabelHUD extends AbstractHUD {
     if (this.fr == null)
       this.fr = mc.fontRenderer;
 
-    ScaledResolution sr = new ScaledResolution(mc);
-    int width = getWidth();
-    int height = getHeight();
+    if (this.text != null && !this.text.isEmpty()) {
+      ScaledResolution sr = new ScaledResolution(mc);
+      int width = getWidth();
+      int height = getHeight();
 
-    int x = getComputedX(sr);
-    int y = getComputedY(sr);
+      int x = getComputedX(sr);
+      int y = getComputedY(sr);
 
-    if (background != 0) {
-      drawRect(x, y, width, height, background);
+      if (background != 0) {
+        drawRect(x, y, width, height, background);
+      }
+
+      mc.fontRenderer.drawString(text, x + paddingX, y + paddingY + 1, color);
     }
-
-    mc.fontRenderer.drawString(text, x + paddingX, y + paddingY + 1, color);
   }
 }
