@@ -22,7 +22,8 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.BossInfo.Color;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.HMage;
@@ -71,7 +72,9 @@ public class AnniObserver {
   }
 
   @SideOnly(Side.CLIENT)
-  public void onClientTick(ClientTickEvent event) {
+  public void onClientTick(PlayerTickEvent event) {
+    if (event.phase != Phase.END) { return; }
+
     if (mc.ingameGUI == null) {
       HMage.anniObserverMap.unsetAnniObserver();
       return;

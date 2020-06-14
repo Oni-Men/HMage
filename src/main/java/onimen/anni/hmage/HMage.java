@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.GameSettings.Options;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.util.MovementInputFromOptions;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -31,7 +30,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.cape.GlobalPlayerUseCapeManager;
@@ -58,7 +57,6 @@ import onimen.anni.hmage.observer.AnniChatReciveExecutor;
 import onimen.anni.hmage.observer.AnniObserverMap;
 import onimen.anni.hmage.observer.killeffect.AnniKillEffectManager;
 import onimen.anni.hmage.transformer.HurtingArmorInjector;
-import onimen.anni.hmage.util.CustomMovementInput;
 import onimen.anni.hmage.util.GuiScreenUtils;
 import onimen.anni.hmage.util.ShotbowUtils;
 import onimen.anni.hmage.util.scheduler.SyncTaskQueue;
@@ -72,8 +70,6 @@ public class HMage {
 
   public static HMage INSTANCE;
   private Minecraft mc;
-
-  private CustomMovementInput customMovementInput;
 
   private static Map<String, InterfaceModule> moduleMap = Maps.newLinkedHashMap();
   private static Map<String, InterfaceHUD> hudMap = Maps.newLinkedHashMap();
@@ -130,6 +126,7 @@ public class HMage {
     this.registerModule(new CustomGuiBackground());
 
     //HUD
+    //this.registerModule(new ToggleSneakSprintHUD());
     this.registerModule(new ArrowCounterHUD());
     this.registerModule(new StatusEffectHUD());
     this.registerModule(new ArmorDurabilityHUD());
@@ -150,20 +147,10 @@ public class HMage {
     //Anni用スレッド開始
     AnniChatReciveExecutor.startThread();
 
-    customMovementInput = new CustomMovementInput(Minecraft.getMinecraft().gameSettings);
   }
 
   @SubscribeEvent
-  public void onClientTick(ClientTickEvent event) {
-    if (mc == null)
-      return;
-
-    if (mc.player != null && customMovementInput != null) {
-      //If player uses vanilla MovementInput. use togglesneak input
-      if (mc.player.movementInput instanceof MovementInputFromOptions)
-        mc.player.movementInput = customMovementInput;
-    }
-
+  public void onPlayerTick(PlayerTickEvent event) {
     if (anniObserverMap.getAnniObserver() != null) {
       anniObserverMap.getAnniObserver().onClientTick(event);
     }
