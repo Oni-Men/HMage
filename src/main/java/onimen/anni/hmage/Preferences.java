@@ -18,9 +18,6 @@ public class Preferences {
   public static Properties cfg;
 
   public static boolean enabled = true;
-  public static boolean toggleSneak = true;
-  public static int toggleSneakThreshold = 300;
-  public static boolean toggleSprint = true;
   public static boolean hurtingArmor = true;
   public static int hurtingArmorColor = 0xFFFF0000;
 
@@ -41,8 +38,6 @@ public class Preferences {
 
     enabled = getBoolean("enabled", true);
 
-    toggleSneak = getBoolean("toggleSneak.enabled", true);
-    toggleSneakThreshold = getInt("toggleSneak.threshold", 300);
     hurtingArmor = getBoolean("hurtingArmor.enabled", true);
     hurtingArmorColor = getInt("hurtingArmor.color", 0xFFFF0000);
   }
@@ -53,8 +48,6 @@ public class Preferences {
 
     setBoolean("enabled", enabled);
 
-    setBoolean("toggleSneak.enabled", toggleSneak);
-    setInt("toggleSneak.threshold", toggleSneakThreshold);
     setBoolean("hurtingArmor.enabled", hurtingArmor);
     setInt("hurtingArmor.color", hurtingArmorColor);
 
