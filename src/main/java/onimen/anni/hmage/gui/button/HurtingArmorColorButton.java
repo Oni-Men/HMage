@@ -23,7 +23,7 @@ public class HurtingArmorColorButton implements ButtonObject {
 
   @Override
   public String getButtonText() {
-    return "Change Color";
+    return getTitle();
   }
 
   @Override

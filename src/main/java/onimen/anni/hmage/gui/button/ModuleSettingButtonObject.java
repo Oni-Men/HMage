@@ -5,7 +5,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.resources.I18n;
 import onimen.anni.hmage.gui.GuiModuleSetting;
 import onimen.anni.hmage.module.InterfaceModule;
 
@@ -26,7 +25,7 @@ public class ModuleSettingButtonObject implements ButtonObject {
 
   @Override
   public String getButtonText() {
-    return I18n.format("hmage.module-option");
+    return module.getName();
   }
 
   @Override

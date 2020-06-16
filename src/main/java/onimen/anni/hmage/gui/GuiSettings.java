@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -56,23 +55,30 @@ public class GuiSettings extends GuiScroll {
 
     ScaledResolution sr = new ScaledResolution(mc);
 
-    int x = sr.getScaledWidth() / 2 + 30;
-    int y = 32 + 24;
-    //1文字の半分の高さだけずらす
-    y -= this.fontRenderer.FONT_HEIGHT / 2 - 12;
-
-    int width = 100;
+    int width = 150;
     int height = 20;
+    int x = sr.getScaledWidth() / 2 - 160;
+    int y = 64;
 
-    int id = 0;
-    for (ButtonObject module : this.buttonObjects) {
-      GuiButton button = new GuiButton(id, x, y, width, height, module.getButtonText());
+    int splitIndex = this.buttonObjects.size() / 2;
+    List<ButtonObject> left = this.buttonObjects.subList(0, splitIndex);
+    List<ButtonObject> right = this.buttonObjects.subList(splitIndex, this.buttonObjects.size());
+
+    for (ButtonObject obj : left) {
+      GuiButton button = new GuiButton(obj.hashCode(), x, y, width, height, obj.getButtonText());
       this.addButton(button);
-      id++;
       y += 24;
     }
 
-    maxScrollAmount = this.buttonObjects.size() * 24 + 48 - sr.getScaledHeight();
+    x = sr.getScaledWidth() / 2 + 10;
+    y = 64;
+    for (ButtonObject obj : right) {
+      GuiButton button = new GuiButton(obj.hashCode(), x, y, width, height, obj.getButtonText());
+      this.addButton(button);
+      y += 24;
+    }
+
+    maxScrollAmount = splitIndex * 24 + 48 - sr.getScaledHeight();
     if (maxScrollAmount < 0) {
       maxScrollAmount = 0;
     }
@@ -90,8 +96,12 @@ public class GuiSettings extends GuiScroll {
 
   @Override
   protected void actionPerformed(GuiButton button) {
-    ButtonObject buttonObject = buttonObjects.get(button.id);
-    buttonObject.actionPerformed(button);
+    ButtonObject mouseOveredObject = buttonObjects
+        .stream()
+        .filter(b -> b.hashCode() == button.id)
+        .findFirst()
+        .orElse(null);
+    mouseOveredObject.actionPerformed(button);
   }
 
   @Override
@@ -103,20 +113,8 @@ public class GuiSettings extends GuiScroll {
   @Override
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
     //    super.drawScreen(mouseX, mouseY, partialTicks);
-    ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-
     this.drawDefaultBackground();
     this.drawCenteredString(this.fontRenderer, "- HMage Settings -", this.width / 2, 16 - amountScroll, 0xffffff);
-
-    int x = sr.getScaledWidth() / 2 - 130;
-    int y = 32 - amountScroll;
-
-    y += 12;
-
-    for (ButtonObject buttonObject : this.buttonObjects) {
-      this.drawString(this.fontRenderer, buttonObject.getTitle(), x, y, 0xffffff);
-      y += 24;
-    }
 
     ButtonObject mouseOveredObject = null;
 
@@ -129,7 +127,7 @@ public class GuiSettings extends GuiScroll {
 
       //マウスでかぶさっているボタンを取得
       if (button.isMouseOver()) {
-        mouseOveredObject = buttonObjects.get(i);
+        mouseOveredObject = buttonObjects.stream().filter(b -> b.hashCode() == button.id).findFirst().orElse(null);
       }
     }
     GlStateManager.popMatrix();

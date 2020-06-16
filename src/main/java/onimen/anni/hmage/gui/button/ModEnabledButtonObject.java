@@ -15,7 +15,7 @@ public class ModEnabledButtonObject implements ButtonObject {
 
   @Override
   public String getButtonText() {
-    return I18n.format(Preferences.enabled ? "hmage.enable" : "hmage.disable");
+    return getTitle() + " : " + I18n.format(Preferences.enabled ? "hmage.enable" : "hmage.disable");
   }
 
   @Override

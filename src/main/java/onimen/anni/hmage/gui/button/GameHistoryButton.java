@@ -19,7 +19,7 @@ public class GameHistoryButton implements ButtonObject {
 
   @Override
   public String getButtonText() {
-    return "Open";
+    return getTitle();
   }
 
   @Override
