@@ -10,6 +10,8 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.module.AbstractModule;
+import onimen.anni.hmage.module.annotation.FloatOption;
+import onimen.anni.hmage.module.annotation.IntegerOption;
 import onimen.anni.hmage.module.hud.layout.Layout;
 import onimen.anni.hmage.module.hud.layout.Layout.LayoutType;
 
@@ -20,24 +22,48 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
   protected int widthHashCode, heightHashCode;
   protected int cachedWidth, cachedHeight;
 
+  @IntegerOption(id = "x")
+  protected int x;
+
+  @IntegerOption(id = "y")
+  protected int y;
+
+  @FloatOption(id = "scale")
+  protected float scale;
+
   @Override
   public void setX(int value) {
-    Preferences.setInt(this.getId() + ".x", value);
+    this.x = value;
   }
 
   @Override
   public int getX() {
-    return Preferences.getInt(this.getId() + ".x", getDefaultX());
+    return this.x;
   }
 
   @Override
   public void setY(int value) {
-    Preferences.setInt(this.getId() + ".y", value);
+    this.y = value;
   }
 
   @Override
   public int getY() {
-    return Preferences.getInt(this.getId() + ".y", getDefaultY());
+    return y;
+  }
+
+  @Override
+  public void setScale(float value) {
+    this.scale = value;
+  }
+
+  @Override
+  public float getScale() {
+    return this.scale;
+  }
+
+  @Override
+  public float getDefaultScale() {
+    return 1.0F;
   }
 
   @Override

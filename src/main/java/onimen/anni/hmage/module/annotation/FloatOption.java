@@ -1,14 +1,14 @@
 package onimen.anni.hmage.module.annotation;
 
 import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.*;
 
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RUNTIME)
 @Target(FIELD)
-public @interface IntegerOption {
+public @interface FloatOption {
 
   String id();
 
@@ -16,10 +16,9 @@ public @interface IntegerOption {
 
   String description() default "";
 
-  int min() default 0;
+  float min() default 0F;
 
-  int max() default Integer.MAX_VALUE;
+  float max() default Float.MAX_VALUE;
 
-  int step() default 1;
-
+  float step() default 1F;
 }

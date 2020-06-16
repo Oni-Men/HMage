@@ -25,6 +25,12 @@ public interface InterfaceHUD extends InterfaceModule {
 
   public int getDefaultY();
 
+  public float getDefaultScale();
+
+  public void setScale(float value);
+
+  public float getScale();
+
   public void drawItem(Minecraft mc);
 
   public void drawItem(Minecraft mc, boolean layoutMode);
