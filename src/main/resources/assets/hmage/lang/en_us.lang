@@ -9,8 +9,12 @@ hmage.gui.guihudlayout.desc2=Drag with right mouse button to change base positio
 hmage.gui.guihudlayout.desc3=Click middle mouse button to toggle horizontal/vertical mode;
 hmage.gui.button.hudlayoutbutton.title=Layout of HUD
 hmage.gui.button.hudlayoutbutton.buttontext=Customize layout
+hmage.gui.back=Back
+hmage.gui.change-color=Change a Color
 
 # Modules
+
+hmage.module-option=Module Options
 
 hmage.module.hide-recipebook.name=Hide Recipe Book
 hmage.module.hide-recipebook.description=Remove recipe book from survival inventory
@@ -32,3 +36,6 @@ hmage.module.hud.kill-counter.name=Kill Counter
 hmage.module.hud.kill-counter.description=Display your kill count.%n(Only avaiable when you playing Annihilation)
 hmage.module.hud.nexus-damage-counter.name=Nexus Damage Counter
 hmage.module.hud.nexus-damage-counter.description=Display your nexus damage.%n(Only avaiable when you playing Annihilation)
+hmage.module.hud.toggle-sneak-sprint.name=Toggle Sneak & Sprint
+hmage.module.old-gui.name=Old GUI
+hmage.module.old-gui.description=Render GUI as 1.7.10 (beta)
