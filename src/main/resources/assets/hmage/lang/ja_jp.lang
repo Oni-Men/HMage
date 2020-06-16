@@ -15,13 +15,15 @@ hmage.gui.change-color=色を変更
 # Modules
 
 hmage.module.hide-recipebook.name=Hide Recipe Book
-hmage.module.hide-recipebook.description=サバイバルインベントリからレシピ本を削除します。
+hmage.module.hide-recipebook.description=インベントリからレシピ本を削除します。
 hmage.module.unaffected-fov.name=Fixed FOV
 hmage.module.unaffected-fov.description=ステータス効果が視野に影響しません.%n(俊敏と鈍足)
 hmage.module.custom-gui-bg.name=Custom GUI Background
 hmage.module.custom-gui-bg.description=好きな色をカラーピッカーで選べます。
 hmage.module.hud.arrorw-couter.name=Arrow Counter
 hmage.module.hud.arrorw-couter.description=インベントリ内の矢の残数を表示します。
+hmage.module.hud.arrorw-couter.not-always.name=Not always
+hmage.module.hud.arrorw-couter.not-always.description=弓か矢を手に持っている時だけ表示する。
 hmage.module.hud.status-effect.name=Status Effect HUD
 hmage.module.hud.status-effect.description=ステータス効果の情報を表示します。
 hmage.module.hud.equipment-info.name=Equipment Info HUD

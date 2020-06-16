@@ -12,6 +12,7 @@ public @interface BooleanOption {
 
   String id();
 
-  String name();
+  String name() default "";
 
+  String description() default "";
 }

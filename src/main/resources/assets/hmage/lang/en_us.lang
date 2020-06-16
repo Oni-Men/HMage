@@ -14,16 +14,19 @@ hmage.gui.change-color=Change a Color
 
 # Modules
 
+hmage.module=Module
 hmage.module-option=Module Options
 
 hmage.module.hide-recipebook.name=Hide Recipe Book
-hmage.module.hide-recipebook.description=Remove recipe book from survival inventory
+hmage.module.hide-recipebook.description=Remove recipe book from inventory
 hmage.module.unaffected-fov.name=Fixed FOV
 hmage.module.unaffected-fov.description=Unaffected by Status Effect.%n(such as Swiftness, Slowness)
 hmage.module.custom-gui-bg.name=Custom GUI Background
 hmage.module.custom-gui-bg.description=You can pick your favorite color with Color picker.
 hmage.module.hud.arrorw-couter.name=Arrow Counter
 hmage.module.hud.arrorw-couter.description=Count arrows in your inventory
+hmage.module.hud.arrorw-couter.not-always.name=Not always
+hmage.module.hud.arrorw-couter.not-always.description=Display when bow or arrow is in your hand.
 hmage.module.hud.status-effect.name=Status Effect HUD
 hmage.module.hud.status-effect.description=Display information of active status effects
 hmage.module.hud.equipment-info.name=Equipment Info HUD

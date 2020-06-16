@@ -109,6 +109,18 @@ public class GuiModuleSetting extends GuiScreen {
       this.drawString(this.fontRenderer, buttonObject.getTitle(), x, y, 0xffffff);
       y += 24;
     }
+
+    GuiButton mouseOvered = this.buttonList.stream().filter(b -> b.isMouseOver()).findFirst().orElse(null);
+    if (mouseOvered != null) {
+      ButtonObject mouseOveredObject = this.buttonObjects.stream().filter(b -> b.hashCode() == mouseOvered.id)
+          .findFirst().orElse(null);
+      if (mouseOveredObject != null) {
+        List<String> description = mouseOveredObject.getDescription();
+        if (description != null && !description.isEmpty()) {
+          this.drawHoveringText(description, mouseX, mouseY);
+        }
+      }
+    }
   }
 
   @Override
@@ -119,7 +131,7 @@ public class GuiModuleSetting extends GuiScreen {
   private void addBooleanComponents(Set<Entry<Field, BooleanOption>> entrySet) {
     JavaUtil.tryLoopOptionEntrySet(entrySet, (field, option) -> {
       field.setAccessible(true);
-      BooleanButtonObject booleanButtonObject = new BooleanButtonObject(option.name(), value -> {
+      BooleanButtonObject booleanButtonObject = new BooleanButtonObject(module.getId(), option, value -> {
         JavaUtil.tryExecuteConsumer(field, f -> {
           field.setAccessible(true);
           field.setBoolean(module, value);

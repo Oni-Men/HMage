@@ -7,9 +7,13 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import onimen.anni.hmage.module.annotation.BooleanOption;
 import onimen.anni.hmage.module.hud.layout.Layout;
 
 public class ArrowCounterHUD extends AbstractHUD {
+
+  @BooleanOption(id = "not-always", name = "name", description = "description")
+  private boolean notAlways;
 
   @Override
   public String getId() {
@@ -64,13 +68,13 @@ public class ArrowCounterHUD extends AbstractHUD {
     ItemStack stackInHand = mc.player.getHeldItemMainhand();
     int itemId = Item.getIdFromItem(stackInHand.getItem());
     //If item that's in player's main hand wasn't arrow or bow.
-    if (itemId != 262 && itemId != 261 && !layoutMode)
+    if (itemId != 262 && itemId != 261 && !layoutMode && notAlways)
       return;
 
     InventoryPlayer inventory = mc.player.inventory;
     int arrowCount = layoutMode ? 64 : this.countArrows(inventory);
 
-    if (arrowCount == 0)
+    if (arrowCount == 0 && notAlways)
       return;
 
     ScaledResolution sr = new ScaledResolution(mc);

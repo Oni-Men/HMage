@@ -16,7 +16,7 @@ public abstract class AbstractModule implements InterfaceModule {
 
   private static final String LINE_SEPARATOR = System.lineSeparator();
 
-  @BooleanOption(id = "enabled", name = "Module")
+  @BooleanOption(id = "enabled")
   private boolean enabled = true;
 
   public AbstractModule() {
