@@ -10,6 +10,7 @@ hmage.gui.guihudlayout.desc3=マウスホイールをクリックで水平/垂�
 hmage.gui.button.hudlayoutbutton.title=HUDのレイアウト
 hmage.gui.button.hudlayoutbutton.buttontext=カスタマイズ
 hmage.gui.back=戻る
+hmage.gui.change-color=色を変更
 
 # Modules
 
@@ -33,3 +34,4 @@ hmage.module.hud.kill-counter.name=Kill Counter
 hmage.module.hud.kill-counter.description=キル数を表示します%n(Annihilationプレイ中のみ)
 hmage.module.hud.nexus-damage-counter.name=Nexus Damage Counter
 hmage.module.hud.nexus-damage-counter.description=ネクサスダメージを表示します。%n(Annihilationプレイ中のみ)
+hmage.module.old-gui.description=GUIを1.7.10で描画 (試験段階)
