@@ -1,61 +1,30 @@
 package onimen.anni.hmage.module;
 
-import java.util.List;
-import java.util.function.Consumer;
-
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.event.DrawWorldBackgroundEvent;
-import onimen.anni.hmage.gui.GuiColorPicker;
-import onimen.anni.hmage.gui.button.ButtonObject;
+import onimen.anni.hmage.module.annotation.ColorOption;
 
 public class CustomGuiBackground extends AbstractModule {
 
-  private Consumer<Integer> callback = i -> {
-    Preferences.setInt(this.getName() + ".color", i);
-    Preferences.save();
-  };
+  @ColorOption(id = "color", name = "GUI Background Color")
+  private int color = 0x4d000000;
 
   @Override
   public String getId() {
     return "hmage.module.custom-gui-bg";
   }
 
-  @Override
-  public ButtonObject getPreferenceButton() {
-    return new ButtonObject() {
-
-      @Override
-      public String getTitle() {
-        return getName();
-      }
-
-      @Override
-      public List<String> getDescription() {
-        return null;
-      }
-
-      @Override
-      public String getButtonText() {
-        return "Change color";
-      }
-
-      @Override
-      public void actionPerformed(GuiButton button) {
-        int color = Preferences.getInt(getName() + ".color", 0x33000000);
-        Minecraft.getMinecraft()
-            .displayGuiScreen(new GuiColorPicker(null, callback, color));
-      }
-    };
+  public CustomGuiBackground() {
+    super();
+    super.loadPreferences(this);
   }
 
   @SubscribeEvent
@@ -84,11 +53,10 @@ public class CustomGuiBackground extends AbstractModule {
     GlStateManager.disableTexture2D();
     GlStateManager.color(1F, 1F, 1F, 1F);
 
-    int c = Preferences.getInt(this.getName() + ".color", 0x33000000);
-    float alpha = (float) (c >> 24 & 255) / 255F;
-    float red = (float) (c >> 16 & 255) / 255F;
-    float green = (float) (c >> 8 & 255) / 255F;
-    float blue = (float) (c & 255) / 255F;
+    float alpha = (float) (color >> 24 & 255) / 255F;
+    float red = (float) (color >> 16 & 255) / 255F;
+    float green = (float) (color >> 8 & 255) / 255F;
+    float blue = (float) (color & 255) / 255F;
 
     builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 

@@ -2,8 +2,6 @@ package onimen.anni.hmage.module;
 
 import java.util.List;
 
-import onimen.anni.hmage.gui.button.ButtonObject;
-
 public interface InterfaceModule {
 
   public boolean isEnable();
@@ -21,7 +19,4 @@ public interface InterfaceModule {
   public String getName();
 
   public List<String> getDescription();
-
-  public ButtonObject getPreferenceButton();
-
 }

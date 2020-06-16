@@ -44,6 +44,7 @@ import onimen.anni.hmage.gui.GuiSettings;
 import onimen.anni.hmage.module.CustomGuiBackground;
 import onimen.anni.hmage.module.FixedFOV;
 import onimen.anni.hmage.module.InterfaceModule;
+import onimen.anni.hmage.module.OldGUI;
 import onimen.anni.hmage.module.RecipeBookRemover;
 import onimen.anni.hmage.module.hud.AcroJumpHUD;
 import onimen.anni.hmage.module.hud.ArmorDurabilityHUD;
@@ -124,9 +125,9 @@ public class HMage {
     this.registerModule(new RecipeBookRemover());
     this.registerModule(new FixedFOV());
     this.registerModule(new CustomGuiBackground());
+    this.registerModule(new OldGUI());
 
     //HUD
-    //this.registerModule(new ToggleSneakSprintHUD());
     this.registerModule(new ArrowCounterHUD());
     this.registerModule(new StatusEffectHUD());
     this.registerModule(new ArmorDurabilityHUD());

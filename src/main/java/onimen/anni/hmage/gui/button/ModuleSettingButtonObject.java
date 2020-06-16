@@ -2,16 +2,21 @@ package onimen.anni.hmage.gui.button;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
+import onimen.anni.hmage.gui.GuiModuleSetting;
 import onimen.anni.hmage.module.InterfaceModule;
 
 public class ModuleSettingButtonObject implements ButtonObject {
 
   private InterfaceModule module;
+  private GuiScreen parent;
 
-  public ModuleSettingButtonObject(InterfaceModule interfaceModule) {
+  public ModuleSettingButtonObject(InterfaceModule interfaceModule, GuiScreen parent) {
     this.module = interfaceModule;
+    this.parent = parent;
   }
 
   @Override
@@ -21,13 +26,12 @@ public class ModuleSettingButtonObject implements ButtonObject {
 
   @Override
   public String getButtonText() {
-    return I18n.format(module.isEnable() ? "hmage.enable" : "hmage.disable");
+    return I18n.format("hmage.module-option");
   }
 
   @Override
   public void actionPerformed(GuiButton button) {
-    module.setEnable(!module.isEnable());
-    button.displayString = getButtonText();
+    Minecraft.getMinecraft().displayGuiScreen(new GuiModuleSetting(parent, module));
   }
 
   @Override
