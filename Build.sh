@@ -1,2 +1,2 @@
 ./gradlew build
-cp -f build/libs/HMage-1.0.1.jar "$APPDATA"/.anni/mods/HMage-1.0.1.jar
+cp -f build/libs/HMage-MC1.12.2.jar "$APPDATA"/.anni/mods/HMage-MC1.12.2.jar
