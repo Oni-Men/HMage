@@ -85,7 +85,7 @@ public class ArmorDurabilityHUD extends AbstractHUD {
       cachedWidth = width;
       widthHashCode = armorList.hashCode();
     }
-    return cachedWidth;
+    return (int) (cachedWidth * this.scale);
   }
 
   @Override
@@ -98,7 +98,7 @@ public class ArmorDurabilityHUD extends AbstractHUD {
           .size() * (20);
       heightHashCode = armorList.hashCode();
     }
-    return cachedHeight;
+    return (int) (cachedHeight * this.scale);
   }
 
   public int getDurabilityColor(ItemStack stack) {
@@ -138,8 +138,12 @@ public class ArmorDurabilityHUD extends AbstractHUD {
     Collections.reverse(armorList);
     Layout layout = getLayout();
 
-    int x = getComputedX(sr);
-    int y = getComputedY(sr);
+    int x = 0;
+    int y = 0;
+
+    GlStateManager.pushMatrix();
+    GlStateManager.translate(getComputedX(sr), getComputedY(sr), 0);
+    GlStateManager.scale(this.scale, this.scale, 1.0F);
 
     for (ItemStack armor : armorList) {
 
@@ -166,6 +170,7 @@ public class ArmorDurabilityHUD extends AbstractHUD {
 
     }
 
+    GlStateManager.popMatrix();
     GlStateManager.disableRescaleNormal();
     GlStateManager.disableBlend();
 
