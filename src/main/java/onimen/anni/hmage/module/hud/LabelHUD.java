@@ -3,6 +3,7 @@ package onimen.anni.hmage.module.hud;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 
 public abstract class LabelHUD extends AbstractHUD {
 
@@ -27,12 +28,12 @@ public abstract class LabelHUD extends AbstractHUD {
       cachedWidth = this.fr.getStringWidth(text) + 2 * paddingX;
       widthHashCode = text.hashCode();
     }
-    return cachedWidth;
+    return (int) (cachedWidth * this.scale);
   }
 
   @Override
   public int getHeight() {
-    return (this.fr == null ? 0 : this.fr.FONT_HEIGHT) + 2 * paddingY;
+    return (int) ((this.fr == null ? 0 : this.fr.FONT_HEIGHT) + 2 * paddingY * this.scale);
   }
 
   @Override
@@ -45,14 +46,20 @@ public abstract class LabelHUD extends AbstractHUD {
       int width = getWidth();
       int height = getHeight();
 
-      int x = getComputedX(sr);
-      int y = getComputedY(sr);
+      int x = 0;
+      int y = 0;
+
+      GlStateManager.pushMatrix();
+      GlStateManager.translate(getComputedX(sr), getComputedY(sr), 0);
+      GlStateManager.scale(this.scale, this.scale, 1.0F);
 
       if (background != 0) {
         drawRect(x, y, width, height, background);
       }
 
       mc.fontRenderer.drawString(text, x + paddingX, y + paddingY + 1, color);
+
+      GlStateManager.popMatrix();
     }
   }
 }
