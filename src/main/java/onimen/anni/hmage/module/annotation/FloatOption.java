@@ -18,7 +18,7 @@ public @interface FloatOption {
 
   float min() default 0F;
 
-  float max() default Float.MAX_VALUE;
+  float max() default 100.0F;
 
   float step() default 1F;
 }

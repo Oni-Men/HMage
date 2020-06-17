@@ -99,7 +99,7 @@ public class HMageGuiSlider extends GuiButton {
   public void mouseReleased(int mousePosX, int mousePosY) {
     this.isSliding = false;
     if (this.obj.onReleased != null) {
-      this.obj.onReleased.accept(value);
+      this.obj.onReleased.accept(this.userIntegers ? this.getIntValue() : this.getFloatValue());
     }
   }
 }
