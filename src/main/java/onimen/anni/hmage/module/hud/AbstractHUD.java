@@ -28,8 +28,8 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
   @IntegerOption(id = "y")
   protected int y;
 
-  @FloatOption(id = "scale")
-  protected float scale;
+  @FloatOption(id = "scale", min = 0.0F, max = 10.0F)
+  protected float scale = 1.0f;
 
   @Override
   public void setX(int value) {
@@ -90,7 +90,6 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
     case LEFT:
       break;
     case RIGHT:
-      x *= -1;
       x += sr.getScaledWidth() - getWidth();
       break;
     case CENTERX:
@@ -109,7 +108,6 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
     case TOP:
       break;
     case BOTTOM:
-      y *= -1;
       y += sr.getScaledHeight() - getHeight();
       break;
     case CENTERY:

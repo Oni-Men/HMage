@@ -136,4 +136,20 @@ public class Preferences {
     cfg.setProperty(key, String.valueOf(value));
   }
 
+  public static float getFloat(String key, float defaultValue) {
+    if (cfg == null)
+      return defaultValue;
+    try {
+      return Float.parseFloat(cfg.getProperty(key, String.valueOf(defaultValue)));
+    } catch (NumberFormatException e) {
+      return defaultValue;
+    }
+  }
+
+  public static void setFloat(String key, float value) {
+    if (cfg == null)
+      return;
+    cfg.setProperty(key, String.valueOf(value));
+  }
+
 }

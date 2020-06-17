@@ -20,6 +20,7 @@ import onimen.anni.hmage.module.AbstractModule;
 import onimen.anni.hmage.module.InterfaceModule;
 import onimen.anni.hmage.module.annotation.BooleanOption;
 import onimen.anni.hmage.module.annotation.ColorOption;
+import onimen.anni.hmage.module.annotation.FloatOption;
 import onimen.anni.hmage.module.annotation.IntegerOption;
 import onimen.anni.hmage.util.JavaUtil;
 
@@ -39,6 +40,7 @@ public class GuiModuleSetting extends GuiScreen {
     addBooleanComponents(JavaUtil.getAnnotatedFields(fields, BooleanOption.class).entrySet());
     addIntegerComponents(JavaUtil.getAnnotatedFields(fields, IntegerOption.class).entrySet());
     addColorComponent(JavaUtil.getAnnotatedFields(fields, ColorOption.class).entrySet());
+    addFloatComponents(JavaUtil.getAnnotatedFields(fields, FloatOption.class).entrySet());
   }
 
   @Override
@@ -54,8 +56,8 @@ public class GuiModuleSetting extends GuiScreen {
 
     for (ButtonObject buttonObj : buttonObjects) {
       if (buttonObj instanceof NumberButtonObject) {
-        NumberButtonObject intObj = (NumberButtonObject) buttonObj;
-        HMageGuiSlider slider = new HMageGuiSlider(intObj.hashCode(), x, y, w, h, intObj);
+        NumberButtonObject numberObj = (NumberButtonObject) buttonObj;
+        HMageGuiSlider slider = new HMageGuiSlider(numberObj.hashCode(), x, y, w, h, numberObj);
         addButton(slider);
       } else {
         GuiButton button = new GuiButton(buttonObj.hashCode(), x, y, w, h, buttonObj.getButtonText());
@@ -152,6 +154,8 @@ public class GuiModuleSetting extends GuiScreen {
       NumberButtonObject integerButtonObject = new NumberButtonObject(option.name(), option.min(), option.max(),
           true);
 
+      integerButtonObject.value = ((float) field.getInt(module) - option.min()) / (option.max() - option.min());
+
       integerButtonObject.onReleased = value -> {
         JavaUtil.tryExecuteConsumer(field, f -> {
           field.setAccessible(true);
@@ -175,6 +179,26 @@ public class GuiModuleSetting extends GuiScreen {
         });
         buttonObjects.add(colorButtonObject);
       });
+    });
+  }
+
+  private void addFloatComponents(Set<Entry<Field, FloatOption>> entrySet) {
+    JavaUtil.tryLoopOptionEntrySet(entrySet, (field, option) -> {
+      field.setAccessible(true);
+
+      NumberButtonObject floatButtonObject = new NumberButtonObject(option.name(), option.min(), option.max(),
+          false);
+
+      floatButtonObject.value = (field.getFloat(module) - option.min()) / (option.max() - option.min());
+
+      floatButtonObject.onReleased = value -> {
+        JavaUtil.tryExecuteConsumer(field, f -> {
+          field.setAccessible(true);
+          field.setFloat(module, value.floatValue());
+        });
+      };
+
+      buttonObjects.add(floatButtonObject);
     });
   }
 

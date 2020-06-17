@@ -126,8 +126,16 @@ public class Layout {
     return this.xAxisLayout == LayoutType.RIGHT;
   }
 
+  public boolean isCenterX() {
+    return this.xAxisLayout == LayoutType.CENTERX;
+  }
+
   public boolean isBottom() {
     return this.yAxisLayout == LayoutType.BOTTOM;
+  }
+
+  public boolean isCenterY() {
+    return this.yAxisLayout == LayoutType.CENTERY;
   }
 
   public boolean isHorizontal() {

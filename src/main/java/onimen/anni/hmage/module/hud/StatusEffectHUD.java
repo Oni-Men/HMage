@@ -70,7 +70,7 @@ public class StatusEffectHUD extends AbstractHUD {
       widthHashCode = potionEffectList.hashCode();
     }
 
-    return this.cachedWidth;
+    return (int) (this.cachedWidth * this.scale);
   }
 
   @Override
@@ -83,7 +83,7 @@ public class StatusEffectHUD extends AbstractHUD {
           .size() * (20);
       heightHashCode = potionEffectList.hashCode();
     }
-    return cachedHeight;
+    return (int) (cachedHeight * this.scale);
   }
 
   @Override
@@ -105,8 +105,12 @@ public class StatusEffectHUD extends AbstractHUD {
 
     Layout position = getLayout();
 
-    int x = getComputedX(sr);
-    int y = getComputedY(sr);
+    GlStateManager.pushMatrix();
+    GlStateManager.translate(getComputedX(sr), getComputedY(sr), 0);
+    GlStateManager.scale(this.scale, this.scale, 1.0F);
+
+    int x = 0;
+    int y = 0;
 
     for (PotionEffect potionEffect : potionEffectList) {
 
@@ -120,6 +124,7 @@ public class StatusEffectHUD extends AbstractHUD {
       int iconIndex = potion.getStatusIconIndex();
 
       mc.getTextureManager().bindTexture(GuiContainer.INVENTORY_BACKGROUND);
+
       GlStateManager.enableBlend();
       GlStateManager.enableAlpha();
       GlStateManager.color(1F, 1F, 1F, 1F);
@@ -137,7 +142,9 @@ public class StatusEffectHUD extends AbstractHUD {
       } else {
         y += 20;
       }
+
     }
+    GlStateManager.popMatrix();
 
   }
 

@@ -9,6 +9,7 @@ import net.minecraft.client.resources.I18n;
 import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.module.annotation.BooleanOption;
 import onimen.anni.hmage.module.annotation.ColorOption;
+import onimen.anni.hmage.module.annotation.FloatOption;
 import onimen.anni.hmage.module.annotation.IntegerOption;
 import onimen.anni.hmage.util.JavaUtil;
 
@@ -42,7 +43,11 @@ public abstract class AbstractModule implements InterfaceModule {
           field.setAccessible(true);
           field.setInt(module, Preferences.getInt(module.getId() + "." + option.id(), field.getInt(module)));
         });
-
+    JavaUtil.tryLoopOptionEntrySet(JavaUtil.getAnnotatedFields(fields, FloatOption.class).entrySet(),
+        (field, option) -> {
+          field.setAccessible(true);
+          field.setFloat(module, Preferences.getFloat(module.getId() + "." + option.id(), field.getFloat(module)));
+        });
   }
 
   public static void savePreferences(InterfaceModule module) {
@@ -61,6 +66,11 @@ public abstract class AbstractModule implements InterfaceModule {
         (field, option) -> {
           field.setAccessible(true);
           Preferences.setInt(module.getId() + "." + option.id(), field.getInt(module));
+        });
+    JavaUtil.tryLoopOptionEntrySet(JavaUtil.getAnnotatedFields(fields, FloatOption.class).entrySet(),
+        (field, option) -> {
+          field.setAccessible(true);
+          Preferences.setFloat(module.getId() + "." + option.id(), field.getFloat(module));
         });
   }
 
