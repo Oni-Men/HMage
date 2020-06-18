@@ -41,5 +41,7 @@ hmage.module.hud.kill-counter.description=Display your kill count.%n(Only avaiab
 hmage.module.hud.nexus-damage-counter.name=Nexus Damage Counter
 hmage.module.hud.nexus-damage-counter.description=Display your nexus damage.%n(Only avaiable when you playing Annihilation)
 hmage.module.hud.toggle-sneak-sprint.name=Toggle Sneak & Sprint
+hmage.module.hud.fps.name=FPS HUD
+hmage.module.hud.fps.description=Display your FPS
 hmage.module.old-gui.name=Old GUI
 hmage.module.old-gui.description=Render GUI as 1.7.10 (beta)
