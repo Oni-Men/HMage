@@ -1,11 +1,9 @@
 package onimen.anni.hmage.gui;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -31,18 +29,16 @@ public class GuiHUDLayout extends GuiScreen {
   private InterfaceHUD selectedHUD;
 
   private Set<Integer> xAxisGuides, yAxisGuides;
-  private Map<Integer, Consumer<Integer>> xSnappingMap, ySnappingMap;
 
-  private boolean isDragging;
+  private boolean isDragging, canDrag;
 
   private int prevMouseX, prevMouseY;
+
 
   public GuiHUDLayout(Map<String, InterfaceHUD> hudList) {
     this.hudMap = hudList;
     this.xAxisGuides = new HashSet<Integer>();
     this.yAxisGuides = new HashSet<Integer>();
-    xSnappingMap = new HashMap<>();
-    ySnappingMap = new HashMap<>();
   }
 
   @Override
@@ -152,38 +148,6 @@ public class GuiHUDLayout extends GuiScreen {
         this.selectedHUD = hud;
         this.isDragging = true;
 
-        if (mouseButton == 0) {
-          this.xSnappingMap.clear();
-          this.ySnappingMap.clear();
-
-          int snapX = hud.getComputedX(sr);
-          int snapY = hud.getComputedX(sr);
-          int width = hud.getWidth();
-          int height = hud.getHeight();
-
-          Layout layout = hud.getLayout();
-          int w = this.width;
-          int h = this.height;
-          this.xSnappingMap.put(snapX, i -> {
-            hud.setX(i - (layout.isCenterX() ? w / 2 : layout.isRight() ? w : 0));
-          });
-          this.xSnappingMap.put(snapX + width / 2, i -> {
-            hud.setX(i - width / 2);
-          });
-          this.xSnappingMap.put(snapX + width, i -> {
-            hud.setX(i - width);
-          });
-          this.ySnappingMap.put(snapY, i -> {
-            hud.setY(i);
-          });
-          this.ySnappingMap.put(snapY + height / 2, i -> {
-            hud.setY(i - height / 2);
-          });
-          this.ySnappingMap.put(snapY + height, i -> {
-            hud.setY(i - height);
-          });
-        }
-
         if (mouseButton == 2) {
           this.selectedHUD.setLayout(this.selectedHUD.getLayout().toggleDirection());
           return;
@@ -206,43 +170,17 @@ public class GuiHUDLayout extends GuiScreen {
         int freeDragY = mouseY - prevMouseY;
 
         if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-          int hudX = selectedHUD.getComputedX(sr);
-          int hudY = selectedHUD.getComputedY(sr);
-          int hudWidth = selectedHUD.getWidth();
-          int hudHeight = selectedHUD.getHeight();
-
-          final Layout layout = selectedHUD.getLayout();
-
-          Integer nearestGuideX = this.xSnappingMap.keySet().stream()
-              .map(x -> { //それぞれのX座標から一番近いガイドの座標
-                return this.xAxisGuides.stream()
-                    .sorted((a, b) -> Math.abs(a - x) - Math.abs(b - x))
-                    .findFirst()
-                    .orElse(null);
-              })
-              .filter(i -> i != null)
-              .sorted((a, b) -> Math.abs(a - mouseX) - Math.abs(b - mouseX))
-              .findFirst().orElse(null);
-
-          Consumer<Integer> onSnapped = xSnappingMap.get(nearestGuideX);
-
-          if (onSnapped != null) {
-            onSnapped.accept(nearestGuideX);
+          if (!canDrag) {
+            freeDragX = 0;
+            freeDragY = 0;
+            canDrag = true;
+          } else {
+            canDrag = false;
           }
-
-          Integer snapY = this.yAxisGuides.stream()
-              .filter(y -> Math.abs(y - mouseY) < 8)
-              .sorted((a, b) -> Math.abs(a - hudY) - Math.abs(b - hudY))
-              .findFirst().orElse(null);
-          if (snapY != null) {
-            this.selectedHUD.setY(snapY - (selectedHUD.getLayout().isCenterY() ? this.height / 2 : 0));
-          }
-
-        } else {
-          //free drag
-          this.selectedHUD.setX(this.selectedHUD.getX() + freeDragX);
-          this.selectedHUD.setY(this.selectedHUD.getY() + freeDragY);
         }
+        //free drag
+        this.selectedHUD.setX(this.selectedHUD.getX() + freeDragX);
+        this.selectedHUD.setY(this.selectedHUD.getY() + freeDragY);
 
       } else if (clickedMouseButton == 1) {
         //change base position
@@ -299,6 +237,7 @@ public class GuiHUDLayout extends GuiScreen {
       }
     }
   }
+
 
   private void initGuides() {
     xAxisGuides.clear();
