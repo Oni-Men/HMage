@@ -22,8 +22,8 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.BossInfo.Color;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.HMage;
@@ -39,7 +39,7 @@ public class AnniObserver {
   private Minecraft mc;
   private Map<UUID, BossInfoClient> bossInfoMap = null;
 
-  private int tickLeftWhileNoScoreboard = 0;
+  private int tickLeftWhileNoAnniScoreboard = 0;
 
   @Nonnull
   private final GameInfo gameInfo;
@@ -54,11 +54,11 @@ public class AnniObserver {
   }
 
   public void onJoinGame() {
-    this.tickLeftWhileNoScoreboard = 0;
+    this.tickLeftWhileNoAnniScoreboard = 0;
   }
 
   public void onLeaveGame() {
-    this.tickLeftWhileNoScoreboard = 0;
+    this.tickLeftWhileNoAnniScoreboard = 0;
     //gameInfoを保存
     File historyDataDir = AnniObserverMap.getHistoryDataDir();
     Gson gson = new Gson();
@@ -72,7 +72,7 @@ public class AnniObserver {
   }
 
   @SideOnly(Side.CLIENT)
-  public void onClientTick(PlayerTickEvent event) {
+  public void onClientTick(ClientTickEvent event) {
     if (event.phase != Phase.END) { return; }
 
     if (mc.ingameGUI == null) {
@@ -80,42 +80,44 @@ public class AnniObserver {
       return;
     }
 
-    //ゲームをプレイ中ではない場合
     if (mc.world == null) {
-      HMage.anniObserverMap.unsetAnniObserver();
-      return;
-    }
-
-    if (this.bossInfoMap == null) {
-      this.bossInfoMap = getBossInfoMap(mc.ingameGUI.getBossOverlay());
-    }
-
-    Scoreboard scoreboard = mc.world.getScoreboard();
-
-    //Anniをプレイ中かどうか確認
-    if (scoreboard != null && isAnniScoreboard(scoreboard)) {
-      tickLeftWhileNoScoreboard = 0;
-    } else {
-      tickLeftWhileNoScoreboard++;
-      if (tickLeftWhileNoScoreboard > 100) {
+      tickLeftWhileNoAnniScoreboard++;
+      if (tickLeftWhileNoAnniScoreboard > 100) {
         HMage.anniObserverMap.unsetAnniObserver();
         return;
       }
-    }
+    } else {
 
-    //フェーズを取得
-    if (bossInfoMap != null) {
-      for (BossInfoClient bossInfo : bossInfoMap.values()) {
-        if (bossInfo.getColor() == Color.BLUE) {
-          String name = bossInfo.getName().getUnformattedText();
-          this.gameInfo.setGamePhase(GamePhase.getGamePhasebyText(name));
+      if (this.bossInfoMap == null) {
+        this.bossInfoMap = getBossInfoMap(mc.ingameGUI.getBossOverlay());
+      }
+
+      Scoreboard scoreboard = mc.world.getScoreboard();
+      //Anniをプレイ中かどうか確認
+      if (scoreboard != null && isAnniScoreboard(scoreboard)) {
+        tickLeftWhileNoAnniScoreboard = 0;
+      } else {
+        tickLeftWhileNoAnniScoreboard++;
+        if (tickLeftWhileNoAnniScoreboard > 100) {
+          HMage.anniObserverMap.unsetAnniObserver();
+          return;
         }
       }
-    }
 
-    //Mapを取得
-    if (gameInfo.getMapName() == null && scoreboard != null) {
-      gameInfo.setMapName(getMapFromScoreboard(scoreboard));
+      //フェーズを取得
+      if (bossInfoMap != null) {
+        for (BossInfoClient bossInfo : bossInfoMap.values()) {
+          if (bossInfo.getColor() == Color.BLUE) {
+            String name = bossInfo.getName().getUnformattedText();
+            this.gameInfo.setGamePhase(GamePhase.getGamePhasebyText(name));
+          }
+        }
+      }
+
+      //Mapを取得
+      if (gameInfo.getMapName() == null && scoreboard != null) {
+        gameInfo.setMapName(getMapFromScoreboard(scoreboard));
+      }
     }
   }
 

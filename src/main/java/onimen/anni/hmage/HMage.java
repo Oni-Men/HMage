@@ -30,7 +30,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.cape.GlobalPlayerUseCapeManager;
@@ -153,7 +153,7 @@ public class HMage {
   }
 
   @SubscribeEvent
-  public void onPlayerTick(PlayerTickEvent event) {
+  public void onPlayerTick(ClientTickEvent event) {
     if (anniObserverMap.getAnniObserver() != null) {
       anniObserverMap.getAnniObserver().onClientTick(event);
     }
