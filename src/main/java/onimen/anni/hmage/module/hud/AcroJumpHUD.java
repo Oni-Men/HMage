@@ -1,18 +1,22 @@
 package onimen.anni.hmage.module.hud;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import onimen.anni.hmage.HMage;
 import onimen.anni.hmage.module.hud.layout.Layout;
 import onimen.anni.hmage.observer.ClassType;
 
-public class AcroJumpHUD extends AbstractHUD {
+public class AcroJumpHUD extends LabelHUD {
 
   private long allowFlightChanged = 0;
-  private String cooldownText = "Cannot Jump now...";
   private boolean prevAllowFlying = false;
+
+  public AcroJumpHUD() {
+    this.paddingX = 2;
+    this.paddingY = 1;
+    this.text = "Canno Jump now...";
+  }
 
   @Override
   public String getId() {
@@ -30,16 +34,6 @@ public class AcroJumpHUD extends AbstractHUD {
   }
 
   @Override
-  public int getWidth() {
-    return Minecraft.getMinecraft().fontRenderer.getStringWidth(cooldownText);
-  }
-
-  @Override
-  public int getHeight() {
-    return Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT;
-  }
-
-  @Override
   public Layout getDefaultLayout() {
     return Layout.getLayout().top().centerx();
   }
@@ -51,9 +45,9 @@ public class AcroJumpHUD extends AbstractHUD {
       if (!canBehaivor() || !this.isAcrobat()) { return; }
     }
 
-    ScaledResolution sr = new ScaledResolution(mc);
-    mc.fontRenderer.drawStringWithShadow(layoutMode ? "Jump Ready!" : cooldownText, getComputedX(sr), getComputedY(sr),
-        0xffffff);
+    text = layoutMode ? "Jump Ready" : getCooldownText();
+
+    super.drawItem(mc, layoutMode);
   }
 
   @SubscribeEvent
@@ -64,7 +58,7 @@ public class AcroJumpHUD extends AbstractHUD {
     if (prevAllowFlying && !allowFlying) {
       allowFlightChanged = System.currentTimeMillis();
     }
-    cooldownText = getCooldownText();
+    text = getCooldownText();
     prevAllowFlying = allowFlying;
   }
 

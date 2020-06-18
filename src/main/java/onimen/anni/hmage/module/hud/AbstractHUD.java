@@ -53,6 +53,8 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
 
   @Override
   public void setScale(float value) {
+    this.widthHashCode = 0;
+    this.heightHashCode = 0;
     this.scale = value;
   }
 
@@ -153,16 +155,13 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
     GlStateManager.disableTexture2D();
     GlStateManager.enableBlend();
 
-    GlStateManager.pushMatrix();
     GlStateManager.color(r, g, b, a);
-    GlStateManager.translate(x, y, 0);
     GlStateManager.glBegin(GL11.GL_QUADS);
-    GlStateManager.glVertex3f(0, height, 0);
-    GlStateManager.glVertex3f(width, height, 0);
-    GlStateManager.glVertex3f(width, 0, 0);
-    GlStateManager.glVertex3f(0, 0, 0);
+    GlStateManager.glVertex3f(x, y + height, 0);
+    GlStateManager.glVertex3f(x + width, y + height, 0);
+    GlStateManager.glVertex3f(x + width, y, 0);
+    GlStateManager.glVertex3f(x, y, 0);
     GlStateManager.glEnd();
-    GlStateManager.popMatrix();
 
     GlStateManager.disableBlend();
     GlStateManager.enableTexture2D();

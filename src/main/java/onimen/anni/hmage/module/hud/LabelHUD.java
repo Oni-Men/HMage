@@ -23,17 +23,17 @@ public abstract class LabelHUD extends AbstractHUD {
   @Override
   public int getWidth() {
     if (this.fr == null || this.text == null)
-      return paddingX * 2;
+      return (int) (paddingX * 2 * this.scale);
     if (widthHashCode != text.hashCode()) {
-      cachedWidth = this.fr.getStringWidth(text) + 2 * paddingX;
+      cachedWidth = (int) ((this.fr.getStringWidth(text) + 2 * paddingX) * this.scale);
       widthHashCode = text.hashCode();
     }
-    return (int) (cachedWidth * this.scale);
+    return cachedWidth;
   }
 
   @Override
   public int getHeight() {
-    return (int) ((this.fr == null ? 0 : this.fr.FONT_HEIGHT) + 2 * paddingY * this.scale);
+    return (int) (((this.fr == null ? 0 : this.fr.FONT_HEIGHT) + 2 * paddingY) * this.scale);
   }
 
   @Override
@@ -46,18 +46,16 @@ public abstract class LabelHUD extends AbstractHUD {
       int width = getWidth();
       int height = getHeight();
 
-      int x = 0;
-      int y = 0;
-
       GlStateManager.pushMatrix();
       GlStateManager.translate(getComputedX(sr), getComputedY(sr), 0);
-      GlStateManager.scale(this.scale, this.scale, 1.0F);
 
       if (background != 0) {
-        drawRect(x, y, width, height, background);
+        drawRect(0, 0, width, height, background);
       }
+      GlStateManager.translate(paddingX * this.scale, (paddingY + 1) * this.scale, 0);
+      GlStateManager.scale(this.scale, this.scale, 1.0F);
 
-      mc.fontRenderer.drawString(text, x + paddingX, y + paddingY + 1, color);
+      mc.fontRenderer.drawString(text, 0, 0, color);
 
       GlStateManager.popMatrix();
     }
