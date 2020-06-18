@@ -12,6 +12,8 @@ public @interface IntegerOption {
 
   String id();
 
+  boolean showMenu() default false;
+
   String name() default "";
 
   String description() default "";

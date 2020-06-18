@@ -4,20 +4,27 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import onimen.anni.hmage.module.annotation.ColorOption;
 
 public abstract class LabelHUD extends AbstractHUD {
 
   protected FontRenderer fr;
   protected String text;
+
+  @ColorOption(id = "color", name = "Text color")
   protected int color = 0xFFFFFFFF;
+
+  @ColorOption(id = "background", name = "Background color")
   protected int background = 0x4D000000;
   protected int paddingX, paddingY = 0;
 
   public LabelHUD() {
+    super.loadPreferences(this);
   }
 
   public LabelHUD(String text) {
     this.text = text;
+    super.loadPreferences(this);
   }
 
   @Override

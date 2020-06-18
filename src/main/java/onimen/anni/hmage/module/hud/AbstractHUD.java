@@ -22,13 +22,17 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
   protected int widthHashCode, heightHashCode;
   protected int cachedWidth, cachedHeight;
 
+  public AbstractHUD() {
+    super.loadPreferences(this);
+  }
+
   @IntegerOption(id = "x")
   protected int x;
 
   @IntegerOption(id = "y")
   protected int y;
 
-  @FloatOption(id = "scale", min = 0.0F, max = 10.0F)
+  @FloatOption(id = "scale", name = "Scale", min = 0.0F, max = 10.0F, showMenu = true)
   protected float scale = 1.0f;
 
   @Override

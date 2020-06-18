@@ -17,7 +17,7 @@ public class HMageGuiSlider extends GuiButton {
   private final NumberButtonObject obj;
 
   public HMageGuiSlider(int id, int x, int y, int width, int height, NumberButtonObject obj) {
-    super(id, x, y, width, height, obj.getButtonText() + (obj.useInts ? (int) obj.value : formatter.format(obj.value)));
+    super(id, x, y, width, height, "");
 
     this.obj = obj;
 
@@ -25,6 +25,8 @@ public class HMageGuiSlider extends GuiButton {
     this.max = obj.max;
     this.value = obj.value;
     this.userIntegers = obj.useInts;
+
+    setLabel();
   }
 
   public float getFloatValue() {

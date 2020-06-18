@@ -149,6 +149,9 @@ public class GuiModuleSetting extends GuiScreen {
 
   private void addIntegerComponents(Set<Entry<Field, IntegerOption>> entrySet) {
     JavaUtil.tryLoopOptionEntrySet(entrySet, (field, option) -> {
+      if (!option.showMenu())
+        return;
+
       field.setAccessible(true);
 
       NumberButtonObject integerButtonObject = new NumberButtonObject(option.name(), option.min(), option.max(),
@@ -184,6 +187,9 @@ public class GuiModuleSetting extends GuiScreen {
 
   private void addFloatComponents(Set<Entry<Field, FloatOption>> entrySet) {
     JavaUtil.tryLoopOptionEntrySet(entrySet, (field, option) -> {
+      if (!option.showMenu())
+        return;
+
       field.setAccessible(true);
 
       NumberButtonObject floatButtonObject = new NumberButtonObject(option.name(), option.min(), option.max(),
