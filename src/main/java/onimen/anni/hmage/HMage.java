@@ -50,6 +50,7 @@ import onimen.anni.hmage.module.hud.AcroJumpHUD;
 import onimen.anni.hmage.module.hud.ArmorDurabilityHUD;
 import onimen.anni.hmage.module.hud.ArrowCounterHUD;
 import onimen.anni.hmage.module.hud.CpsCounterHUD;
+import onimen.anni.hmage.module.hud.FpsHUD;
 import onimen.anni.hmage.module.hud.InterfaceHUD;
 import onimen.anni.hmage.module.hud.KillCounterHUD;
 import onimen.anni.hmage.module.hud.NexusDamageHUD;
@@ -135,6 +136,7 @@ public class HMage {
     this.registerModule(new AcroJumpHUD());
     this.registerModule(new KillCounterHUD());
     this.registerModule(new NexusDamageHUD());
+    this.registerModule(new FpsHUD());
 
     ClientCommandHandler.instance.registerCommand(new DebugCommand());
     ClientCommandHandler.instance.registerCommand(new NameCommand());
