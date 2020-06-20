@@ -32,7 +32,7 @@ public class ArrowCounterHUD extends AbstractHUD {
 
   @Override
   public int getDefaultY() {
-    return 1;
+    return -2;
   }
 
   @Override
