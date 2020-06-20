@@ -20,7 +20,7 @@ public class ShotbowUtils {
 
     if (currentServerData == null) { return false; }
 
-    String serverIP = currentServerData.serverIP;
+    String serverIP = currentServerData.serverIP.toLowerCase();
 
     if (serverIP == null) {
       return false;
