@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
@@ -69,55 +70,59 @@ public class AnniObserver {
       e.printStackTrace();
       //握りつぶす
     }
+
+    //昔の情報を削除
+    File[] listFiles = historyDataDir.listFiles(f -> f.getName().endsWith(".txt"));
+    Arrays.stream(listFiles).sorted((f1, f2) -> f2.compareTo(f1)).skip(20).forEach(f -> f.delete());
   }
 
   @SideOnly(Side.CLIENT)
   public void onClientTick(ClientTickEvent event) {
     if (event.phase != Phase.END) { return; }
 
+    //ゲーム中でないならリセット
     if (mc.ingameGUI == null) {
       HMage.anniObserverMap.unsetAnniObserver();
       return;
     }
-
     if (mc.world == null) {
+      tickLeftWhileNoAnniScoreboard++;
+      if (tickLeftWhileNoAnniScoreboard > 100) {
+        HMage.anniObserverMap.unsetAnniObserver();
+      }
+      return;
+    }
+
+    //ボスゲージ取得
+    if (this.bossInfoMap == null) {
+      this.bossInfoMap = getBossInfoMap(mc.ingameGUI.getBossOverlay());
+    }
+
+    Scoreboard scoreboard = mc.world.getScoreboard();
+    //Anniをプレイ中かどうか確認
+    if (scoreboard != null && isAnniScoreboard(scoreboard)) {
+      tickLeftWhileNoAnniScoreboard = 0;
+    } else {
       tickLeftWhileNoAnniScoreboard++;
       if (tickLeftWhileNoAnniScoreboard > 100) {
         HMage.anniObserverMap.unsetAnniObserver();
         return;
       }
-    } else {
+    }
 
-      if (this.bossInfoMap == null) {
-        this.bossInfoMap = getBossInfoMap(mc.ingameGUI.getBossOverlay());
-      }
-
-      Scoreboard scoreboard = mc.world.getScoreboard();
-      //Anniをプレイ中かどうか確認
-      if (scoreboard != null && isAnniScoreboard(scoreboard)) {
-        tickLeftWhileNoAnniScoreboard = 0;
-      } else {
-        tickLeftWhileNoAnniScoreboard++;
-        if (tickLeftWhileNoAnniScoreboard > 100) {
-          HMage.anniObserverMap.unsetAnniObserver();
-          return;
+    //フェーズを取得
+    if (bossInfoMap != null) {
+      for (BossInfoClient bossInfo : bossInfoMap.values()) {
+        if (bossInfo.getColor() == Color.BLUE) {
+          String name = bossInfo.getName().getUnformattedText();
+          this.gameInfo.setGamePhase(GamePhase.getGamePhasebyText(name));
         }
       }
+    }
 
-      //フェーズを取得
-      if (bossInfoMap != null) {
-        for (BossInfoClient bossInfo : bossInfoMap.values()) {
-          if (bossInfo.getColor() == Color.BLUE) {
-            String name = bossInfo.getName().getUnformattedText();
-            this.gameInfo.setGamePhase(GamePhase.getGamePhasebyText(name));
-          }
-        }
-      }
-
-      //Mapを取得
-      if (gameInfo.getMapName() == null && scoreboard != null) {
-        gameInfo.setMapName(getMapFromScoreboard(scoreboard));
-      }
+    //Mapを取得
+    if (gameInfo.getMapName() == null && scoreboard != null) {
+      gameInfo.setMapName(getMapFromScoreboard(scoreboard));
     }
   }
 

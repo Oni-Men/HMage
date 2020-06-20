@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.client.GuiScrollingList;
 import onimen.anni.hmage.observer.AnniObserverMap;
+import onimen.anni.hmage.observer.GamePhase;
 import onimen.anni.hmage.observer.data.AnniPlayerData;
 import onimen.anni.hmage.observer.data.GameInfo;
 
@@ -243,7 +244,11 @@ public class AnniHistoryList extends GuiScreen {
       if (mapName == null || mapName.isEmpty()) {
         mapName = "Voting";
       }
+
       String mapAndTeamText = mapName + " - " + gameInfo.getMeTeamColor().getColoredName();
+      if (gameInfo.getGamePhase() != GamePhase.UNKNOWN) {
+        mapName = ChatFormatting.GRAY + "   (" + gameInfo.getGamePhase().getText() + ")";
+      }
       //MAP NAME AND TEAM COLOR
       fr.drawStringWithShadow(mapAndTeamText, left, top, color);
       top += 12;

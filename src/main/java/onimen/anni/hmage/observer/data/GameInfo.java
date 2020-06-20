@@ -74,8 +74,12 @@ public class GameInfo {
   }
 
   public void setGamePhase(GamePhase gamePhase) {
-    if (gamePhase != null)
-      this.gamePhase = gamePhase;
+    if (gamePhase == null) { return; }
+
+    //フェーズが戻ることはないため今よりも低いものは設定しない
+    if (gamePhase.getValue() < this.gamePhase.getValue()) { return; }
+
+    this.gamePhase = gamePhase;
   }
 
   public String getMapName() {

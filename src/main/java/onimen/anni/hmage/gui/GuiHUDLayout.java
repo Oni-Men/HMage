@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import onimen.anni.hmage.Preferences;
+import onimen.anni.hmage.module.AbstractModule;
 import onimen.anni.hmage.module.hud.InterfaceHUD;
 import onimen.anni.hmage.module.hud.layout.Layout;
 
@@ -33,7 +34,6 @@ public class GuiHUDLayout extends GuiScreen {
   private boolean isDragging, canDrag;
 
   private int prevMouseX, prevMouseY;
-
 
   public GuiHUDLayout(Map<String, InterfaceHUD> hudList) {
     this.hudMap = hudList;
@@ -63,6 +63,9 @@ public class GuiHUDLayout extends GuiScreen {
       resetAllPosition();
       break;
     case 2:
+      for (InterfaceHUD module : hudMap.values()) {
+        AbstractModule.savePreferences(module);
+      }
       Preferences.save();
       mc.displayGuiScreen((GuiScreen) null);
       mc.setIngameFocus();
@@ -184,8 +187,8 @@ public class GuiHUDLayout extends GuiScreen {
 
       } else if (clickedMouseButton == 1) {
         //change base position
-        double px = (double) mouseX / sr.getScaledWidth_double();
-        double py = (double) mouseY / sr.getScaledHeight_double();
+        double px = mouseX / sr.getScaledWidth_double();
+        double py = mouseY / sr.getScaledHeight_double();
 
         Layout layout = this.selectedHUD.getLayout();
 
@@ -237,7 +240,6 @@ public class GuiHUDLayout extends GuiScreen {
       }
     }
   }
-
 
   private void initGuides() {
     xAxisGuides.clear();

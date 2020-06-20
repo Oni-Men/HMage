@@ -15,11 +15,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.IClientCommand;
+import onimen.anni.hmage.HMage;
 import onimen.anni.hmage.cape.CapeResourceLoadTask;
 import onimen.anni.hmage.cape.GlobalPlayerUseCapeManager;
 import onimen.anni.hmage.observer.AnniObserver;
 import onimen.anni.hmage.observer.AnniObserverMap;
 import onimen.anni.hmage.observer.data.GameInfo;
+import onimen.anni.hmage.util.HMageLogger;
 
 public class DebugCommand extends CommandBase implements IClientCommand {
 
@@ -35,13 +37,15 @@ public class DebugCommand extends CommandBase implements IClientCommand {
 
   @Override
   public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-    if (args.length == 0) {
-      throw new WrongUsageException(getUsage(sender));
-    }
+    if (args.length == 0) { throw new WrongUsageException(getUsage(sender)); }
 
     switch (args[0]) {
     case "reload":
       new CapeResourceLoadTask().run();
+      break;
+    case "log":
+      HMageLogger.printOnDisplay = !HMageLogger.printOnDisplay;
+      HMage.logger.info("debug mode:" + HMageLogger.printOnDisplay);
       break;
     case "anni":
       AnniObserver anniObserver = AnniObserverMap.getInstance().getAnniObserver();

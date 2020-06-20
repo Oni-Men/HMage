@@ -55,16 +55,20 @@ public class AnniObserverMap {
     if (anniObserverMap.containsKey(serverName)) {
       AnniObserver anniObserver = anniObserverMap.get(serverName);
       if (anniObserver != null && anniObserver.getGameInfo().getGamePhase().getValue() > phase.getValue()) {
+        HMage.logger.info("detect change game, before phase:" + anniObserver.getGameInfo().getGamePhase()
+            + ", next phase:" + phase);
         canPutNewObserver = true;
+      } else {
+        HMage.logger.info("detect change game, before phase:" + anniObserver.getGameInfo().getGamePhase()
+            + ", next phase:" + phase);
       }
     } else {
       canPutNewObserver = true;
     }
-    canPutNewObserver = force ? true : canPutNewObserver;
 
-    if (canPutNewObserver) {
-      anniObserverMap.put(serverName, new AnniObserver(Minecraft.getMinecraft()));
+    if (force || canPutNewObserver) {
       HMage.logger.info("New Annihilation Observer created");
+      anniObserverMap.put(serverName, new AnniObserver(Minecraft.getMinecraft()));
     }
 
     getAnniObserver().onJoinGame();
@@ -95,7 +99,7 @@ public class AnniObserverMap {
       if (listFiles == null) {
         listFiles = new File[0];
       }
-      List<File> collect = Arrays.stream(listFiles).sorted((f1, f2) -> f1.getName().compareTo(f2.getName())).limit(20)
+      List<File> collect = Arrays.stream(listFiles).sorted((f1, f2) -> f1.getName().compareTo(f2.getName()))
           .collect(Collectors.toList());
       for (File file : collect) {
         FileReader fileReader = new FileReader(file);

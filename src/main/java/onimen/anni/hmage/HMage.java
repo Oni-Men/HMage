@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.logging.log4j.Logger;
-
 import com.google.common.collect.Maps;
 
 import net.minecraft.client.Minecraft;
@@ -60,6 +58,7 @@ import onimen.anni.hmage.observer.AnniObserverMap;
 import onimen.anni.hmage.observer.killeffect.AnniKillEffectManager;
 import onimen.anni.hmage.transformer.HurtingArmorInjector;
 import onimen.anni.hmage.util.GuiScreenUtils;
+import onimen.anni.hmage.util.HMageLogger;
 import onimen.anni.hmage.util.ShotbowUtils;
 import onimen.anni.hmage.util.scheduler.SyncTaskQueue;
 
@@ -68,7 +67,7 @@ public class HMage {
   public static final String MODID = "hmage";
   public static final String NAME = "HMage";
   public static final String VERSION = "1.0.1";
-  public static Logger logger;
+  public static HMageLogger logger;
 
   public static HMage INSTANCE;
   private Minecraft mc;
@@ -106,7 +105,7 @@ public class HMage {
   @EventHandler
   public void preInit(FMLPreInitializationEvent event) {
     MinecraftForge.EVENT_BUS.register(this);
-    logger = event.getModLog();
+    logger = new HMageLogger(event.getModLog());
     Preferences.load(event);
     modConfigurationDirectory = event.getModConfigurationDirectory();
     anniObserverMap = AnniObserverMap.getInstance();
