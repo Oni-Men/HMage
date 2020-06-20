@@ -49,8 +49,8 @@ public class OldGUI extends AbstractModule {
             for (int m = 0; m < 2; ++m) {
               for (int n = 0; n < 2; ++n) {
                 Slot craft = inventorySlots.get(i + n + m * 2 + 1);
-                craft.xPos = (canBehaivor ? 88 : 98) + m * 18;
-                craft.yPos = (canBehaivor ? 26 : 18) + n * 18;
+                craft.xPos = (canBehaivor ? 88 : 98) + n * 18;
+                craft.yPos = (canBehaivor ? 26 : 18) + m * 18;
               }
             }
             break;
