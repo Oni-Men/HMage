@@ -247,7 +247,7 @@ public class AnniHistoryList extends GuiScreen {
 
       String mapAndTeamText = mapName + " - " + gameInfo.getMeTeamColor().getColoredName();
       if (gameInfo.getGamePhase() != GamePhase.UNKNOWN) {
-        mapName = ChatFormatting.GRAY + "   (" + gameInfo.getGamePhase().getText() + ")";
+        mapAndTeamText = mapAndTeamText + ChatFormatting.GRAY + "   (" + gameInfo.getGamePhase().getText() + ")";
       }
       //MAP NAME AND TEAM COLOR
       fr.drawStringWithShadow(mapAndTeamText, left, top, color);
