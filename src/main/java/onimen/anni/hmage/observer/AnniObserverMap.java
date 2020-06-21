@@ -122,4 +122,8 @@ public class AnniObserverMap {
   public static File getHistoryDataDir() {
     return historyDataDir;
   }
+
+  public String getPlayingServerName() {
+    return playingServerName;
+  }
 }

@@ -35,6 +35,7 @@ import onimen.anni.hmage.cape.GlobalPlayerUseCapeManager;
 import onimen.anni.hmage.cape.SPPlayerUseCape;
 import onimen.anni.hmage.command.DebugCommand;
 import onimen.anni.hmage.command.NameCommand;
+import onimen.anni.hmage.command.TestAnniCommand;
 import onimen.anni.hmage.event.GetLocationCapeEvent;
 import onimen.anni.hmage.event.PlayParticleEvent;
 import onimen.anni.hmage.gui.GuiAnniServers;
@@ -139,6 +140,7 @@ public class HMage {
 
     ClientCommandHandler.instance.registerCommand(new DebugCommand());
     ClientCommandHandler.instance.registerCommand(new NameCommand());
+    ClientCommandHandler.instance.registerCommand(new TestAnniCommand());
     ClientRegistry.registerKeyBinding(Preferences.openSettingsKey);
 
     RenderManager renderManager = this.mc.getRenderManager();
@@ -207,6 +209,9 @@ public class HMage {
 
   @SubscribeEvent
   public void onRecieveChat(ClientChatReceivedEvent event) {
+    //デバック情報
+    TestAnniCommand.debugPrint(event);
+
     if (anniObserverMap.getAnniObserver() != null) {
       anniObserverMap.getAnniObserver().onRecieveChat(event);
     }

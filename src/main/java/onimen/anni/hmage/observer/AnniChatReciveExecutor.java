@@ -52,12 +52,20 @@ public class AnniChatReciveExecutor {
     thread.start();
   }
 
-  static class ChatParseRunner implements Runnable {
+  public static ChatParseRunner getTarget() {
+    return target;
+  }
+
+  static public class ChatParseRunner implements Runnable {
+
+    private long lastExecuteTime = -1;
 
     @Override
     public void run() {
       while (true) {
         try {
+          lastExecuteTime = System.currentTimeMillis();
+
           ChatReciveTask task = blockingQueue.poll(200, TimeUnit.SECONDS);
           if (task == null) {
             continue;
@@ -120,6 +128,10 @@ public class AnniChatReciveExecutor {
           HMage.logger.error("Error:", e);
         }
       }
+    }
+
+    public long getLastExecuteTime() {
+      return lastExecuteTime;
     }
   }
 
