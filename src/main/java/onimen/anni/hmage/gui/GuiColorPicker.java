@@ -3,14 +3,18 @@ package onimen.anni.hmage.gui;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Color;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GLAllocation;
@@ -18,8 +22,11 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
+import onimen.anni.hmage.util.JavaUtil;
 
 public class GuiColorPicker extends GuiScreen {
+
+  private static final Pattern colorCodeMatcher = Pattern.compile("[a-fA-F0-9]+");
 
   @Nullable
   private GuiScreen parent;
@@ -43,19 +50,15 @@ public class GuiColorPicker extends GuiScreen {
   private FloatBuffer[] vertexs;
   private FloatBuffer[] colors;
 
+  private GuiTextField colorCodeField;
+
   public GuiColorPicker(GuiScreen parent, Consumer<Integer> callback) {
     this(parent, callback, 0xFFFF0000);
   }
 
   public GuiColorPicker(GuiScreen parent, Consumer<Integer> callback, int initialColor) {
 
-    Color color = new Color(initialColor >> 16, initialColor >> 8, initialColor, initialColor >> 24);
-    float[] hsb = color.toHSB(null);
-
-    hue = hsb[0];
-    sat = hsb[1];
-    val = hsb[2];
-    alpha = color.getAlpha() / 255F;
+    this.setIntColor(initialColor);
 
     this.parent = parent;
     this.callback = callback;
@@ -80,7 +83,22 @@ public class GuiColorPicker extends GuiScreen {
   @Override
   public void initGui() {
     super.initGui();
+    Keyboard.enableRepeatEvents(true);
+    this.colorCodeField = new GuiTextField(1, fontRenderer, this.width / 2 - 40, 48, 80,
+        this.fontRenderer.FONT_HEIGHT);
+    this.colorCodeField.setMaxStringLength(10);
+    this.colorCodeField.setEnableBackgroundDrawing(true);
+    this.colorCodeField.setTextColor(0xFFFFFF);
+    this.colorCodeField.setVisible(true);
+    this.colorCodeField.setText("#" + Integer.toHexString(this.getIntColor()));
+
     this.addButton(new GuiButton(0, this.width / 2 - 100, this.height - 38, I18n.format("gui.done")));
+  }
+
+  @Override
+  public void onGuiClosed() {
+    super.onGuiClosed();
+    Keyboard.enableRepeatEvents(false);
   }
 
   @Override
@@ -98,12 +116,14 @@ public class GuiColorPicker extends GuiScreen {
 
     int textColor = getIntColor();
 
-    this.drawCenteredString(fontRenderer, "Color Picker", this.width / 2, 32, textColor);
-    this.drawCenteredString(fontRenderer,
-        String.format("Hue %.0f, Saturation %.0f%%, Value %.0f%%, Alpha %.0f%%", hue * 360, sat * 100, val * 100,
-            alpha * 100),
-        this.width / 2,
-        48, textColor);
+    this.drawCenteredString(fontRenderer, "Color Picker", this.width / 2, 24, textColor);
+    //    this.drawCenteredString(fontRenderer,
+    //        String.format("Hue %.0f, Saturation %.0f%%, Value %.0f%%, Alpha %.0f%%", hue * 360, sat * 100, val * 100,
+    //            alpha * 100),
+    //        this.width / 2,
+    //        48, textColor);
+
+    this.colorCodeField.drawTextBox();
 
     ScaledResolution sr = new ScaledResolution(mc);
 
@@ -197,8 +217,35 @@ public class GuiColorPicker extends GuiScreen {
   }
 
   @Override
+  protected void keyTyped(char typedChar, int keyCode) throws IOException {
+    if (this.colorCodeField.textboxKeyTyped(typedChar, keyCode)) {
+      String text = this.colorCodeField.getText().replace("#", "");
+
+      Matcher matcher = colorCodeMatcher.matcher(text);
+
+      if (matcher.matches()) {
+        JavaUtil.tryExecuteConsumer(text, hex -> {
+          if (hex.length() > 6) {
+            int alpha = 0, rgb = 0;
+            alpha = Integer.parseInt(hex.substring(0, 2), 16);
+            rgb = Integer.parseInt(hex.substring(2, hex.length()), 16);
+            GuiColorPicker.this.setIntColor((alpha << 24) | rgb);
+          } else {
+            GuiColorPicker.this.setIntColor(Integer.parseInt(hex, 16));
+          }
+        });
+        this.callback();
+      }
+
+    } else {
+      super.keyTyped(typedChar, keyCode);
+    }
+  }
+
+  @Override
   protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
     super.mouseClicked(mouseX, mouseY, mouseButton);
+    this.colorCodeField.mouseClicked(mouseX, mouseY, mouseButton);
     calculateHSV(mouseX, mouseY);
   }
 
@@ -210,9 +257,7 @@ public class GuiColorPicker extends GuiScreen {
   @Override
   protected void mouseReleased(int mouseX, int mouseY, int state) {
     super.mouseReleased(mouseX, mouseY, state);
-    if (this.callback != null) {
-      callback.accept(getIntColor());
-    }
+    this.callback();
   }
 
   private void calculateHSV(int mouseX, int mouseY) {
@@ -231,14 +276,18 @@ public class GuiColorPicker extends GuiScreen {
         hue = atan2;
       }
       this.hueBuffer = getColorHue(hue);
+      this.colorCodeField.setText("#" + Integer.toHexString(this.getIntColor()));
     } else if (mouseX >= centerX - boxSize && mouseX <= centerX + boxSize
         && mouseY >= centerY - boxSize && mouseY <= centerY + boxSize) {
       sat = 0.5 + (mouseX - centerX) / boxSize / 2;
       val = 0.5 - (mouseY - centerY) / boxSize / 2;
+      this.colorCodeField.setText("#" + Integer.toHexString(this.getIntColor()));
     } else if (mouseX >= alphaLeft && mouseX <= alphaRight &&
         mouseY >= alphaTop && mouseY <= alphaBottom) {
       alpha = (mouseY - alphaTop) / (alphaBottom - alphaTop);
+      this.colorCodeField.setText("#" + Integer.toHexString(this.getIntColor()));
     }
+
   }
 
   private FloatBuffer getColorHue(double hue) {
@@ -258,6 +307,22 @@ public class GuiColorPicker extends GuiScreen {
     color.fromHSB((float) hue, (float) sat, (float) val);
     color.setAlpha((int) (255 * alpha));
     return (color.getAlpha() << 24) | (color.getRed() << 16) | (color.getGreen() << 8) | (color.getBlue());
+  }
+
+  private void setIntColor(int color) {
+    Color c = new Color(color >> 16, color >> 8, color, color >> 24);
+    float[] hsb = c.toHSB(null);
+
+    hue = hsb[0];
+    sat = hsb[1];
+    val = hsb[2];
+    alpha = c.getAlpha() / 255F;
+  }
+
+  private void callback() {
+    if (this.callback != null) {
+      callback.accept(getIntColor());
+    }
   }
 
   @Override
