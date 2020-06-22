@@ -45,3 +45,5 @@ hmage.module.hud.fps.name=FPS HUD
 hmage.module.hud.fps.description=Display your FPS
 hmage.module.old-gui.name=Old GUI
 hmage.module.old-gui.description=Render GUI as 1.7.10 (beta)
+hmage.module.ss-clipboard.name=SS Clipboard
+hmage.module.ss-clipboard.description=Copy screenshot to clipboard
