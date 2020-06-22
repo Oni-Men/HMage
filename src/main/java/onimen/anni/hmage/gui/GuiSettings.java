@@ -78,7 +78,7 @@ public class GuiSettings extends GuiScroll {
       y += 24;
     }
 
-    maxScrollAmount = splitIndex * 24 + 48 - sr.getScaledHeight();
+    maxScrollAmount = (splitIndex + 1) * 24 + 64 - sr.getScaledHeight();
     if (maxScrollAmount < 0) {
       maxScrollAmount = 0;
     }
