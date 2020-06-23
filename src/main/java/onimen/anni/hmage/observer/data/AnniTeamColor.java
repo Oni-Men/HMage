@@ -22,6 +22,11 @@ public enum AnniTeamColor {
     return optional.orElse(NO_JOIN);
   }
 
+  public static AnniTeamColor findByTeamName(String teamName) {
+    Optional<AnniTeamColor> optional = Arrays.stream(values()).filter(e -> e.colorName.equals(teamName)).findAny();
+    return optional.orElse(NO_JOIN);
+  }
+
   public String getColorName() {
     return colorName;
   }

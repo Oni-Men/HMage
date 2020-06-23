@@ -19,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.BossInfoClient;
 import net.minecraft.client.gui.GuiBossOverlay;
 import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.BossInfo.Color;
@@ -29,6 +30,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.HMage;
 import onimen.anni.hmage.HMageDiscordHandler;
+import onimen.anni.hmage.observer.data.AnniTeamColor;
 import onimen.anni.hmage.observer.data.GameInfo;
 import onimen.anni.hmage.util.ShotbowUtils;
 
@@ -62,35 +64,31 @@ public class AnniObserver {
 
   public void onLeaveGame() {
     this.tickLeftWhileNoAnniScoreboard = 0;
-    //gameInfoを保存
-    File historyDataDir = AnniObserverMap.getHistoryDataDir();
-    Gson gson = new Gson();
-    String json = gson.toJson(gameInfo);
-    try {
-      Files.write(json, new File(historyDataDir, gameInfo.getGameTimestamp() + ".txt"), StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      e.printStackTrace();
-      //握りつぶす
+
+    if (gameInfo.getGamePhase().getValue() > 0) {
+      //gameInfoを保存
+      File historyDataDir = AnniObserverMap.getHistoryDataDir();
+      Gson gson = new Gson();
+      String json = gson.toJson(gameInfo);
+      try {
+        Files.write(json, new File(historyDataDir, gameInfo.getGameTimestamp() + ".txt"), StandardCharsets.UTF_8);
+      } catch (IOException e) {
+        e.printStackTrace();
+        //握りつぶす
+      }
+
+      //昔の情報を削除
+      File[] listFiles = historyDataDir.listFiles(f -> f.getName().endsWith(".txt"));
+      Arrays.stream(listFiles).sorted((f1, f2) -> f2.compareTo(f1)).skip(20).forEach(f -> f.delete());
+
     }
-
-    //昔の情報を削除
-    File[] listFiles = historyDataDir.listFiles(f -> f.getName().endsWith(".txt"));
-    Arrays.stream(listFiles).sorted((f1, f2) -> f2.compareTo(f1)).skip(20).forEach(f -> f.delete());
-
-    HMageDiscordHandler.INSTANCE.updatePresenceWithNormal();
+    HMageDiscordHandler.INSTANCE.clearPresence();
   }
 
-  public void onChangeMap() {
+  public void updatePresence() {
     HMageDiscordHandler.INSTANCE.updatePresenceWithGameInfo(gameInfo);
   }
 
-  public void onChangePhase() {
-    HMageDiscordHandler.INSTANCE.updatePresenceWithGameInfo(gameInfo);
-  }
-
-  public void onChangeColor() {
-    HMageDiscordHandler.INSTANCE.updatePresenceWithGameInfo(gameInfo);
-  }
 
   @SideOnly(Side.CLIENT)
   public void onClientTick(ClientTickEvent event) {
@@ -118,6 +116,21 @@ public class AnniObserver {
     //Anniをプレイ中かどうか確認
     if (scoreboard != null && isAnniScoreboard(scoreboard)) {
       tickLeftWhileNoAnniScoreboard = 0;
+
+      AnniTeamColor previousTeamColor = gameInfo.getMeTeamColor();
+      AnniTeamColor nextTeamColor = AnniTeamColor.NO_JOIN;
+
+      ScorePlayerTeam team = scoreboard.getPlayersTeam(gameInfo.getMePlayerData().getPlayerName());
+
+      if (team != null) {
+        nextTeamColor = AnniTeamColor.findByTeamName(team.getDisplayName().replaceFirst("§.", ""));
+      }
+
+      if (previousTeamColor != nextTeamColor) {
+        gameInfo.getMePlayerData().setTeamColor(nextTeamColor);
+        updatePresence();
+      }
+
     } else {
       tickLeftWhileNoAnniScoreboard++;
       if (tickLeftWhileNoAnniScoreboard > 100) {
@@ -126,28 +139,30 @@ public class AnniObserver {
       }
     }
 
+    GamePhase previousPhase = this.gameInfo.getGamePhase(), nextPhase = GamePhase.UNKNOWN;
     //フェーズを取得
     if (bossInfoMap != null) {
       for (BossInfoClient bossInfo : bossInfoMap.values()) {
+        //フェーズを表示するボスバーは青色なので
         if (bossInfo.getColor() == Color.BLUE) {
           String name = bossInfo.getName().getUnformattedText();
-          GamePhase previousPhase = this.gameInfo.getGamePhase();
-          GamePhase nextPhase = GamePhase.getGamePhasebyText(name);
-          this.gameInfo.setGamePhase(nextPhase);
-          if (previousPhase != null && !previousPhase.equals(nextPhase)) {
-            onChangePhase();
-          }
+          nextPhase = GamePhase.getGamePhasebyText(name);
+          break;
         }
       }
+    }
+    if (previousPhase == null || previousPhase.getValue() != nextPhase.getValue()) {
+      this.gameInfo.setGamePhase(nextPhase);
+      updatePresence();
     }
 
     //Mapを取得
     if (gameInfo.getMapName() == null && scoreboard != null) {
       String previousMapName = gameInfo.getMapName();
       String nextMapName = getMapFromScoreboard(scoreboard);
-      gameInfo.setMapName(getMapFromScoreboard(scoreboard));
-      if (previousMapName != null && !previousMapName.equals(nextMapName)) {
-        onChangeMap();
+      if (previousMapName == null || !previousMapName.equals(nextMapName)) {
+        gameInfo.setMapName(nextMapName);
+        updatePresence();
       }
     }
   }
@@ -186,6 +201,11 @@ public class AnniObserver {
 
     if (scoreobjective == null) { return null; }
     String displayName = scoreobjective.getDisplayName();
+
+    if (displayName.equals(VOTING_TEXT)) {
+      gameInfo.setGamePhase(GamePhase.STARTING);
+      return null;
+    }
 
     if (!displayName.contains(MAP_PREFIX)) { return null; }
 

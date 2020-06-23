@@ -22,11 +22,19 @@ public class HMageDiscordHandler {
     client.Discord_Initialize(DISCORD_APPLICATION_ID, handlers, true, "");
   }
 
+  public void clearPresence() {
+    client.Discord_ClearPresence();
+  }
+
   public void updatePresenceWithGameInfo(GameInfo gameInfo) {
     DiscordRichPresence presence = new DiscordRichPresence();
 
-    presence.startTimestamp = gameInfo.getGameTimestamp() / 1000;
-    presence.details = String.format("%s - %s", gameInfo.getMapName(), gameInfo.getGamePhase().getText());
+    String name = gameInfo.getMapName();
+    if (name == null) {
+      name = HMage.anniObserverMap.getPlayingServerName().replaceAll("§.", "");
+    }
+
+    presence.details = String.format("%s - %s", name, gameInfo.getGamePhase().getText());
     presence.state = gameInfo.getMeTeamColor().getColorName();
 
     client.Discord_UpdatePresence(presence);
