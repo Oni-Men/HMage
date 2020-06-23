@@ -65,7 +65,7 @@ public class AnniObserver {
   public void onLeaveGame() {
     this.tickLeftWhileNoAnniScoreboard = 0;
 
-    if (gameInfo.getGamePhase().getValue() > 0) {
+    if (gameInfo.getGamePhase().getValue() > 0 && gameInfo.getMeTeamColor() != AnniTeamColor.NO_JOIN) {
       //gameInfoを保存
       File historyDataDir = AnniObserverMap.getHistoryDataDir();
       Gson gson = new Gson();
