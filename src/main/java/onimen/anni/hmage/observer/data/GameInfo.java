@@ -133,7 +133,6 @@ public class GameInfo {
       AnniTeamColor damageTeam) {
     if (Minecraft.getMinecraft().player.getName().equals(attacker)) {
       //自身のデータを更新
-      mePlayerData.setTeamColor(attackerTeam);
       mePlayerData.nexusDamage(damageTeam);
     } else {
       //自身以外のデータを更新
@@ -160,7 +159,6 @@ public class GameInfo {
     //キル数をカウント
     if (Minecraft.getMinecraft().player.getName().equals(killer)) {
       //自身のデータを更新
-      mePlayerData.setTeamColor(killerTeam);
       mePlayerData.incrementCount(killType, deadTeam);
       //キルエフェクト情報を設定
       AnniKillEffectManager.getInstance().onKillPlayer();
@@ -173,7 +171,6 @@ public class GameInfo {
     //デス数をカウント
     if (Minecraft.getMinecraft().player.getName().equals(dead)) {
       //自身のデータを更新
-      mePlayerData.setTeamColor(deadTeam);
       mePlayerData.incrementDeathCount();
     } else {
       //自身以外のデータを更新
