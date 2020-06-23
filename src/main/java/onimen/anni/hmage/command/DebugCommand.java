@@ -7,10 +7,13 @@ import java.util.UUID;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
@@ -67,10 +70,33 @@ public class DebugCommand extends CommandBase implements IClientCommand {
         sender.sendMessage(new TextComponentString(entry.getKey() + "@" + entry.getValue().getResourcePath()));
       }
       break;
+    case "scoreboard":
+      if (args.length == 1) {
+        scoreboard(sender, null);
+      } else if (args.length == 2) {
+        scoreboard(sender, args[1]);
+      }
+      break;
     default:
       sender.sendMessage(new TextComponentString("unknown paramater.:" + args[0]));
       break;
     }
+  }
+
+  public static void scoreboard(ICommandSender sender, String arg) {
+    Minecraft mc = Minecraft.getMinecraft();
+
+    if (mc.world == null)
+      return;
+
+    Scoreboard score = mc.world.getScoreboard();
+
+    if (score == null)
+      return;
+
+    ScorePlayerTeam team = score.getPlayersTeam(arg == null ? mc.player.getName() : arg);
+
+    sender.sendMessage(new TextComponentString(team.getDisplayName()));
   }
 
   @Override
