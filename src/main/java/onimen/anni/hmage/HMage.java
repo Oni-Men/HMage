@@ -71,6 +71,8 @@ public class HMage {
   public static final String VERSION = "1.0.1";
   public static HMageLogger logger;
 
+  public static final long startMilliTime = System.currentTimeMillis();
+
   public static HMage INSTANCE;
   private Minecraft mc;
 
@@ -153,6 +155,7 @@ public class HMage {
     //Anni用スレッド開始
     AnniChatReciveExecutor.startThread();
 
+    HMageDiscordHandler.INSTANCE.updatePresenceWithNormal();
   }
 
   @SubscribeEvent

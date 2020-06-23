@@ -28,6 +28,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.HMage;
+import onimen.anni.hmage.HMageDiscordHandler;
 import onimen.anni.hmage.observer.data.GameInfo;
 import onimen.anni.hmage.util.ShotbowUtils;
 
@@ -56,6 +57,7 @@ public class AnniObserver {
 
   public void onJoinGame() {
     this.tickLeftWhileNoAnniScoreboard = 0;
+    HMageDiscordHandler.INSTANCE.updatePresenceWithGameInfo(gameInfo);
   }
 
   public void onLeaveGame() {
@@ -74,6 +76,20 @@ public class AnniObserver {
     //昔の情報を削除
     File[] listFiles = historyDataDir.listFiles(f -> f.getName().endsWith(".txt"));
     Arrays.stream(listFiles).sorted((f1, f2) -> f2.compareTo(f1)).skip(20).forEach(f -> f.delete());
+
+    HMageDiscordHandler.INSTANCE.updatePresenceWithNormal();
+  }
+
+  public void onChangeMap() {
+    HMageDiscordHandler.INSTANCE.updatePresenceWithGameInfo(gameInfo);
+  }
+
+  public void onChangePhase() {
+    HMageDiscordHandler.INSTANCE.updatePresenceWithGameInfo(gameInfo);
+  }
+
+  public void onChangeColor() {
+    HMageDiscordHandler.INSTANCE.updatePresenceWithGameInfo(gameInfo);
   }
 
   @SideOnly(Side.CLIENT)
@@ -115,14 +131,24 @@ public class AnniObserver {
       for (BossInfoClient bossInfo : bossInfoMap.values()) {
         if (bossInfo.getColor() == Color.BLUE) {
           String name = bossInfo.getName().getUnformattedText();
-          this.gameInfo.setGamePhase(GamePhase.getGamePhasebyText(name));
+          GamePhase previousPhase = this.gameInfo.getGamePhase();
+          GamePhase nextPhase = GamePhase.getGamePhasebyText(name);
+          this.gameInfo.setGamePhase(nextPhase);
+          if (previousPhase != null && !previousPhase.equals(nextPhase)) {
+            onChangePhase();
+          }
         }
       }
     }
 
     //Mapを取得
     if (gameInfo.getMapName() == null && scoreboard != null) {
+      String previousMapName = gameInfo.getMapName();
+      String nextMapName = getMapFromScoreboard(scoreboard);
       gameInfo.setMapName(getMapFromScoreboard(scoreboard));
+      if (previousMapName != null && !previousMapName.equals(nextMapName)) {
+        onChangeMap();
+      }
     }
   }
 
