@@ -54,13 +54,15 @@ public class AnniObserverMap {
 
     if (anniObserverMap.containsKey(serverName)) {
       AnniObserver anniObserver = anniObserverMap.get(serverName);
-      if (anniObserver != null && anniObserver.getGameInfo().getGamePhase().getValue() > phase.getValue()) {
-        HMage.logger.info("detect change game, before phase:" + anniObserver.getGameInfo().getGamePhase()
-            + ", next phase:" + phase);
-        canPutNewObserver = true;
-      } else {
-        HMage.logger.info("detect change game, before phase:" + anniObserver.getGameInfo().getGamePhase()
-            + ", next phase:" + phase);
+      if (anniObserver != null) {
+        if (anniObserver.getGameInfo().getGamePhase().getValue() > phase.getValue()) {
+          HMage.logger.info("detect change game, before phase:" + anniObserver.getGameInfo().getGamePhase()
+              + ", next phase:" + phase);
+          canPutNewObserver = true;
+        } else {
+          HMage.logger.info("detect change game, before phase:" + anniObserver.getGameInfo().getGamePhase()
+              + ", next phase:" + phase);
+        }
       }
     } else {
       canPutNewObserver = true;
