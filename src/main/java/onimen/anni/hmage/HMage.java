@@ -152,7 +152,9 @@ public class HMage {
     ClientCommandHandler.instance.registerCommand(new DebugCommand());
     ClientCommandHandler.instance.registerCommand(new NameCommand());
     ClientCommandHandler.instance.registerCommand(new TestAnniCommand());
+
     ClientRegistry.registerKeyBinding(Preferences.openSettingsKey);
+    ClientRegistry.registerKeyBinding(Preferences.showAnniRankingTab);
 
     RenderManager renderManager = this.mc.getRenderManager();
     HurtingArmorInjector.replaceSkinMap(renderManager);
@@ -192,8 +194,10 @@ public class HMage {
     if (mc.gameSettings.showDebugInfo)
       return;
 
-    if (event.getType() == ElementType.TEXT) {
-      if (mc.currentScreen == null) {
+    if (mc.currentScreen == null && event.getType() == ElementType.TEXT) {
+      if (Preferences.showAnniRankingTab.isKeyDown()) {
+        renderAnniRanking(event.getResolution().getScaledWidth(), event.getResolution().getScaledHeight());
+      } else if (event.getType() == ElementType.TEXT) {
         for (InterfaceHUD item : hudMap.values()) {
           if (item.isEnable())
             item.drawItem(mc);
@@ -207,13 +211,15 @@ public class HMage {
     if (!Preferences.showGameStatsInInventory) { return; }
     if (!(event.getGui() instanceof GuiInventory)) { return; }
 
+    renderAnniRanking(event.getGui().width, event.getGui().height);
+  }
+
+  private void renderAnniRanking(int width, int height) {
     AnniObserver anniObserver = HMage.anniObserverMap.getAnniObserver();
 
     if (anniObserver == null)
       return;
 
-    int width = event.getGui().width;
-    int height = event.getGui().height;
 
     GameInfo gameInfo = anniObserver.getGameInfo();
 
