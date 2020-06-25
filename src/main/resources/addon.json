@@ -1,0 +1,6 @@
+{
+  "uuid": "%uuid%",
+  "name": "HMage Mod",
+  "mainClass": "onimen.anni.hmage.LabyHMageMod",
+  "transformerClass": "onimen.anni.hmage.transformer.HMageClassTransformer"
+}

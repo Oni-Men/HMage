@@ -22,7 +22,6 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -186,7 +185,7 @@ public class HMage {
   }
 
   @SubscribeEvent
-  public void onRenderGameOverlay(RenderGameOverlayEvent.Post event) {
+  public void onRenderGameOverlay(RenderGameOverlayEvent event) {
 
     if (!Preferences.enabled)
       return;
@@ -194,10 +193,11 @@ public class HMage {
     if (mc.gameSettings.showDebugInfo)
       return;
 
-    if (mc.currentScreen == null && event.getType() == ElementType.TEXT) {
+    //TODO event.getType()が通常時nullになるため、nullかどうかの確認を行う
+    if (mc.currentScreen == null && event.getType() == null) {
       if (Preferences.showAnniRankingTab.isKeyDown()) {
         renderAnniRanking(event.getResolution().getScaledWidth(), event.getResolution().getScaledHeight());
-      } else if (event.getType() == ElementType.TEXT) {
+      } else if (event.getType() == null) {
         for (InterfaceHUD item : hudMap.values()) {
           if (item.isEnable())
             item.drawItem(mc);
@@ -219,7 +219,6 @@ public class HMage {
 
     if (anniObserver == null)
       return;
-
 
     GameInfo gameInfo = anniObserver.getGameInfo();
 
