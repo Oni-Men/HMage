@@ -27,10 +27,10 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
   }
 
   @IntegerOption(id = "x")
-  protected int x;
+  protected int x = getDefaultX();
 
   @IntegerOption(id = "y")
-  protected int y;
+  protected int y = getDefaultY();
 
   @FloatOption(id = "scale", name = "Scale", min = 0.0F, max = 10.0F, showMenu = true)
   protected float scale = 1.0f;
