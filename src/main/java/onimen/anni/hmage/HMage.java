@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.GameSettings.Options;
@@ -213,11 +214,12 @@ public class HMage {
 
     int width = event.getGui().width;
 
-    List<GameInfo> gameInfoList = HMage.anniObserverMap.getGameInfoList();
     GameInfo gameInfo = anniObserver.getGameInfo();
 
     List<AnniPlayerData> killRanking = gameInfo.getTotalKillRanking(10);
     List<AnniPlayerData> nexusRanking = gameInfo.getNexusRanking(10);
+
+    GlStateManager.disableLighting();
 
     GuiScreenUtils.drawRankingLeft("Kills in this Game", killRanking, mc.fontRenderer, 4, 4,
         d -> String.format("%dK", d.getTotalKillCount()));
