@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.MessageFormat;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
@@ -22,8 +21,6 @@ public class GuiScreenUtils {
   private static final String GRAY = ChatFormatting.GRAY.toString();
   private static final String BLACK = ChatFormatting.BLACK.toString();
   public static final String SELEC_SERVER = MessageFormat.format("{0}|{1}Select Server{0}", GRAY, BLACK);
-
-  private static final HashMap<Integer, Integer> rankingOffsetCacheMap = new HashMap<>();
 
   public static IInventory getChestInventory(GuiChest chest) {
 
@@ -72,7 +69,7 @@ public class GuiScreenUtils {
       return top;
     }
 
-    int offset = rankingOffsetCacheMap.computeIfAbsent(ranking.hashCode(), key -> getMaxPlayerNameWidth(fr, ranking));
+    int offset = getMaxPlayerNameWidth(fr, ranking);
 
     int rankerNumberWidth = fr.getStringWidth(ranking.size() + ".");
 
@@ -109,7 +106,7 @@ public class GuiScreenUtils {
       return top;
     }
 
-    int offset = rankingOffsetCacheMap.computeIfAbsent(ranking.hashCode(), key -> getMaxPlayerNameWidth(fr, ranking));
+    int offset = getMaxPlayerNameWidth(fr, ranking);
 
     int rankerValueOffset = ranking.stream()
         .map(d -> fr.getStringWidth(valueGetter.apply(d)))
@@ -124,8 +121,8 @@ public class GuiScreenUtils {
       rankerName = String.format(" %s%s", data.getTeamColor().getColorCode(), data.getPlayerName());
       rankerValue = valueGetter.apply(data);
       drawStringRight(fr, rankerValue, right, top, color);
-      fr.drawStringWithShadow(rankerName, right - offset - rankerValueOffset, top, color);
-      drawStringRight(fr, rankerNumber, right - rankerValueOffset - offset,
+      fr.drawStringWithShadow(rankerName, right - offset - rankerValueOffset - 8, top, color);
+      drawStringRight(fr, rankerNumber, right - rankerValueOffset - offset - 8,
           top,
           color);
       top += 10;
@@ -135,7 +132,7 @@ public class GuiScreenUtils {
   }
 
   public static int drawRanking(String title, List<AnniPlayerData> ranking, FontRenderer fr, int top,
-      int left, int rankingValueOffset, Function<AnniPlayerData, String> value) {
+      int left, Function<AnniPlayerData, String> value) {
     return drawRankingLeft(title, ranking, fr, top, left, value);
   }
 

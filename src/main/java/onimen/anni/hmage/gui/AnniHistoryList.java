@@ -306,21 +306,21 @@ public class AnniHistoryList extends GuiScreen {
       left += 8;
 
       if (sr.getScaleFactor() == 4) {
-        top = GuiScreenUtils.drawRanking("Melee Kill", meleeKillRanking, fr, top, left, rankingValueOffset,
+        top = GuiScreenUtils.drawRanking("Melee Kill", meleeKillRanking, fr, top, left,
             p -> p.getMeleeCount() + " Kills");
-        top = GuiScreenUtils.drawRanking("Shot Kill", shotKillRanking, fr, top, left, rankingValueOffset,
+        top = GuiScreenUtils.drawRanking("Shot Kill", shotKillRanking, fr, top, left,
             p -> p.getBowCount() + " Kills");
       } else {
         int underMeleeRanking = GuiScreenUtils.drawRanking("Melee Kill", meleeKillRanking, fr, top, left + 200,
-            rankingValueOffset,
+
             p -> p.getMeleeCount() + " Kills");
-        GuiScreenUtils.drawRanking("Shot Kill", shotKillRanking, fr, underMeleeRanking, left + 200, rankingValueOffset,
+        GuiScreenUtils.drawRanking("Shot Kill", shotKillRanking, fr, underMeleeRanking, left + 200,
             p -> p.getBowCount() + " Kills");
       }
 
-      top = GuiScreenUtils.drawRanking("Total Kill", killRanking, fr, top, left, rankingValueOffset,
+      top = GuiScreenUtils.drawRanking("Total Kill", killRanking, fr, top, left,
           p -> p.getTotalKillCount() + " Kills");
-      top = GuiScreenUtils.drawRanking("Nexus Damage", nexusRanking, fr, top, left, rankingValueOffset,
+      top = GuiScreenUtils.drawRanking("Nexus Damage", nexusRanking, fr, top, left,
           p -> p.getNexusDamageCount() + " Damage");
 
       left -= 8;

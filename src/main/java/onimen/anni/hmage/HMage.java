@@ -213,6 +213,7 @@ public class HMage {
       return;
 
     int width = event.getGui().width;
+    int height = event.getGui().height;
 
     GameInfo gameInfo = anniObserver.getGameInfo();
 
@@ -226,6 +227,10 @@ public class HMage {
 
     GuiScreenUtils.drawRankingRight("Nexus damage in this Game", nexusRanking, mc.fontRenderer, 4, width - 4,
         d -> String.format("%dD", d.getNexusDamageCount()));
+
+    mc.fontRenderer.drawStringWithShadow("You can disable this ranking in Match history", 4,
+        height - 10,
+        0xdddddd);
   }
 
   @SubscribeEvent
