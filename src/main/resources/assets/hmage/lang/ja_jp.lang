@@ -1,4 +1,6 @@
+key.categories.hmage=HMageのキー設定
 hmage.key.settings=HMageの設定を開く
+hmage.key.anni-ranking=試合のランキングを表示する
 hmage.setting.desc.capeselect=使用するCapeを選択する。ここで選択したCapeは自分だけ見ることができる。
 hmage.enable=オン
 hmage.disable=オフ
