@@ -59,6 +59,7 @@ import onimen.anni.hmage.module.hud.KillCounterHUD;
 import onimen.anni.hmage.module.hud.NexusDamageHUD;
 import onimen.anni.hmage.module.hud.StatusEffectHUD;
 import onimen.anni.hmage.observer.AnniChatReciveExecutor;
+import onimen.anni.hmage.observer.AnniObserver;
 import onimen.anni.hmage.observer.AnniObserverMap;
 import onimen.anni.hmage.observer.data.AnniPlayerData;
 import onimen.anni.hmage.observer.data.GameInfo;
@@ -205,15 +206,15 @@ public class HMage {
     if (!Preferences.showGameStatsInInventory) { return; }
     if (!(event.getGui() instanceof GuiInventory)) { return; }
 
-    //    AnniObserver anniObserver = HMage.anniObserverMap.getAnniObserver();
-    //
-    //    if (anniObserver == null)
-    //      return;
+    AnniObserver anniObserver = HMage.anniObserverMap.getAnniObserver();
+
+    if (anniObserver == null)
+      return;
 
     int width = event.getGui().width;
 
     List<GameInfo> gameInfoList = HMage.anniObserverMap.getGameInfoList();
-    GameInfo gameInfo = gameInfoList.get(gameInfoList.size() - 1);//anniObserver.getGameInfo();
+    GameInfo gameInfo = anniObserver.getGameInfo();
 
     List<AnniPlayerData> killRanking = gameInfo.getTotalKillRanking(10);
     List<AnniPlayerData> nexusRanking = gameInfo.getNexusRanking(10);
