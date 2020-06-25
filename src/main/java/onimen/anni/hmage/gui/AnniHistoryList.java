@@ -7,7 +7,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,11 +21,15 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.ChatType;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.client.GuiScrollingList;
+import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.observer.AnniObserverMap;
 import onimen.anni.hmage.observer.GamePhase;
 import onimen.anni.hmage.observer.data.AnniPlayerData;
 import onimen.anni.hmage.observer.data.GameInfo;
+import onimen.anni.hmage.util.GuiScreenUtils;
 
 public class AnniHistoryList extends GuiScreen {
 
@@ -64,6 +67,9 @@ public class AnniHistoryList extends GuiScreen {
     this.buttonList
         .add(new GuiButton(6, this.width / 2 - 100, this.height - 38, I18n.format("gui.done")));
 
+    this.buttonList
+        .add(new GuiButton(17, this.width - 100, 8, 80, 20, I18n.format("View on 'E'")));
+
     updateCache();
   }
 
@@ -77,6 +83,12 @@ public class AnniHistoryList extends GuiScreen {
       this.mc.displayGuiScreen((GuiScreen) null);
       this.mc.setIngameFocus();
       return;
+    }
+    case 17: {
+      Preferences.showGameStatsInInventory = !Preferences.showGameStatsInInventory;
+      Preferences.save();
+      this.mc.ingameGUI.addChatMessage(ChatType.SYSTEM, new TextComponentString(
+          String.format("Show Game Stats in Inventory: %b", Preferences.showGameStatsInInventory)));
     }
     }
     super.actionPerformed(button);
@@ -283,7 +295,7 @@ public class AnniHistoryList extends GuiScreen {
           .collect(Collectors.toList());
 
       if (rankingHashCode != allCurrentRankers.hashCode()) {
-        rankingValueOffset = getMaxPlayerNameWidth(allCurrentRankers);
+        rankingValueOffset = GuiScreenUtils.getMaxPlayerNameWidth(fr, allCurrentRankers);
         rankingValueOffset += 8;
         rankingHashCode = allCurrentRankers.hashCode();
       }
@@ -294,63 +306,27 @@ public class AnniHistoryList extends GuiScreen {
       left += 8;
 
       if (sr.getScaleFactor() == 4) {
-        top = drawRanking("Melee Kill", meleeKillRanking, fr, top, left, color,
+        top = GuiScreenUtils.drawRanking("Melee Kill", meleeKillRanking, fr, top, left, rankingValueOffset,
             p -> p.getMeleeCount() + " Kills");
-        top = drawRanking("Shot Kill", shotKillRanking, fr, top, left, color,
+        top = GuiScreenUtils.drawRanking("Shot Kill", shotKillRanking, fr, top, left, rankingValueOffset,
             p -> p.getBowCount() + " Kills");
       } else {
-        int underMeleeRanking = drawRanking("Melee Kill", meleeKillRanking, fr, top, left + 200, color,
+        int underMeleeRanking = GuiScreenUtils.drawRanking("Melee Kill", meleeKillRanking, fr, top, left + 200,
+            rankingValueOffset,
             p -> p.getMeleeCount() + " Kills");
-        drawRanking("Shot Kill", shotKillRanking, fr, underMeleeRanking, left + 200, color,
+        GuiScreenUtils.drawRanking("Shot Kill", shotKillRanking, fr, underMeleeRanking, left + 200, rankingValueOffset,
             p -> p.getBowCount() + " Kills");
       }
 
-      top = drawRanking("Total Kill", killRanking, fr, top, left, color, p -> p.getTotalKillCount() + " Kills");
-      top = drawRanking("Nexus Damage", nexusRanking, fr, top, left, color, p -> p.getNexusDamageCount() + " Damage");
+      top = GuiScreenUtils.drawRanking("Total Kill", killRanking, fr, top, left, rankingValueOffset,
+          p -> p.getTotalKillCount() + " Kills");
+      top = GuiScreenUtils.drawRanking("Nexus Damage", nexusRanking, fr, top, left, rankingValueOffset,
+          p -> p.getNexusDamageCount() + " Damage");
 
       left -= 8;
       //SECTION END - TOP OF THE GAME
 
       this.setHeaderInfo(true, this.getHeaderHeight());
-    }
-
-    private int drawRanking(String title, List<AnniPlayerData> ranking, FontRenderer fr, int top,
-        int left, int color, Function<AnniPlayerData, String> value) {
-      fr.drawStringWithShadow(title, left, top, color);
-      left += 8;
-      top += 12;
-
-      if (ranking.isEmpty()) {
-        fr.drawStringWithShadow("No Result", left, top, color);
-        top += 10;
-        return top;
-      }
-
-      String rankText;
-      int rank = 1;
-      for (AnniPlayerData data : ranking) {
-        rankText = rank + ".";
-        fr.drawStringWithShadow(rankText, left - fr.getStringWidth(rankText), top, color);
-        fr.drawStringWithShadow(
-            String.format(" %s%s", data.getTeamColor().getColorCode(), data.getPlayerName()), left, top,
-            color);
-        fr.drawStringWithShadow(value.apply(data), left + rankingValueOffset, top, color);
-        top += 10;
-        rank++;
-      }
-      top += 10;
-      return top;
-    }
-
-    private int getMaxPlayerNameWidth(Collection<AnniPlayerData> datas) {
-      int width = 0;
-      for (AnniPlayerData data : datas) {
-        int nameWidth = AnniHistoryList.this.fontRenderer.getStringWidth(data.getPlayerName());
-        if (nameWidth > width) {
-          width = nameWidth;
-        }
-      }
-      return width;
     }
 
     @Override

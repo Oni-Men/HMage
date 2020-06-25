@@ -1,6 +1,7 @@
 package onimen.anni.hmage;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -8,6 +9,7 @@ import com.google.common.collect.Maps;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.GameSettings.Options;
@@ -16,6 +18,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -57,6 +60,8 @@ import onimen.anni.hmage.module.hud.NexusDamageHUD;
 import onimen.anni.hmage.module.hud.StatusEffectHUD;
 import onimen.anni.hmage.observer.AnniChatReciveExecutor;
 import onimen.anni.hmage.observer.AnniObserverMap;
+import onimen.anni.hmage.observer.data.AnniPlayerData;
+import onimen.anni.hmage.observer.data.GameInfo;
 import onimen.anni.hmage.observer.killeffect.AnniKillEffectManager;
 import onimen.anni.hmage.transformer.HurtingArmorInjector;
 import onimen.anni.hmage.util.GuiScreenUtils;
@@ -193,6 +198,31 @@ public class HMage {
         }
       }
     }
+  }
+
+  @SubscribeEvent
+  public void onDrawScreen(DrawScreenEvent.Post event) {
+    if (!Preferences.showGameStatsInInventory) { return; }
+    if (!(event.getGui() instanceof GuiInventory)) { return; }
+
+    //    AnniObserver anniObserver = HMage.anniObserverMap.getAnniObserver();
+    //
+    //    if (anniObserver == null)
+    //      return;
+
+    int width = event.getGui().width;
+
+    List<GameInfo> gameInfoList = HMage.anniObserverMap.getGameInfoList();
+    GameInfo gameInfo = gameInfoList.get(gameInfoList.size() - 1);//anniObserver.getGameInfo();
+
+    List<AnniPlayerData> killRanking = gameInfo.getTotalKillRanking(10);
+    List<AnniPlayerData> nexusRanking = gameInfo.getNexusRanking(10);
+
+    GuiScreenUtils.drawRankingLeft("Kills in this Game", killRanking, mc.fontRenderer, 4, 4,
+        d -> String.format("%dK", d.getTotalKillCount()));
+
+    GuiScreenUtils.drawRankingRight("Nexus damage in this Game", nexusRanking, mc.fontRenderer, 4, width - 4,
+        d -> String.format("%dD", d.getNexusDamageCount()));
   }
 
   @SubscribeEvent

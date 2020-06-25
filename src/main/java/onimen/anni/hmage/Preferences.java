@@ -21,6 +21,7 @@ public class Preferences {
   public static boolean hurtingArmor = true;
   public static int hurtingArmorColor = 0xFFFF0000;
 
+  public static boolean showGameStatsInInventory = true;
 
   public static KeyBinding openSettingsKey = new KeyBinding("hmage.key.settings", Keyboard.KEY_P,
       "key.categories.misc");
@@ -40,6 +41,8 @@ public class Preferences {
 
     hurtingArmor = getBoolean("hurtingArmor.enabled", true);
     hurtingArmorColor = getInt("hurtingArmor.color", 0xFFFF0000);
+
+    getBoolean("hmage.game-stats-on-inv", false);
   }
 
   public static void save() {
@@ -50,6 +53,8 @@ public class Preferences {
 
     setBoolean("hurtingArmor.enabled", hurtingArmor);
     setInt("hurtingArmor.color", hurtingArmorColor);
+
+    setBoolean("hmage.game-stats-on-inv", showGameStatsInInventory);
 
     new Thread(() ->{
       try {
