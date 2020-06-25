@@ -43,7 +43,6 @@ public interface InterfaceHUD extends InterfaceModule {
 
   public int getComputedY(ScaledResolution sr);
 
-
   public boolean isHorizontal();
 
   public boolean isInside(ScaledResolution sr, int x, int y);
