@@ -24,7 +24,10 @@ public class Preferences {
   public static boolean showGameStatsInInventory = true;
 
   public static KeyBinding openSettingsKey = new KeyBinding("hmage.key.settings", Keyboard.KEY_P,
-      "key.categories.misc");
+      "key.categories.hmage");
+
+  public static KeyBinding showAnniRankingTab = new KeyBinding("hmage.key.anni-ranking", Keyboard.KEY_H,
+      "key.categories.hmage");
 
   public static void load(FMLPreInitializationEvent event) {
     cfg = new Properties();
