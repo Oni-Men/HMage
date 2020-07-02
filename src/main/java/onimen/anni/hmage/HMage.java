@@ -1,6 +1,7 @@
 package onimen.anni.hmage;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -44,6 +45,7 @@ import onimen.anni.hmage.event.GetLocationCapeEvent;
 import onimen.anni.hmage.event.PlayParticleEvent;
 import onimen.anni.hmage.gui.GuiAnniServers;
 import onimen.anni.hmage.gui.GuiSettings;
+import onimen.anni.hmage.module.AutoText;
 import onimen.anni.hmage.module.CustomGuiBackground;
 import onimen.anni.hmage.module.FixedFOV;
 import onimen.anni.hmage.module.InterfaceModule;
@@ -75,7 +77,7 @@ import onimen.anni.hmage.util.scheduler.SyncTaskQueue;
 public class HMage {
   public static final String MODID = "hmage";
   public static final String NAME = "HMage";
-  public static final String VERSION = "1.0.1";
+  public static final String VERSION = "1.2.2";
   public static HMageLogger logger;
 
   public static final long startMilliTime = System.currentTimeMillis();
@@ -88,6 +90,8 @@ public class HMage {
 
   public static AnniObserverMap anniObserverMap;
   public static File modConfigurationDirectory;
+
+  public static AutoText autoText;
 
   public void registerModule(InterfaceModule module) {
     if (module == null) { return; }
@@ -121,6 +125,8 @@ public class HMage {
     modConfigurationDirectory = event.getModConfigurationDirectory();
     anniObserverMap = AnniObserverMap.getInstance();
 
+    AutoText.saveData = Paths.get(modConfigurationDirectory.getAbsolutePath(), "auto-text.txt");
+
     //明るさの設定を変更
     Options options = GameSettings.Options.GAMMA;
     options.setValueMax(15);
@@ -132,12 +138,15 @@ public class HMage {
 
     this.mc = Minecraft.getMinecraft();
 
+    autoText = new AutoText();
+
     //Register Modules
     this.registerModule(new RecipeBookRemover());
     this.registerModule(new FixedFOV());
     this.registerModule(new CustomGuiBackground());
     this.registerModule(new OldGUI());
     this.registerModule(new SSClipboard());
+    this.registerModule(autoText);
 
     //HUD
     this.registerModule(new ArrowCounterHUD());
