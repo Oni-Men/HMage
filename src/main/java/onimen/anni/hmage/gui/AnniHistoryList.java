@@ -28,6 +28,7 @@ import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.observer.AnniObserverMap;
 import onimen.anni.hmage.observer.GamePhase;
 import onimen.anni.hmage.observer.data.AnniPlayerData;
+import onimen.anni.hmage.observer.data.AnniTeamColor;
 import onimen.anni.hmage.observer.data.GameInfo;
 import onimen.anni.hmage.util.GuiScreenUtils;
 
@@ -269,6 +270,21 @@ public class AnniHistoryList extends GuiScreen {
       LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
       fr.drawStringWithShadow(datePattern.format(matchDateTime), left, top, 0xCCCCCC);
       top += 20;
+
+      fr.drawStringWithShadow("Team Ranking", left, top, color);
+      top += 12;
+      left += 8;
+      if (gameInfo.getTeamRanking().isEmpty()) {
+        fr.drawStringWithShadow("No result", left, top, color);
+        top += 10;
+      }
+
+      for (AnniTeamColor team : gameInfo.getTeamRanking()) {
+        fr.drawStringWithShadow(team.getColoredName(), left, top, color);
+        top += 10;
+      }
+
+      left -= 8;
 
       //SECTION START - PLAYER STATS
       fr.drawStringWithShadow(ChatFormatting.UNDERLINE + "Your Stats", left, top, color);

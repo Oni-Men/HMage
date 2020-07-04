@@ -258,6 +258,10 @@ public class GameInfo {
     this.teamRanking.addFirst(winTeam);
   }
 
+  public List<AnniTeamColor> getTeamRanking() {
+    return this.teamRanking.stream().collect(Collectors.toList());
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
