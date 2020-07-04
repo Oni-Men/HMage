@@ -1,7 +1,9 @@
 package onimen.anni.hmage.observer.data;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +54,9 @@ public class GameInfo {
 
   /** Nexusを削った回数のランキング */
   private List<AnniPlayerData> nexusRanking = null;
+
+  /** Teamのランキング */
+  private Deque<AnniTeamColor> teamRanking = new ArrayDeque<>();
 
   public GameInfo() {
     this.usingClassType = ClassType.CIVILIAN;
@@ -241,6 +246,16 @@ public class GameInfo {
     }
     if (nexusRanking.size() > limit) { return nexusRanking.subList(0, (int) limit); }
     return nexusRanking;
+  }
+
+  public void nexusDestroyed(AnniTeamColor destroyedTeam) {
+    this.teamRanking.remove(destroyedTeam);
+    this.teamRanking.addFirst(destroyedTeam);
+  }
+
+  public void teamWins(AnniTeamColor winTeam) {
+    this.teamRanking.remove(winTeam);
+    this.teamRanking.addFirst(winTeam);
   }
 
   @Override

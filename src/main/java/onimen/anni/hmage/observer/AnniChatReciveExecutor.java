@@ -25,6 +25,11 @@ public class AnniChatReciveExecutor {
   private static Pattern nexusChatPattern2 = Pattern
       .compile("§(?<damageColor>.)(.+) team's§(.) nexus is under attack by §(?<attackColor>.)(?<attacker>.+).*");
 
+  /** 拠点落ちた時のパターン */
+  private static String AA = "(§.▒§r){10} §r.+";
+  private static Pattern destroyedTeam = Pattern.compile(AA + "§(?<color>.)(.+) team's§r");
+  private static Pattern teamWins = Pattern.compile(AA + "§(?<color>.)(.+)§r§7 team wins!§r");
+
   private static List<Pattern> nexusChatPatterns = Arrays.asList(nexusChatPattern, nexusChatPattern2);
 
   /** 職業変更のパターン */
@@ -78,15 +83,33 @@ public class AnniChatReciveExecutor {
           if (task.getChatType() == ChatType.CHAT) {
             //パターンにマッチすることを確認
             Matcher matcher = killChatPattern.matcher(message);
-            if (!matcher.matches()) {
+            if (matcher.matches()) {
+              //キル数を加算
+              AnniTeamColor killerTeam = AnniTeamColor.findByColorCode(matcher.group(1));
+              AnniTeamColor deadTeam = AnniTeamColor.findByColorCode(matcher.group(6));
+              AnniKillType killType = matcher.group(5).equalsIgnoreCase("shot") ? AnniKillType.SHOT
+                  : AnniKillType.MELEE;
+              anniObserver.getGameInfo().addKillCount(matcher.group(2), killerTeam, matcher.group(7), deadTeam,
+                  killType);
               continue;
             }
 
-            //キル数を加算
-            AnniTeamColor killerTeam = AnniTeamColor.findByColorCode(matcher.group(1));
-            AnniTeamColor deadTeam = AnniTeamColor.findByColorCode(matcher.group(6));
-            AnniKillType killType = matcher.group(5).equalsIgnoreCase("shot") ? AnniKillType.SHOT : AnniKillType.MELEE;
-            anniObserver.getGameInfo().addKillCount(matcher.group(2), killerTeam, matcher.group(7), deadTeam, killType);
+            matcher = destroyedTeam.matcher(message);
+
+            if (matcher.matches()) {
+              AnniTeamColor destroyedTeam = AnniTeamColor.findByColorCode(matcher.group("color"));
+              anniObserver.getGameInfo().nexusDestroyed(destroyedTeam);
+              continue;
+            }
+
+            matcher = teamWins.matcher(message);
+
+            if (matcher.matches()) {
+              AnniTeamColor winTeam = AnniTeamColor.findByColorCode(matcher.group("color"));
+              anniObserver.getGameInfo().teamWins(winTeam);
+              continue;
+            }
+
           } else if (task.getChatType() == ChatType.GAME_INFO) {
 
             Matcher matcher = null;
