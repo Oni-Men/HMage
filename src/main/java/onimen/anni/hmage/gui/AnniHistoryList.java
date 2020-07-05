@@ -279,11 +279,14 @@ public class AnniHistoryList extends GuiScreen {
         top += 10;
       }
 
-      for (AnniTeamColor team : gameInfo.getTeamRanking()) {
-        fr.drawStringWithShadow(team.getColoredName(), left, top, color);
+      List<AnniTeamColor> teamRanking = gameInfo.getTeamRanking().stream().collect(Collectors.toList());
+      for (int i = 0; i < teamRanking.size(); i++) {
+        AnniTeamColor team = teamRanking.get(i);
+        fr.drawStringWithShadow(String.format("%d. %s", i+ 1, team.getColoredName()), left, top, color);
         top += 10;
       }
 
+      top += 20;
       left -= 8;
 
       //SECTION START - PLAYER STATS

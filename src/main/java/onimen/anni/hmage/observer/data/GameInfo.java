@@ -258,8 +258,8 @@ public class GameInfo {
     this.teamRanking.addFirst(winTeam);
   }
 
-  public List<AnniTeamColor> getTeamRanking() {
-    return this.teamRanking.stream().collect(Collectors.toList());
+  public Deque<AnniTeamColor> getTeamRanking() {
+    return this.teamRanking;
   }
 
   @Override
