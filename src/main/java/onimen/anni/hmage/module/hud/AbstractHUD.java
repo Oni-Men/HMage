@@ -35,6 +35,9 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
   @FloatOption(id = "scale", name = "Scale", min = 0.0F, max = 10.0F, showMenu = true)
   protected float scale = 1.0f;
 
+  @IntegerOption(id = "layout", showMenu = false)
+  protected int layout = getDefaultLayout().getCode();
+
   @Override
   public void setX(int value) {
     this.x = value;
@@ -76,12 +79,13 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
   public void setLayout(Layout layout) {
     widthHashCode = 0;
     heightHashCode = 0;
-    Preferences.setInt(this.getId() + ".layout", layout.getCode());
+    this.layout = layout.getCode();
+    Preferences.setInt(this.getId() + ".layout", this.layout);
   }
 
   @Override
   public Layout getLayout() {
-    return Layout.getLayout(Preferences.getInt(this.getId() + ".layout", 0));
+    return Layout.getLayout(this.layout);
   }
 
   @Override
