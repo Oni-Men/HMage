@@ -39,5 +39,6 @@ hmage.module.hud.kill-counter.description=キル数を表示します%n(Annihila
 hmage.module.hud.nexus-damage-counter.name=Nexus Damage Counter
 hmage.module.hud.nexus-damage-counter.description=ネクサスダメージを表示します。%n(Annihilationプレイ中のみ)
 hmage.module.hud.fps.description=FPSを表示します
+hmage.module.hud.ping.description=Pingを表示します
 hmage.module.old-gui.description=GUIを1.7.10で描画 (試験段階)
 hmage.module.ss-clipboard.description=スクリーンショットをクリップボードにコピー

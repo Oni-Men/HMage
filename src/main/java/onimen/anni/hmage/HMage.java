@@ -60,6 +60,7 @@ import onimen.anni.hmage.module.hud.FpsHUD;
 import onimen.anni.hmage.module.hud.InterfaceHUD;
 import onimen.anni.hmage.module.hud.KillCounterHUD;
 import onimen.anni.hmage.module.hud.NexusDamageHUD;
+import onimen.anni.hmage.module.hud.PingHUD;
 import onimen.anni.hmage.module.hud.StatusEffectHUD;
 import onimen.anni.hmage.observer.AnniChatReciveExecutor;
 import onimen.anni.hmage.observer.AnniObserver;
@@ -157,6 +158,7 @@ public class HMage {
     this.registerModule(new KillCounterHUD());
     this.registerModule(new NexusDamageHUD());
     this.registerModule(new FpsHUD());
+    this.registerModule(new PingHUD());
 
     ClientCommandHandler.instance.registerCommand(new DebugCommand());
     ClientCommandHandler.instance.registerCommand(new NameCommand());
