@@ -147,7 +147,7 @@ public class HMage {
     this.registerModule(new CustomGuiBackground());
     this.registerModule(new OldGUI());
     this.registerModule(new SSClipboard());
-    this.registerModule(autoText);
+    //this.registerModule(autoText);
 
     //HUD
     this.registerModule(new ArrowCounterHUD());
