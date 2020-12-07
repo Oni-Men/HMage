@@ -7,6 +7,7 @@ import net.minecraftforge.common.MinecraftForge;
 import onimen.anni.hmage.event.DrawWorldBackgroundEvent;
 import onimen.anni.hmage.event.GetLocationCapeEvent;
 import onimen.anni.hmage.event.PlayParticleEvent;
+import onimen.anni.hmage.event.RenderFontEvent;
 
 public class HMageHooks {
 
@@ -24,6 +25,12 @@ public class HMageHooks {
     PlayParticleEvent event = new PlayParticleEvent(particle);
     MinecraftForge.EVENT_BUS.post(event);
     return event.isCanceled();
+  }
+
+  public static RenderFontEvent onRenderFont(char ch, boolean italic) {
+    RenderFontEvent event = new RenderFontEvent(ch, italic);
+    MinecraftForge.EVENT_BUS.post(new RenderFontEvent(ch, italic));
+    return event;
   }
 
 }
