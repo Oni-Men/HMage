@@ -4,6 +4,7 @@ import java.util.ListIterator;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
@@ -41,7 +42,7 @@ public class FontRendererHook extends HookInjector {
   public void injectHook(InsnList list) {
     InsnList injectings = new InsnList();
 
-    String descriptor = "(CZ)Lonimen/anni/hmage/event/RenderFontEvent;";
+    String descriptor = "(CZFF)Lonimen/anni/hmage/event/RenderFontEvent;";
     MethodInsnNode onRenderFont = new MethodInsnNode(Opcodes.INVOKESTATIC, "onimen/anni/hmage/HMageHooks",
         "onRenderFont", descriptor, false);
 
@@ -55,6 +56,10 @@ public class FontRendererHook extends HookInjector {
 
     injectings.add(new VarInsnNode(Opcodes.ILOAD, 1));
     injectings.add(new VarInsnNode(Opcodes.ILOAD, 2));
+    injectings.add(new VarInsnNode(Opcodes.ALOAD, 0));
+    injectings.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/gui/FontRenderer", "posX", "F"));
+    injectings.add(new VarInsnNode(Opcodes.ALOAD, 0));
+    injectings.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/gui/FontRenderer", "posY", "F"));
     injectings.add(onRenderFont);
     injectings.add(new VarInsnNode(Opcodes.ASTORE, 4));
     injectings.add(new VarInsnNode(Opcodes.ALOAD, 4));

@@ -27,9 +27,9 @@ public class HMageHooks {
     return event.isCanceled();
   }
 
-  public static RenderFontEvent onRenderFont(char ch, boolean italic) {
-    RenderFontEvent event = new RenderFontEvent(ch, italic);
-    MinecraftForge.EVENT_BUS.post(new RenderFontEvent(ch, italic));
+  public static RenderFontEvent onRenderFont(char ch, boolean italic, float x, float y) {
+    RenderFontEvent event = new RenderFontEvent(ch, italic, x, y);
+    MinecraftForge.EVENT_BUS.post(event);
     return event;
   }
 
