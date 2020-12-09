@@ -51,3 +51,5 @@ hmage.module.old-gui.name=Old GUI
 hmage.module.old-gui.description=Render GUI as 1.7.10 (beta)
 hmage.module.ss-clipboard.name=SS Clipboard
 hmage.module.ss-clipboard.description=Copy screenshot to clipboard
+hmage.module.custom-font.name=Custom Font
+hmage.module.custom-font.description=You can use your chosen font for drawing
