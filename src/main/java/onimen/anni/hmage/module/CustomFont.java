@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import onimen.anni.hmage.event.GetCharWidthEvent;
 import onimen.anni.hmage.event.LoadFontTextureEvent;
 import onimen.anni.hmage.event.RenderFontEvent;
 import onimen.anni.hmage.util.font.FontTextureData;
@@ -45,11 +46,7 @@ public class CustomFont extends AbstractModule {
     float posY = event.getPosY();
 
     int page = ch / 256;
-    FontTextureData data = fontDatas[page];
-    if (data == null) {
-      data = new FontTextureData(new Font(fontName, Font.PLAIN, 12 * scaleFactor), page, scaleFactor);
-      fontDatas[page] = data;
-    }
+    FontTextureData data = this.getFontTextureData(page, scaleFactor);
 
     float k = italic ? 1.0F : 0.0F;
     float w = data.getTextureWidth();
@@ -88,6 +85,26 @@ public class CustomFont extends AbstractModule {
     if (canBehaivor()) {
       event.setResourceLocation(null);
     }
+  }
+
+  @SubscribeEvent
+  public void onGetCharWidthEvent(GetCharWidthEvent event) {
+    int scaleFactor = new ScaledResolution(Minecraft.getMinecraft()).getScaleFactor();
+    if (canBehaivor()) {
+      event.setCanceled(true);
+      int page = event.getChar() / 256;
+      FontTextureData data = this.getFontTextureData(page, scaleFactor);
+      event.setWidth((int) data.getCharWidth(event.getChar()));
+    }
+  }
+
+  private FontTextureData getFontTextureData(int page, int scaleFactor) {
+    FontTextureData data = fontDatas[page];
+    if (data == null) {
+      data = new FontTextureData(new Font(fontName, Font.PLAIN, 12 * scaleFactor), page, scaleFactor);
+      fontDatas[page] = data;
+    }
+    return data;
   }
 
   private void resetFontTexture() {
