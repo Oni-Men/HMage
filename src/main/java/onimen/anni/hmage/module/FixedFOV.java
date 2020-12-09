@@ -19,7 +19,7 @@ public class FixedFOV extends AbstractModule {
 
   @SubscribeEvent
   public void onFOVUpdate(FOVUpdateEvent event) {
-    if (canBehaivor()) {
+    if (canBehave()) {
       event.setNewfov(getFovModifier(event.getEntity()));
     }
   }

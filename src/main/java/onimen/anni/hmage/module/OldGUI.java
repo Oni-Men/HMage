@@ -25,7 +25,7 @@ public class OldGUI extends AbstractModule {
 
   @SubscribeEvent
   public void onGuiInit(InitGuiEvent event) {
-    boolean canBehaivor = canBehaivor();
+    boolean canBehaivor = canBehave();
 
     GuiScreen gui = event.getGui();
 

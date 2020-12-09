@@ -20,7 +20,7 @@ public class SSClipboard extends AbstractModule {
 
   @SubscribeEvent
   public void onScreenShot(ScreenshotEvent event) {
-    if(!canBehaivor()) {return;}
+    if(!canBehave()) {return;}
     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     ImageSelection imageSelection = new ImageSelection(event.getImage());
     clipboard.setContents(imageSelection, null);

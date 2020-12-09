@@ -42,7 +42,7 @@ public class AcroJumpHUD extends LabelHUD {
   public void drawItem(Minecraft mc, boolean layoutMode) {
 
     if (!layoutMode) {
-      if (!canBehaivor() || !this.isAcrobat()) { return; }
+      if (!canBehave() || !this.isAcrobat()) { return; }
     }
 
     text = layoutMode ? "Jump Ready" : getCooldownText();

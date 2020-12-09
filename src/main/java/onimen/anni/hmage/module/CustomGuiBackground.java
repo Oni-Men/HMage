@@ -34,7 +34,7 @@ public class CustomGuiBackground extends AbstractModule {
     if (mc == null)
       return;
 
-    if (!canBehaivor() || mc.world == null) { return; }
+    if (!canBehave() || mc.world == null) { return; }
     event.setCanceled(true);
 
     ScaledResolution sr = new ScaledResolution(mc);

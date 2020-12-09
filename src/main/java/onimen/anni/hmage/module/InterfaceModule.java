@@ -12,7 +12,7 @@ public interface InterfaceModule {
 
   public void setEnable(boolean value);
 
-  public boolean canBehaivor();
+  public boolean canBehave();
 
   public String getId();
 

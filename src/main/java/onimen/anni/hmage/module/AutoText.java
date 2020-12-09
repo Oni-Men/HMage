@@ -112,7 +112,7 @@ public class AutoText extends AbstractModule {
 
   @SubscribeEvent
   public void onInputUpdate(InputEvent event) {
-    if (!canBehaivor())
+    if (!canBehave())
       return;
     Minecraft mc = Minecraft.getMinecraft();
     for (TextBinding binding : bindedTexts.values()) {

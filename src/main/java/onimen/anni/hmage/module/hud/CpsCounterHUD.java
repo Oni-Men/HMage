@@ -56,7 +56,7 @@ public class CpsCounterHUD extends LabelHUD {
 
   @SubscribeEvent
   public void onMouseInputEvent(MouseInputEvent event) {
-    if (!canBehaivor())
+    if (!canBehave())
       return;
 
     if (!Mouse.getEventButtonState())

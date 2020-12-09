@@ -27,6 +27,12 @@ public abstract class AbstractModule implements InterfaceModule {
   public static void loadPreferences(InterfaceModule module) {
     Set<Field> fields = JavaUtil.getAllDeclaredField(module.getClass());
 
+    for (Field field : fields) {
+      Class<?> type = field.getType();
+
+
+    }
+
     JavaUtil.tryLoopOptionEntrySet(JavaUtil.getAnnotatedFields(fields, BooleanOption.class).entrySet(),
         (field, option) -> {
           field.setAccessible(true);
@@ -85,7 +91,7 @@ public abstract class AbstractModule implements InterfaceModule {
   }
 
   @Override
-  public boolean canBehaivor() {
+  public boolean canBehave() {
     return Preferences.enabled && isEnable();
   }
 
