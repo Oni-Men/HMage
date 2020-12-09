@@ -18,10 +18,11 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import onimen.anni.hmage.transformer.hook.DrawBackgroundHook;
-import onimen.anni.hmage.transformer.hook.FontRendererHook;
 import onimen.anni.hmage.transformer.hook.GetCapeTextureLocationHook;
 import onimen.anni.hmage.transformer.hook.HookInjector;
+import onimen.anni.hmage.transformer.hook.LoadFontTextureHook;
 import onimen.anni.hmage.transformer.hook.ParticleHandleHook;
+import onimen.anni.hmage.transformer.hook.RenderCharHook;
 
 public class HMageClassTransformer implements IClassTransformer {
 
@@ -38,7 +39,8 @@ public class HMageClassTransformer implements IClassTransformer {
     registerHookInjector(new DrawBackgroundHook());
     registerHookInjector(new GetCapeTextureLocationHook());
     registerHookInjector(new ParticleHandleHook());
-    registerHookInjector(new FontRendererHook());
+    registerHookInjector(new RenderCharHook());
+    registerHookInjector(new LoadFontTextureHook());
   }
 
   @Override

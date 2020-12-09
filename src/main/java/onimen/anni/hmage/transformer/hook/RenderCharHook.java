@@ -12,10 +12,10 @@ import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-public class FontRendererHook extends HookInjector {
+public class RenderCharHook extends HookInjector {
 
   //net.minecraft.client.gui.FontRenderer is "bip.class" in obfuscated
-  public FontRendererHook() {
+  public RenderCharHook() {
     super("net.minecraft.client.gui.FontRenderer", "(CZ)F", "renderChar", "func_181559_a", "a");
   }
 
@@ -64,7 +64,7 @@ public class FontRendererHook extends HookInjector {
     injectings.add(new VarInsnNode(Opcodes.ASTORE, 4));
     injectings.add(new VarInsnNode(Opcodes.ALOAD, 4));
     injectings.add(isCancelled);
-    injectings.add(new JumpInsnNode(Opcodes.IFNE, endOfInjection));
+    injectings.add(new JumpInsnNode(Opcodes.IFEQ, endOfInjection));
     injectings.add(new VarInsnNode(Opcodes.ALOAD, 4));
     injectings.add(getWidth);
     injectings.add(new InsnNode(Opcodes.FRETURN));
@@ -82,7 +82,7 @@ public class FontRendererHook extends HookInjector {
 
       VarInsnNode varInsnNode = (VarInsnNode) next;
 
-      if (varInsnNode.getOpcode() == Opcodes.ISTORE && varInsnNode.var == 3) {
+      if (varInsnNode.var == 3) {
         list.insert(next, injectings);
         break;
       }

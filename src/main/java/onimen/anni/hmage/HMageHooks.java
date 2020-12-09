@@ -6,6 +6,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import onimen.anni.hmage.event.DrawWorldBackgroundEvent;
 import onimen.anni.hmage.event.GetLocationCapeEvent;
+import onimen.anni.hmage.event.LoadFontTextureEvent;
 import onimen.anni.hmage.event.PlayParticleEvent;
 import onimen.anni.hmage.event.RenderFontEvent;
 
@@ -31,6 +32,12 @@ public class HMageHooks {
     RenderFontEvent event = new RenderFontEvent(ch, italic, x, y);
     MinecraftForge.EVENT_BUS.post(event);
     return event;
+  }
+
+  public static ResourceLocation onLoadFontTexture(int page, ResourceLocation resourceLocation) {
+    LoadFontTextureEvent event = new LoadFontTextureEvent(page, resourceLocation);
+    MinecraftForge.EVENT_BUS.post(event);
+    return event.getResourceLocation();
   }
 
 }
