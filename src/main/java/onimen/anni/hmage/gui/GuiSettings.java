@@ -12,11 +12,13 @@ import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.gui.button.AimGameButtonObject;
 import onimen.anni.hmage.gui.button.ButtonObject;
 import onimen.anni.hmage.gui.button.CapeSelectButtonObject;
+import onimen.anni.hmage.gui.button.ConsumableButton;
 import onimen.anni.hmage.gui.button.GameHistoryButton;
 import onimen.anni.hmage.gui.button.HUDLayoutButton;
 import onimen.anni.hmage.gui.button.HurtingArmorColorButton;
 import onimen.anni.hmage.gui.button.ModEnabledButtonObject;
 import onimen.anni.hmage.gui.button.ModuleSettingButtonObject;
+import onimen.anni.hmage.module.normal.CustomFont;
 import onimen.anni.hmage.module.normal.InterfaceModule;
 
 public class GuiSettings extends GuiScroll {
@@ -32,6 +34,13 @@ public class GuiSettings extends GuiScroll {
 
     buttonObjects.add(new HUDLayoutButton());
 
+    buttonObjects.add(new ConsumableButton("Customize Font", "Change Font", b -> {
+      mc.displayGuiScreen(new GuiFontChoose(this, font -> {
+        CustomFont.setFont(font);
+        CustomFont.resetFontTexture();
+      }));
+    }));
+
     //各モジュールの有効/無効の設定
     for (InterfaceModule module : moduleMap.values()) {
       if (module.isShowMenu()) {
@@ -45,7 +54,7 @@ public class GuiSettings extends GuiScroll {
     buttonObjects.add(new AimGameButtonObject());
     buttonObjects.add(new HurtingArmorColorButton());
 
-    //    buttonObjects.add(new DebugButtonObject());
+    //buttonObjects.add(new DebugButtonObject());
   }
 
   @Override

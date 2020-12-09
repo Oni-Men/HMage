@@ -9,7 +9,7 @@ import net.minecraft.client.gui.GuiScreen;
 
 public class GuiScroll extends GuiScreen {
 
-  public int amountScroll;
+  public int amountScroll = 0;
   public int mouseX, mouseY, prevMouseY;
 
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
@@ -42,7 +42,6 @@ public class GuiScroll extends GuiScreen {
 
     this.scroll(prevMouseY - mouseY);
     prevMouseY = mouseY;
-
   }
 
   @Override

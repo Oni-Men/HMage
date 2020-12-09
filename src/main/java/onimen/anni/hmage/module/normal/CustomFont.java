@@ -16,8 +16,7 @@ import onimen.anni.hmage.util.font.FontTextureData;
 public class CustomFont extends AbstractModule {
 
   private static FontTextureData[] fontDatas = new FontTextureData[256];
-
-  public String fontName = "Ubuntu";//"sushiki Regular";//"源真ゴシック Light";
+  public static String fontName = "System";//"sushiki Regular";//"源真ゴシック Light";
   private int prevScaleFactor = -1;
 
   @Override
@@ -28,14 +27,14 @@ public class CustomFont extends AbstractModule {
   @SubscribeEvent
   public void onRenderChar(RenderFontEvent event) {
     if (!this.canBehave()) {
-      this.resetFontTexture();
+      resetFontTexture();
       return;
     }
 
     int scaleFactor = new ScaledResolution(Minecraft.getMinecraft()).getScaleFactor();
     if (prevScaleFactor != scaleFactor) {
       prevScaleFactor = scaleFactor;
-      this.resetFontTexture();
+      resetFontTexture();
     }
 
     event.setCanceled(true);
@@ -109,13 +108,17 @@ public class CustomFont extends AbstractModule {
   private FontTextureData getFontTextureData(int page, int scaleFactor) {
     FontTextureData data = fontDatas[page];
     if (data == null) {
-      data = new FontTextureData(new Font("Ubuntu", Font.PLAIN, 12 * scaleFactor), page, scaleFactor);
+      data = new FontTextureData(new Font(fontName, Font.PLAIN, 12 * scaleFactor), page, scaleFactor);
       fontDatas[page] = data;
     }
     return data;
   }
 
-  private void resetFontTexture() {
+  public static void setFont(Font font) {
+    fontName = font.getFamily();
+  }
+
+  public static void resetFontTexture() {
     if (fontDatas != null) {
       for (FontTextureData data : fontDatas) {
         if (data != null)
