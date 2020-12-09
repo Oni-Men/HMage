@@ -5,6 +5,7 @@ import net.minecraft.network.play.server.SPacketParticles;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import onimen.anni.hmage.event.DrawWorldBackgroundEvent;
+import onimen.anni.hmage.event.GetCharWidthEvent;
 import onimen.anni.hmage.event.GetLocationCapeEvent;
 import onimen.anni.hmage.event.LoadFontTextureEvent;
 import onimen.anni.hmage.event.PlayParticleEvent;
@@ -40,4 +41,9 @@ public class HMageHooks {
     return event.getResourceLocation();
   }
 
+  public static GetCharWidthEvent onGetCharWidth(char ch) {
+    GetCharWidthEvent event = new GetCharWidthEvent(ch, 0);
+    MinecraftForge.EVENT_BUS.post(event);
+    return event;
+  }
 }
