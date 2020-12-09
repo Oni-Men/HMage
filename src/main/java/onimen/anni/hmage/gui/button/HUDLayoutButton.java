@@ -5,8 +5,8 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
-import onimen.anni.hmage.HMage;
 import onimen.anni.hmage.gui.GuiHUDLayout;
+import onimen.anni.hmage.module.ModuleManager;
 
 public class HUDLayoutButton implements ButtonObject {
 
@@ -22,7 +22,7 @@ public class HUDLayoutButton implements ButtonObject {
 
   @Override
   public void actionPerformed(GuiButton button) {
-    Minecraft.getMinecraft().displayGuiScreen(new GuiHUDLayout(HMage.getHUDMap()));
+    Minecraft.getMinecraft().displayGuiScreen(new GuiHUDLayout(ModuleManager.getHUDMap()));
   }
 
   @Override

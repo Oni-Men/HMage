@@ -3,10 +3,7 @@ package onimen.anni.hmage;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-
-import com.google.common.collect.Maps;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -46,6 +43,7 @@ import onimen.anni.hmage.event.GetLocationCapeEvent;
 import onimen.anni.hmage.event.PlayParticleEvent;
 import onimen.anni.hmage.gui.GuiAnniServers;
 import onimen.anni.hmage.gui.GuiSettings;
+import onimen.anni.hmage.module.ModuleManager;
 import onimen.anni.hmage.module.hud.AcroJumpHUD;
 import onimen.anni.hmage.module.hud.ArmorDurabilityHUD;
 import onimen.anni.hmage.module.hud.ArrowCounterHUD;
@@ -60,7 +58,6 @@ import onimen.anni.hmage.module.normal.AutoText;
 import onimen.anni.hmage.module.normal.CustomFont;
 import onimen.anni.hmage.module.normal.CustomGuiBackground;
 import onimen.anni.hmage.module.normal.FixedFOV;
-import onimen.anni.hmage.module.normal.InterfaceModule;
 import onimen.anni.hmage.module.normal.OldGUI;
 import onimen.anni.hmage.module.normal.RecipeBookRemover;
 import onimen.anni.hmage.module.normal.SSClipboard;
@@ -90,32 +87,10 @@ public class HMage {
   public static HMage INSTANCE;
   private Minecraft mc;
 
-  private static Map<String, InterfaceModule> moduleMap = Maps.newLinkedHashMap();
-  private static Map<String, InterfaceHUD> hudMap = Maps.newLinkedHashMap();
-
   public static AnniObserverMap anniObserverMap;
   public static File modConfigurationDirectory;
 
   public static AutoText autoText;
-
-  public void registerModule(InterfaceModule module) {
-    if (module == null) { return; }
-
-    MinecraftForge.EVENT_BUS.register(module);
-
-    moduleMap.put(module.getName(), module);
-    if (module instanceof InterfaceHUD) {
-      hudMap.put(module.getName(), (InterfaceHUD) module);
-    }
-  }
-
-  public static Map<String, InterfaceModule> getModuleMap() {
-    return moduleMap;
-  }
-
-  public static Map<String, InterfaceHUD> getHUDMap() {
-    return hudMap;
-  }
 
   public HMage() {
     INSTANCE = this;
@@ -146,24 +121,24 @@ public class HMage {
     autoText = new AutoText();
 
     //Register Modules
-    this.registerModule(new RecipeBookRemover());
-    this.registerModule(new FixedFOV());
-    this.registerModule(new CustomGuiBackground());
-    this.registerModule(new OldGUI());
-    this.registerModule(new SSClipboard());
-    this.registerModule(new CustomFont());
-    //this.registerModule(autoText);
+    ModuleManager.registerModule(new RecipeBookRemover());
+    ModuleManager.registerModule(new FixedFOV());
+    ModuleManager.registerModule(new CustomGuiBackground());
+    ModuleManager.registerModule(new OldGUI());
+    ModuleManager.registerModule(new SSClipboard());
+    ModuleManager.registerModule(new CustomFont());
+    //ModuleManager.registerModule(autoText);
 
     //HUD
-    this.registerModule(new ArrowCounterHUD());
-    this.registerModule(new StatusEffectHUD());
-    this.registerModule(new ArmorDurabilityHUD());
-    this.registerModule(new CpsCounterHUD());
-    this.registerModule(new AcroJumpHUD());
-    this.registerModule(new KillCounterHUD());
-    this.registerModule(new NexusDamageHUD());
-    this.registerModule(new FpsHUD());
-    this.registerModule(new PingHUD());
+    ModuleManager.registerModule(new ArrowCounterHUD());
+    ModuleManager.registerModule(new StatusEffectHUD());
+    ModuleManager.registerModule(new ArmorDurabilityHUD());
+    ModuleManager.registerModule(new CpsCounterHUD());
+    ModuleManager.registerModule(new AcroJumpHUD());
+    ModuleManager.registerModule(new KillCounterHUD());
+    ModuleManager.registerModule(new NexusDamageHUD());
+    ModuleManager.registerModule(new FpsHUD());
+    ModuleManager.registerModule(new PingHUD());
 
     ClientCommandHandler.instance.registerCommand(new DebugCommand());
     ClientCommandHandler.instance.registerCommand(new NameCommand());
@@ -196,7 +171,7 @@ public class HMage {
     if (Preferences.openSettingsKey.isPressed()) {
       if (mc.currentScreen == null) {
         //mc.displayGuiScreen(new CapeSetting());
-        mc.displayGuiScreen(new GuiSettings(getModuleMap()));
+        mc.displayGuiScreen(new GuiSettings(ModuleManager.getModuleMap()));
       }
     }
   }
@@ -214,7 +189,7 @@ public class HMage {
       if (Preferences.showAnniRankingTab.isKeyDown()) {
         renderAnniRanking(event.getResolution().getScaledWidth(), event.getResolution().getScaledHeight());
       } else if (event.getType() == ElementType.TEXT) {
-        for (InterfaceHUD item : hudMap.values()) {
+        for (InterfaceHUD item : ModuleManager.getHUDMap().values()) {
           if (item.isEnable())
             item.drawItem(mc);
         }
