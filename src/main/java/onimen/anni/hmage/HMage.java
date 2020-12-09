@@ -46,6 +46,7 @@ import onimen.anni.hmage.event.PlayParticleEvent;
 import onimen.anni.hmage.gui.GuiAnniServers;
 import onimen.anni.hmage.gui.GuiSettings;
 import onimen.anni.hmage.module.AutoText;
+import onimen.anni.hmage.module.CustomFont;
 import onimen.anni.hmage.module.CustomGuiBackground;
 import onimen.anni.hmage.module.FixedFOV;
 import onimen.anni.hmage.module.InterfaceModule;
@@ -147,6 +148,7 @@ public class HMage {
     this.registerModule(new CustomGuiBackground());
     this.registerModule(new OldGUI());
     this.registerModule(new SSClipboard());
+    this.registerModule(new CustomFont());
     //this.registerModule(autoText);
 
     //HUD
@@ -305,4 +307,5 @@ public class HMage {
 
     event.setCapeLocation(locationCape);
   }
+
 }
