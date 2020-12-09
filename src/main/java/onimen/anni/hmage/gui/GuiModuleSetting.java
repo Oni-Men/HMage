@@ -16,12 +16,12 @@ import onimen.anni.hmage.gui.button.component.BooleanButtonObject;
 import onimen.anni.hmage.gui.button.component.ColorButtonObject;
 import onimen.anni.hmage.gui.button.component.HMageGuiSlider;
 import onimen.anni.hmage.gui.button.component.NumberButtonObject;
-import onimen.anni.hmage.module.AbstractModule;
-import onimen.anni.hmage.module.InterfaceModule;
 import onimen.anni.hmage.module.annotation.BooleanOption;
 import onimen.anni.hmage.module.annotation.ColorOption;
 import onimen.anni.hmage.module.annotation.FloatOption;
 import onimen.anni.hmage.module.annotation.IntegerOption;
+import onimen.anni.hmage.module.normal.AbstractModule;
+import onimen.anni.hmage.module.normal.InterfaceModule;
 import onimen.anni.hmage.util.JavaUtil;
 
 public class GuiModuleSetting extends GuiScreen {

@@ -1,4 +1,4 @@
-package onimen.anni.hmage.module;
+package onimen.anni.hmage.module.normal;
 
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.entity.SharedMonsterAttributes;

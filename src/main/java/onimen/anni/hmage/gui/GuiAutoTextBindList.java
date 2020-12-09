@@ -16,8 +16,8 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import onimen.anni.hmage.module.AutoText;
-import onimen.anni.hmage.module.AutoText.TextBinding;
+import onimen.anni.hmage.module.normal.AutoText;
+import onimen.anni.hmage.module.normal.AutoText.TextBinding;
 
 public class GuiAutoTextBindList extends GuiListExtended {
   private final GuiAutoTextSetting parent;

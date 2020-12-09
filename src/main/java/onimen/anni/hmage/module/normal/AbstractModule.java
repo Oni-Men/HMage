@@ -1,4 +1,4 @@
-package onimen.anni.hmage.module;
+package onimen.anni.hmage.module.normal;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;

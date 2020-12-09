@@ -17,7 +17,7 @@ import onimen.anni.hmage.gui.button.HUDLayoutButton;
 import onimen.anni.hmage.gui.button.HurtingArmorColorButton;
 import onimen.anni.hmage.gui.button.ModEnabledButtonObject;
 import onimen.anni.hmage.gui.button.ModuleSettingButtonObject;
-import onimen.anni.hmage.module.InterfaceModule;
+import onimen.anni.hmage.module.normal.InterfaceModule;
 
 public class GuiSettings extends GuiScroll {
 

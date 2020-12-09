@@ -10,7 +10,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.settings.KeyModifier;
 import onimen.anni.hmage.HMage;
-import onimen.anni.hmage.module.AutoText;
+import onimen.anni.hmage.module.normal.AutoText;
 
 public class GuiAutoTextSetting extends GuiScreen {
 

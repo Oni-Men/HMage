@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import onimen.anni.hmage.gui.GuiModuleSetting;
-import onimen.anni.hmage.module.InterfaceModule;
+import onimen.anni.hmage.module.normal.InterfaceModule;
 
 public class ModuleSettingButtonObject implements ButtonObject {
 

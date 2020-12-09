@@ -1,4 +1,4 @@
-package onimen.anni.hmage.module;
+package onimen.anni.hmage.module.normal;
 
 import java.awt.Font;
 
@@ -17,9 +17,8 @@ public class CustomFont extends AbstractModule {
 
   private static FontTextureData[] fontDatas = new FontTextureData[256];
 
-  private String fontName = "Ubuntu";//"sushiki Regular";//"源真ゴシック Light";
+  public String fontName = "Ubuntu";//"sushiki Regular";//"源真ゴシック Light";
   private int prevScaleFactor = -1;
-  private Font font;
 
   @Override
   public String getId() {
@@ -28,7 +27,7 @@ public class CustomFont extends AbstractModule {
 
   @SubscribeEvent
   public void onRenderChar(RenderFontEvent event) {
-    if (!this.canBehaivor()) {
+    if (!this.canBehave()) {
       this.resetFontTexture();
       return;
     }
@@ -88,7 +87,7 @@ public class CustomFont extends AbstractModule {
 
   @SubscribeEvent
   public void onLoadFontTexture(LoadFontTextureEvent event) {
-    if (canBehaivor()) {
+    if (canBehave()) {
       event.setResourceLocation(null);
     }
   }
@@ -96,7 +95,7 @@ public class CustomFont extends AbstractModule {
   @SubscribeEvent
   public void onGetCharWidthEvent(GetCharWidthEvent event) {
     int scaleFactor = new ScaledResolution(Minecraft.getMinecraft()).getScaleFactor();
-    if (canBehaivor()) {
+    if (canBehave()) {
       event.setCanceled(true);
       int page = event.getChar() / 256;
       FontTextureData data = this.getFontTextureData(page, scaleFactor);
