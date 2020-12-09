@@ -13,6 +13,7 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.GameSettings.Options;
 import net.minecraft.inventory.IInventory;
@@ -73,6 +74,8 @@ import onimen.anni.hmage.transformer.HurtingArmorInjector;
 import onimen.anni.hmage.util.GuiScreenUtils;
 import onimen.anni.hmage.util.HMageLogger;
 import onimen.anni.hmage.util.ShotbowUtils;
+import onimen.anni.hmage.util.font.FontGenerateData;
+import onimen.anni.hmage.util.font.FontGenerateWorker;
 import onimen.anni.hmage.util.scheduler.SyncTaskQueue;
 
 @Mod(modid = HMage.MODID, name = HMage.NAME, version = HMage.VERSION)
@@ -285,6 +288,15 @@ public class HMage {
     Runnable nextTask;
     while ((nextTask = SyncTaskQueue.getNextTask()) != null) {
       nextTask.run();
+    }
+    FontGenerateData result;
+    while ((result = FontGenerateWorker.getNextResult()) != null) {
+      try {
+        TextureUtil.uploadTextureImage(result.glTextureId, result.image);
+        result.data.complete();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 

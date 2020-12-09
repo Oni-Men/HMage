@@ -13,7 +13,8 @@ import net.minecraft.client.renderer.texture.TextureUtil;
 
 public class FontTextureData {
 
-  private int glTextureId;
+  private boolean isInitialized = false;
+  private int glTextureId = -1;
   private int[] glyphWidth;
   private int width;
   private int height;
@@ -24,12 +25,21 @@ public class FontTextureData {
     this.scale = scale;
     this.glyphWidth = new int[256];
     this.uvCoords = new Vector2f[256];
-    this.generate(font, page, scale);
+    this.glTextureId = GlStateManager.generateTexture();
+    FontGenerateWorker.addGenerateTask(() -> {
+      BufferedImage generated = this.generate(font, page, scale);
+      return new FontGenerateData(this, generated, glTextureId);
+    });
   }
 
-  public void generate(Font font, int page, int scale) {
+  public void complete() {
+    this.isInitialized = true;
+  }
+
+  public BufferedImage generate(Font font, int page, int scale) {
     width = 256 * scale;
     height = 256 * scale;
+
     BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = (Graphics2D) image.getGraphics();
 
@@ -44,12 +54,15 @@ public class FontTextureData {
         this.uvCoords[codePoint % 256] = new Vector2f(u, v);
       }
     }
-    this.glTextureId = GlStateManager.generateTexture();
-    TextureUtil.uploadTextureImage(this.glTextureId, image);
+    return image;
   }
 
   public void destroy() {
     TextureUtil.deleteTexture(this.glTextureId);
+  }
+
+  public boolean isInitialized() {
+    return this.isInitialized;
   }
 
   public BufferedImage generateChar(Font font, char ch, int scale) {
@@ -60,13 +73,13 @@ public class FontTextureData {
 
     FontMetrics fm = g.getFontMetrics();
 
-    float x = 1F;
+    float x = 0F;
     float y = fm.getHeight() - fm.getLeading() - fm.getDescent();
 
     g.drawString(String.valueOf(ch), x, y);
     g.drawString(String.valueOf(ch), x, y);
 
-    this.glyphWidth[ch % 256] = fm.charWidth(ch) / scale;
+    this.glyphWidth[ch % 256] = fm.charWidth(ch) / scale + 1;
 
     return image;
   }
