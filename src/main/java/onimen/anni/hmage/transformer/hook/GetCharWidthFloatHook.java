@@ -11,10 +11,10 @@ import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-public class GetCharWidthHook extends HookInjector {
+public class GetCharWidthFloatHook extends HookInjector {
 
-  public GetCharWidthHook() {
-    super("net.minecraft.client.gui.FontRenderer", "(C)I", "getCharWidth", "func_78263_a", "a");
+  public GetCharWidthFloatHook() {
+    super("net.minecraft.client.gui.FontRenderer", "(C)F", "getCharWidthFloat");
   }
 
   @Override
@@ -28,8 +28,9 @@ public class GetCharWidthHook extends HookInjector {
     MethodInsnNode isCanceled = new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "onimen/anni/hmage/event/GetCharWidthEvent",
         "isCanceled", "()Z", false);
 
-    MethodInsnNode getWidth = new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "onimen/anni/hmage/event/GetCharWidthEvent",
-        "getWidth", "()I", false);
+    MethodInsnNode getWidthFloat = new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+        "onimen/anni/hmage/event/GetCharWidthEvent",
+        "getWidthFloat", "()F", false);
 
     LabelNode jumpTo = new LabelNode();
 
@@ -40,8 +41,8 @@ public class GetCharWidthHook extends HookInjector {
     injectings.add(isCanceled);
     injectings.add(new JumpInsnNode(Opcodes.IFEQ, jumpTo));
     injectings.add(new VarInsnNode(Opcodes.ALOAD, 3));
-    injectings.add(getWidth);
-    injectings.add(new InsnNode(Opcodes.IRETURN));
+    injectings.add(getWidthFloat);
+    injectings.add(new InsnNode(Opcodes.FRETURN));
     injectings.add(jumpTo);
 
     ListIterator<AbstractInsnNode> itr = list.iterator();

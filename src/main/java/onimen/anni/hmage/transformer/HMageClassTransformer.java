@@ -20,6 +20,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import onimen.anni.hmage.transformer.hook.DrawBackgroundHook;
 import onimen.anni.hmage.transformer.hook.GetCapeTextureLocationHook;
 import onimen.anni.hmage.transformer.hook.GetCharWidthHook;
+import onimen.anni.hmage.transformer.hook.GetCharWidthFloatHook;
 import onimen.anni.hmage.transformer.hook.HookInjector;
 import onimen.anni.hmage.transformer.hook.LoadFontTextureHook;
 import onimen.anni.hmage.transformer.hook.ParticleHandleHook;
@@ -43,6 +44,7 @@ public class HMageClassTransformer implements IClassTransformer {
     registerHookInjector(new RenderCharHook());
     registerHookInjector(new LoadFontTextureHook());
     registerHookInjector(new GetCharWidthHook());
+    registerHookInjector(new GetCharWidthFloatHook());
   }
 
   @Override
@@ -54,7 +56,7 @@ public class HMageClassTransformer implements IClassTransformer {
           ClassNode classNode = new ClassNode();
           ClassReader classReader = new ClassReader(bytes);
 
-          classReader.accept(classNode, 0);
+          classReader.accept(classNode, ClassReader.SKIP_FRAMES);
 
           List<HookInjector> injectorList = hookInjectorMap.get(transformedName);
 

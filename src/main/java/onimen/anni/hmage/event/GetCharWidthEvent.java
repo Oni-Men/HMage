@@ -25,6 +25,10 @@ public class GetCharWidthEvent extends Event {
     return this.width;
   }
 
+  public float getWidthFloat() {
+    return (float) this.width;
+  }
+
   public void setWidth(int width) {
     this.width = width;
   }

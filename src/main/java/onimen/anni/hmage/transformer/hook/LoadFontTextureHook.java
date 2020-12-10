@@ -17,7 +17,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 //  }
 public class LoadFontTextureHook extends HookInjector {
 
-  private static final String RESOURCE_LOCATION = "Lnet/minecraft/util/ResourceLocation;";
+  private static final String RESOURCE_LOCATION = "Lnf;";//"Lnet/minecraft/util/ResourceLocation;";
 
   public LoadFontTextureHook() {
     super("net.minecraft.client.gui.FontRenderer", "(I)" + RESOURCE_LOCATION,

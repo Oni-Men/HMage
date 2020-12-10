@@ -57,9 +57,9 @@ public class RenderCharHook extends HookInjector {
     injectings.add(new VarInsnNode(Opcodes.ILOAD, 1));
     injectings.add(new VarInsnNode(Opcodes.ILOAD, 2));
     injectings.add(new VarInsnNode(Opcodes.ALOAD, 0));
-    injectings.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/gui/FontRenderer", "posX", "F"));
+    injectings.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/gui/FontRenderer", "field_78295_j", "F"));
     injectings.add(new VarInsnNode(Opcodes.ALOAD, 0));
-    injectings.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/gui/FontRenderer", "posY", "F"));
+    injectings.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/gui/FontRenderer", "field_78296_k", "F"));
     injectings.add(onRenderFont);
     injectings.add(new VarInsnNode(Opcodes.ASTORE, 4));
     injectings.add(new VarInsnNode(Opcodes.ALOAD, 4));
