@@ -2,18 +2,24 @@ package onimen.anni.hmage.module.normal;
 
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.lwjgl.util.vector.Vector2f;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import onimen.anni.hmage.event.GetCharWidthEvent;
 import onimen.anni.hmage.event.LoadFontTextureEvent;
 import onimen.anni.hmage.event.RenderFontEvent;
+import onimen.anni.hmage.gui.GuiFontChoose;
+import onimen.anni.hmage.gui.button.ButtonObject;
+import onimen.anni.hmage.gui.button.ConsumableButton;
 import onimen.anni.hmage.util.font.FontTextureData;
 
 public class CustomFont extends AbstractModule {
@@ -26,6 +32,21 @@ public class CustomFont extends AbstractModule {
   @Override
   public String getId() {
     return "hmage.module.custom-font";
+  }
+
+  @Override
+  public ButtonObject getSettingButton(GuiScreen parent) {
+    String title = I18n.format(this.getId() + ".name");
+    String description = I18n.format(this.getId() + ".description");
+
+    ConsumableButton button = new ConsumableButton(title, title, b -> {
+      parent.mc.displayGuiScreen(new GuiFontChoose(parent, CustomFont.getFontNameList(), fonts -> {
+        CustomFont.setFontList(fonts);
+        CustomFont.resetFontTexture();
+      }));
+    });
+    button.setDescription(Arrays.asList(description));
+    return button;
   }
 
   @SubscribeEvent

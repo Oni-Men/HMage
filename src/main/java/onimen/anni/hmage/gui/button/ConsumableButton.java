@@ -35,7 +35,11 @@ public class ConsumableButton implements ButtonObject {
 
   @Override
   public List<String> getDescription() {
-    return null;
+    return description;
+  }
+
+  public void setDescription(List<String> description) {
+    this.description = description;
   }
 
 }

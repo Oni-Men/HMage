@@ -5,8 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import onimen.anni.hmage.Preferences;
+import onimen.anni.hmage.gui.button.ButtonObject;
+import onimen.anni.hmage.gui.button.ModuleSettingButtonObject;
 import onimen.anni.hmage.module.annotation.BooleanOption;
 import onimen.anni.hmage.module.annotation.ColorOption;
 import onimen.anni.hmage.module.annotation.FloatOption;
@@ -26,12 +29,6 @@ public abstract class AbstractModule implements InterfaceModule {
 
   public static void loadPreferences(InterfaceModule module) {
     Set<Field> fields = JavaUtil.getAllDeclaredField(module.getClass());
-
-    for (Field field : fields) {
-      Class<?> type = field.getType();
-
-
-    }
 
     JavaUtil.tryLoopOptionEntrySet(JavaUtil.getAnnotatedFields(fields, BooleanOption.class).entrySet(),
         (field, option) -> {
@@ -78,6 +75,11 @@ public abstract class AbstractModule implements InterfaceModule {
           field.setAccessible(true);
           Preferences.setFloat(module.getId() + "." + option.id(), field.getFloat(module));
         });
+  }
+
+  @Override
+  public ButtonObject getSettingButton(GuiScreen parent) {
+    return new ModuleSettingButtonObject(this, parent);
   }
 
   @Override

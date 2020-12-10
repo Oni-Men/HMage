@@ -2,6 +2,9 @@ package onimen.anni.hmage.module.normal;
 
 import java.util.List;
 
+import net.minecraft.client.gui.GuiScreen;
+import onimen.anni.hmage.gui.button.ButtonObject;
+
 public interface InterfaceModule {
 
   public boolean isEnable();
@@ -20,4 +23,5 @@ public interface InterfaceModule {
 
   public List<String> getDescription();
 
+  public ButtonObject getSettingButton(GuiScreen parent);
 }
