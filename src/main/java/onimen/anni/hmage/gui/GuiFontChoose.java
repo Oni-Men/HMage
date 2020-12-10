@@ -3,7 +3,11 @@ package onimen.anni.hmage.gui;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -31,18 +35,18 @@ public class GuiFontChoose extends GuiScroll {
         if (font.getFamily().equals(name)) { return font; }
       }
     }
-    return new Font("System", Font.PLAIN, 12);
+    return null;
   }
 
   @Nullable
   private GuiScreen parent;
 
   @Nullable
-  private Consumer<Font> callback;
+  private Consumer<List<Font>> callback;
 
   private int currentFontIndex = -1;
 
-  private String chosenFontName = null;
+  private List<String> chosenFontNames = null;
 
   private final String[] availableFontNames;
 
@@ -50,10 +54,14 @@ public class GuiFontChoose extends GuiScroll {
 
   private GuiTextField fontTextField;
 
-  public GuiFontChoose(GuiScreen parent, Consumer<Font> callback) {
+  public GuiFontChoose(GuiScreen parent, List<String> initialFontNames, Consumer<List<Font>> callback) {
     this.parent = parent;
     this.callback = callback;
     this.availableFontNames = getSystemAvailableFonts();
+    this.chosenFontNames = new ArrayList<>();
+    if (initialFontNames != null) {
+      this.chosenFontNames.addAll(initialFontNames);
+    }
   }
 
   @Override
@@ -62,8 +70,12 @@ public class GuiFontChoose extends GuiScroll {
     done = new GuiButton(-1, this.width / 2 - 100, this.height - 36, I18n.format("gui.done"));
     addButton(done);
 
-    fontTextField = new GuiTextField(2, fontRenderer, width / 2 - 100, 24, 200, 20);
+    Keyboard.enableRepeatEvents(true);
 
+    fontTextField = new GuiTextField(2, fontRenderer, width / 2 - 100, 36, 200, 20);
+    fontTextField.setEnableBackgroundDrawing(true);
+    fontTextField.setMaxStringLength(32);
+    fontTextField.setVisible(true);
   }
 
   @Override
@@ -81,13 +93,19 @@ public class GuiFontChoose extends GuiScroll {
     int y = TOP;
     for (int i = startIndex; i < endIndex; i++) {
       String text = availableFontNames[i];
-      if (text.equals(chosenFontName)) {
-        text = ">" + text;
+      if (chosenFontNames.contains(text)) {
+        text = ChatFormatting.LIGHT_PURPLE + ">" + text;
       }
       if (i == currentFontIndex) {
         text = ChatFormatting.UNDERLINE + text;
       }
       this.drawString(fontRenderer, text, width / 2 - 100, y - amountScroll % 12, 0xFFFFFF);
+      y += 12;
+    }
+
+    y = TOP;
+    for (String fontName : chosenFontNames) {
+      this.drawString(fontRenderer, ChatFormatting.LIGHT_PURPLE + fontName, width / 2 + 10, y, 0xFFFFFF);
       y += 12;
     }
 
@@ -97,7 +115,12 @@ public class GuiFontChoose extends GuiScroll {
   @Override
   public void onGuiClosed() {
     super.onGuiClosed();
-    this.callback.accept(getFontByName(chosenFontName));
+    Keyboard.enableRepeatEvents(false);
+    this.callback.accept(
+        chosenFontNames.stream()
+            .map(n -> getFontByName(n))
+            .filter(f -> f != null)
+            .collect(Collectors.toList()));
   }
 
   @Override
@@ -124,11 +147,23 @@ public class GuiFontChoose extends GuiScroll {
       done.playPressSound(this.mc.getSoundHandler());
       this.actionPerformed(done);
     }
-    fontTextField.mouseClicked(mouseX, mouseY, mouseButton);
-    int index = (mouseY + amountScroll - TOP) / 12;
-    if (index >= 0 && index < availableFontNames.length) {
+    if (fontTextField.mouseClicked(mouseX, mouseY, mouseButton))
+      return;
+
+    if (mouseY > TOP && mouseY < height - BOT + TOP) {
       if (mouseX > width / 2 - 100 && mouseX < width / 2) {
-        chosenFontName = availableFontNames[index];
+        int index = (mouseY + amountScroll - TOP) / 12;
+        if (index >= 0 && index < availableFontNames.length) {
+          String fontName = availableFontNames[index];
+          if (!chosenFontNames.remove(fontName)) {
+            chosenFontNames.add(fontName);
+          }
+        }
+      } else if (mouseX > width / 2 && mouseX < width / 2 + 100) {
+        int index = (mouseY - TOP) / 12;
+        if (index >= 0 && index < chosenFontNames.size()) {
+          chosenFontNames.remove(index);
+        }
       }
     }
   }
@@ -138,7 +173,7 @@ public class GuiFontChoose extends GuiScroll {
     super.handleMouseInput();
     int index = (mouseY + amountScroll - TOP) / 12;
     if (index >= 0 && index < availableFontNames.length) {
-      if (mouseX > width / 2 - 100 && mouseX < width / 2) {
+      if (mouseX > width / 2 - 100 && mouseX < width / 2 && mouseY > TOP && mouseY < height - BOT + TOP) {
         currentFontIndex = index;
       }
     }
@@ -150,7 +185,7 @@ public class GuiFontChoose extends GuiScroll {
       String[] split = fontTextField.getText().split(",");
       boolean backSpace = keyCode == Keyboard.KEY_BACK;
       boolean typedComma = typedChar == ',';
-      if (!backSpace && !typedComma && split.length != 0) {
+      if (!backSpace && !isCtrlKeyDown() && !typedComma && split.length != 0) {
         this.findAndScroll(split[split.length - 1]);
       }
     } else {
@@ -176,13 +211,20 @@ public class GuiFontChoose extends GuiScroll {
   }
 
   private void findAndScroll(String text) {
+    int find = find(text, (s, t) -> s.startsWith(t));
+    if (find != -1) {
+      amountScroll = 12 * find;
+    }
+  }
+
+  private int find(String text, BiPredicate<String, String> predicate) {
     if (text.isEmpty())
-      return;
+      return -1;
 
     text = text.toLowerCase();
 
     int min = 0, mid, max = availableFontNames.length;
-    int find = -1;
+    int idxFirstChar = -1;
     while (max >= min) {
       mid = min + (max - min) / 2;
       if (mid < 0 || mid >= availableFontNames.length) {
@@ -190,6 +232,8 @@ public class GuiFontChoose extends GuiScroll {
       }
 
       String fontName = availableFontNames[mid].toLowerCase();
+      if (fontName.isEmpty())
+        continue;
 
       if (fontName.charAt(0) > text.charAt(0)) {
         max = mid - 1;
@@ -199,20 +243,22 @@ public class GuiFontChoose extends GuiScroll {
         min = mid + 1;
         continue;
       }
-      find = mid;
+      idxFirstChar = mid;
       break;
     }
 
-    for (int i = find; i < availableFontNames.length; i++) {
-      if (availableFontNames[i].toLowerCase().startsWith(text)) {
-        find = i;
+    if (idxFirstChar == -1)
+      return idxFirstChar;
+
+    int foundAt = -1;
+
+    for (int i = idxFirstChar; i < availableFontNames.length; i++) {
+      if (predicate.test(availableFontNames[i].toLowerCase(), text)) {
+        foundAt = i;
         break;
       }
     }
 
-    if (find != -1) {
-      amountScroll = 12 * find - TOP;
-    }
+    return foundAt;
   }
-
 }

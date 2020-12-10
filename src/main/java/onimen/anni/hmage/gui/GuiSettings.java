@@ -35,8 +35,8 @@ public class GuiSettings extends GuiScroll {
     buttonObjects.add(new HUDLayoutButton());
 
     buttonObjects.add(new ConsumableButton("Customize Font", "Change Font", b -> {
-      mc.displayGuiScreen(new GuiFontChoose(this, font -> {
-        CustomFont.setFont(font);
+      mc.displayGuiScreen(new GuiFontChoose(this, CustomFont.getFontNameList(), fonts -> {
+        CustomFont.setFontList(fonts);
         CustomFont.resetFontTexture();
       }));
     }));

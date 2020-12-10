@@ -1,6 +1,9 @@
 package onimen.anni.hmage.module.normal;
 
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.lwjgl.util.vector.Vector2f;
 
@@ -16,6 +19,7 @@ import onimen.anni.hmage.util.font.FontTextureData;
 public class CustomFont extends AbstractModule {
 
   private static FontTextureData[] fontDatas = new FontTextureData[256];
+  private static List<String> fontNames = new ArrayList<>();
   public static String fontName = "System";//"sushiki Regular";//"源真ゴシック Light";
   private int prevScaleFactor = -1;
 
@@ -101,23 +105,29 @@ public class CustomFont extends AbstractModule {
       if (!data.isInitialized()) {
         event.setWidth(4);
       }
-      event.setWidth((int) data.getCharWidth(event.getChar()) / 2);
+      event.setWidth((int) (data.getCharWidth(event.getChar()) / 2F));
     }
   }
 
   private FontTextureData getFontTextureData(int page, int scaleFactor) {
     FontTextureData data = fontDatas[page];
     if (data == null) {
-      data = new FontTextureData(new Font(fontName, Font.PLAIN, 12 * scaleFactor), page, scaleFactor);
+      List<Font> fonts = fontNames.stream()
+          .map(n -> new Font(n, Font.PLAIN, 12 * scaleFactor))
+          .collect(Collectors.toList());
+      data = new FontTextureData(fonts, page, scaleFactor);
       fontDatas[page] = data;
     }
     return data;
   }
 
-  public static void setFont(Font font) {
-    fontName = font.getFamily();
+  public static void setFontList(List<Font> fonts) {
+    fontNames = fonts.stream().map(f -> f.getFamily()).collect(Collectors.toList());
   }
 
+  public static List<String> getFontNameList() {
+    return fontNames;
+  }
   public static void resetFontTexture() {
     if (fontDatas != null) {
       for (FontTextureData data : fontDatas) {

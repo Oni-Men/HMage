@@ -5,6 +5,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.Iterator;
+import java.util.List;
 
 import org.lwjgl.util.vector.Vector2f;
 
@@ -21,13 +23,13 @@ public class FontTextureData {
   private int scale;
   private Vector2f[] uvCoords;
 
-  public FontTextureData(Font font, int page, int scale) {
+  public FontTextureData(List<Font> fonts, int page, int scale) {
     this.scale = scale;
     this.glyphWidth = new int[256];
     this.uvCoords = new Vector2f[256];
     this.glTextureId = GlStateManager.generateTexture();
     FontGenerateWorker.addGenerateTask(() -> {
-      BufferedImage generated = this.generate(font, page, scale);
+      BufferedImage generated = this.generate(fonts, page, scale);
       return new FontGenerateData(this, generated, glTextureId);
     });
   }
@@ -36,7 +38,7 @@ public class FontTextureData {
     this.isInitialized = true;
   }
 
-  public BufferedImage generate(Font font, int page, int scale) {
+  public BufferedImage generate(List<Font> fonts, int page, int scale) {
     width = 256 * scale;
     height = 256 * scale;
 
@@ -50,7 +52,7 @@ public class FontTextureData {
         float u = (float) (x * 16 * scale) / (float) width;
         float v = (float) (y * 16 * scale) / (float) height;
 
-        g.drawImage(generateChar(font, codePoint, scale), (int) (u * width), (int) (v * height), null);
+        g.drawImage(generateChar(fonts, codePoint, scale), (int) (u * width), (int) (v * height), null);
         this.uvCoords[codePoint % 256] = new Vector2f(u, v);
       }
     }
@@ -65,10 +67,11 @@ public class FontTextureData {
     return this.isInitialized;
   }
 
-  public BufferedImage generateChar(Font font, char ch, int scale) {
+  public BufferedImage generateChar(List<Font> fonts, char ch, int scale) {
     BufferedImage image = new BufferedImage(16 * scale, 16 * scale, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = (Graphics2D) image.getGraphics();
-    g.setFont(font);
+    g.setFont(new Font("System", Font.PLAIN, 12 * scale));
+    g.setFont(findFontCanDisplayUp(g, fonts, ch));
     g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
     FontMetrics fm = g.getFontMetrics();
@@ -82,6 +85,16 @@ public class FontTextureData {
     this.glyphWidth[ch % 256] = fm.charWidth(ch) / scale + 1;
 
     return image;
+  }
+
+  public Font findFontCanDisplayUp(Graphics2D g, List<Font> fonts, char ch) {
+    Iterator<Font> iterator = fonts.iterator();
+    while (iterator.hasNext()) {
+      Font next = iterator.next();
+      if (g.getFont().canDisplay((int) ch))
+        return next;
+    }
+    return fonts.isEmpty() ? null : fonts.get(0);
   }
 
   public int getGlTextureId() {
