@@ -3,6 +3,7 @@ package onimen.anni.hmage.gui;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.gui.button.ButtonObject;
+import onimen.anni.hmage.gui.button.ConsumableButton;
 import onimen.anni.hmage.gui.button.component.BooleanButtonObject;
 import onimen.anni.hmage.gui.button.component.ColorButtonObject;
 import onimen.anni.hmage.gui.button.component.HMageGuiSlider;
@@ -21,6 +23,7 @@ import onimen.anni.hmage.module.annotation.ColorOption;
 import onimen.anni.hmage.module.annotation.FloatOption;
 import onimen.anni.hmage.module.annotation.IntegerOption;
 import onimen.anni.hmage.module.normal.AbstractModule;
+import onimen.anni.hmage.module.normal.CustomFont;
 import onimen.anni.hmage.module.normal.InterfaceModule;
 import onimen.anni.hmage.util.JavaUtil;
 
@@ -41,6 +44,24 @@ public class GuiModuleSetting extends GuiScreen {
     addIntegerComponents(JavaUtil.getAnnotatedFields(fields, IntegerOption.class).entrySet());
     addColorComponent(JavaUtil.getAnnotatedFields(fields, ColorOption.class).entrySet());
     addFloatComponents(JavaUtil.getAnnotatedFields(fields, FloatOption.class).entrySet());
+
+    if (module instanceof CustomFont) {
+      String title = I18n.format(module.getId() + ".name");
+      String description = I18n.format(module.getId() + ".description");
+
+      ConsumableButton button = new ConsumableButton(title, title, b -> {
+        parent.mc.displayGuiScreen(new GuiFontChoose(parent, CustomFont.getFontNameList(), fonts -> {
+          CustomFont.setFontList(fonts);
+          CustomFont.resetFontTexture();
+        }));
+      });
+      button.setDescription(Arrays.asList(description));
+      this.buttonObjects.add(button);
+    }
+  }
+
+  public void addButton(ButtonObject button) {
+    this.buttonObjects.add(button);
   }
 
   @Override
