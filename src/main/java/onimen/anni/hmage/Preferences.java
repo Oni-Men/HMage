@@ -1,16 +1,21 @@
 package onimen.anni.hmage;
 
+import java.awt.Font;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import onimen.anni.hmage.module.normal.CustomFont;
 
 public class Preferences {
 
@@ -46,6 +51,10 @@ public class Preferences {
     hurtingArmorColor = getInt("hurtingArmor.color", 0xFFFF0000);
 
     getBoolean("hmage.game-stats-on-inv", false);
+
+    String[] fontNames = getString("hmage.module.custom-font.font-names", "").split(",");
+    List<Font> fonts = Stream.of(fontNames).map(n -> new Font(n, Font.PLAIN, 12)).collect(Collectors.toList());
+    CustomFont.setFontList(fonts);
   }
 
   public static void save() {
@@ -59,6 +68,7 @@ public class Preferences {
 
     setBoolean("hmage.game-stats-on-inv", showGameStatsInInventory);
 
+    setString("hmage.module.custom-font.font-names", String.join(",", CustomFont.getFontNameList()));
     new Thread(() ->{
       try {
         cfg.store(Files.newBufferedWriter(configPath, StandardCharsets.UTF_8), "Created by HMage");
