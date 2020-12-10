@@ -54,6 +54,8 @@ public class GuiFontChoose extends GuiScroll {
 
   private GuiTextField fontTextField;
 
+  private boolean changed = false;
+
   public GuiFontChoose(GuiScreen parent, List<String> initialFontNames, Consumer<List<Font>> callback) {
     this.parent = parent;
     this.callback = callback;
@@ -116,11 +118,13 @@ public class GuiFontChoose extends GuiScroll {
   public void onGuiClosed() {
     super.onGuiClosed();
     Keyboard.enableRepeatEvents(false);
-    this.callback.accept(
-        chosenFontNames.stream()
-            .map(n -> getFontByName(n))
-            .filter(f -> f != null)
-            .collect(Collectors.toList()));
+    if (changed) {
+      this.callback.accept(
+          chosenFontNames.stream()
+              .map(n -> getFontByName(n))
+              .filter(f -> f != null)
+              .collect(Collectors.toList()));
+    }
   }
 
   @Override
@@ -157,12 +161,14 @@ public class GuiFontChoose extends GuiScroll {
           String fontName = availableFontNames[index];
           if (!chosenFontNames.remove(fontName)) {
             chosenFontNames.add(fontName);
+            changed = true;
           }
         }
       } else if (mouseX > width / 2 && mouseX < width / 2 + 100) {
         int index = (mouseY - TOP) / 12;
         if (index >= 0 && index < chosenFontNames.size()) {
           chosenFontNames.remove(index);
+          changed = true;
         }
       }
     }
