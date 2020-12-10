@@ -7,13 +7,18 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
+import org.lwjgl.input.Keyboard;
+
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
 
 public class GuiFontChoose extends GuiScroll {
+
+  private static final int TOP = 64, BOT = 96;
 
   public static String[] getSystemAvailableFonts() {
     return GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
@@ -43,6 +48,8 @@ public class GuiFontChoose extends GuiScroll {
 
   private GuiButton done;
 
+  private GuiTextField fontTextField;
+
   public GuiFontChoose(GuiScreen parent, Consumer<Font> callback) {
     this.parent = parent;
     this.callback = callback;
@@ -54,6 +61,9 @@ public class GuiFontChoose extends GuiScroll {
     super.initGui();
     done = new GuiButton(-1, this.width / 2 - 100, this.height - 36, I18n.format("gui.done"));
     addButton(done);
+
+    fontTextField = new GuiTextField(2, fontRenderer, width / 2 - 100, 24, 200, 20);
+
   }
 
   @Override
@@ -66,9 +76,9 @@ public class GuiFontChoose extends GuiScroll {
       return;
 
     int startIndex = Math.max(0, (amountScroll) / 12);
-    int endIndex = Math.min(availableFontNames.length, (amountScroll + height - 96) / 12);
+    int endIndex = Math.min(availableFontNames.length, (amountScroll + height - BOT) / 12);
 
-    int y = 48;
+    int y = TOP;
     for (int i = startIndex; i < endIndex; i++) {
       String text = availableFontNames[i];
       if (text.equals(chosenFontName)) {
@@ -81,6 +91,7 @@ public class GuiFontChoose extends GuiScroll {
       y += 12;
     }
 
+    fontTextField.drawTextBox();
   }
 
   @Override
@@ -91,7 +102,7 @@ public class GuiFontChoose extends GuiScroll {
 
   @Override
   public int getMaxScroll() {
-    return 12 * availableFontNames.length - height + 96;
+    return 12 * availableFontNames.length - height + BOT;
   }
 
   @Override
@@ -113,8 +124,8 @@ public class GuiFontChoose extends GuiScroll {
       done.playPressSound(this.mc.getSoundHandler());
       this.actionPerformed(done);
     }
-
-    int index = (mouseY + amountScroll - 48) / 12;
+    fontTextField.mouseClicked(mouseX, mouseY, mouseButton);
+    int index = (mouseY + amountScroll - TOP) / 12;
     if (index >= 0 && index < availableFontNames.length) {
       if (mouseX > width / 2 - 100 && mouseX < width / 2) {
         chosenFontName = availableFontNames[index];
@@ -125,11 +136,25 @@ public class GuiFontChoose extends GuiScroll {
   @Override
   public void handleMouseInput() throws IOException {
     super.handleMouseInput();
-    int index = (mouseY + amountScroll - 48) / 12;
+    int index = (mouseY + amountScroll - TOP) / 12;
     if (index >= 0 && index < availableFontNames.length) {
       if (mouseX > width / 2 - 100 && mouseX < width / 2) {
         currentFontIndex = index;
       }
+    }
+  }
+
+  @Override
+  protected void keyTyped(char typedChar, int keyCode) throws IOException {
+    if (this.fontTextField.textboxKeyTyped(typedChar, keyCode)) {
+      String[] split = fontTextField.getText().split(",");
+      boolean backSpace = keyCode == Keyboard.KEY_BACK;
+      boolean typedComma = typedChar == ',';
+      if (!backSpace && !typedComma && split.length != 0) {
+        this.findAndScroll(split[split.length - 1]);
+      }
+    } else {
+      super.keyTyped(typedChar, keyCode);
     }
   }
 
@@ -140,7 +165,7 @@ public class GuiFontChoose extends GuiScroll {
 
   @Override
   protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
-    if (mouseY > 48 && mouseY < height - 96) {
+    if (mouseY > TOP && mouseY < height - BOT) {
       super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
     }
   }
@@ -148,6 +173,46 @@ public class GuiFontChoose extends GuiScroll {
   @Override
   protected void mouseReleased(int mouseX, int mouseY, int state) {
     super.mouseReleased(mouseX, mouseY, state);
+  }
+
+  private void findAndScroll(String text) {
+    if (text.isEmpty())
+      return;
+
+    text = text.toLowerCase();
+
+    int min = 0, mid, max = availableFontNames.length;
+    int find = -1;
+    while (max >= min) {
+      mid = min + (max - min) / 2;
+      if (mid < 0 || mid >= availableFontNames.length) {
+        break;
+      }
+
+      String fontName = availableFontNames[mid].toLowerCase();
+
+      if (fontName.charAt(0) > text.charAt(0)) {
+        max = mid - 1;
+        continue;
+      }
+      if (fontName.charAt(0) < text.charAt(0)) {
+        min = mid + 1;
+        continue;
+      }
+      find = mid;
+      break;
+    }
+
+    for (int i = find; i < availableFontNames.length; i++) {
+      if (availableFontNames[i].toLowerCase().startsWith(text)) {
+        find = i;
+        break;
+      }
+    }
+
+    if (find != -1) {
+      amountScroll = 12 * find - TOP;
+    }
   }
 
 }
