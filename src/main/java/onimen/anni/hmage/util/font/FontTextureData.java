@@ -91,7 +91,7 @@ public class FontTextureData {
     Iterator<Font> iterator = fonts.iterator();
     while (iterator.hasNext()) {
       Font next = iterator.next();
-      if (g.getFont().canDisplay((int) ch))
+      if (next.canDisplay(ch))
         return next;
     }
     return fonts.isEmpty() ? null : fonts.get(0);
