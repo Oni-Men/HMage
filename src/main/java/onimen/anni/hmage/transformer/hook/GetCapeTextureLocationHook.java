@@ -8,6 +8,9 @@ import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
+import onimen.anni.hmage.transformer.HookInjector;
+import onimen.anni.hmage.transformer.HookInjectorManager.ObfuscateType;
+
 public class GetCapeTextureLocationHook extends HookInjector {
 
   /*
@@ -28,15 +31,21 @@ public class GetCapeTextureLocationHook extends HookInjector {
    */
 
   public GetCapeTextureLocationHook() {
-    super("net.minecraft.client.entity.AbstractClientPlayer", "()Lnf;", "getLocationCape", "q");
+    super("net.minecraft.client.entity.AbstractClientPlayer");
+    this.registerEntry(ObfuscateType.DEOBF, "getLocationCape", "()Lnet/minecraft/util/ResourceLocation;");
+    this.registerEntry(ObfuscateType.OBF, "q", "()Lnf;");
   }
 
   @Override
-  public void injectHook(InsnList list) {
+  public boolean injectHook(InsnList list, ObfuscateType type) {
+    String resourceLocation = type == ObfuscateType.DEOBF ? "Lnet/minecraft/util/ResourceLocation;" : "Lnf;";
+    String abstractClientPlayer = type == ObfuscateType.DEOBF ? "Lnet/minecraft/client/entity/AbstractClientPlayer;"
+        : "Lbua;";
+
     InsnList injectings = new InsnList();
 
     MethodInsnNode hook = new MethodInsnNode(Opcodes.INVOKESTATIC, "onimen/anni/hmage/HMageHooks",
-        "onGetLocationCape", "(Lbua;)Lnf;", false);
+        "onGetLocationCape", "(" + abstractClientPlayer + ")" + resourceLocation, false);
 
     InsnNode returnNode = new InsnNode(Opcodes.ARETURN);
     LabelNode gotoNode = new LabelNode();
@@ -51,6 +60,7 @@ public class GetCapeTextureLocationHook extends HookInjector {
     injectings.add(returnNode);
     injectings.add(gotoNode);
     list.insert(injectings);
+    return true;
   }
 
 }

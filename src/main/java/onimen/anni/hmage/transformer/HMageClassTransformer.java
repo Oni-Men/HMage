@@ -1,56 +1,26 @@
 package onimen.anni.hmage.transformer;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
-import onimen.anni.hmage.transformer.hook.DrawBackgroundHook;
-import onimen.anni.hmage.transformer.hook.GetCapeTextureLocationHook;
-import onimen.anni.hmage.transformer.hook.GetCharWidthHook;
-import onimen.anni.hmage.transformer.hook.GetCharWidthFloatHook;
-import onimen.anni.hmage.transformer.hook.HookInjector;
-import onimen.anni.hmage.transformer.hook.LoadFontTextureHook;
-import onimen.anni.hmage.transformer.hook.ParticleHandleHook;
-import onimen.anni.hmage.transformer.hook.RenderCharHook;
+import onimen.anni.hmage.transformer.HookInjector.MethodIdentifier;
+import onimen.anni.hmage.transformer.HookInjectorManager.ObfuscateType;
 
 public class HMageClassTransformer implements IClassTransformer {
-
-  private static HashMap<String, List<HookInjector>> hookInjectorMap = Maps.newHashMap();
-
-  public static void registerHookInjector(HookInjector injector) {
-    hookInjectorMap
-        .computeIfAbsent(injector.owner, k -> Lists.newArrayList())
-        .add(injector);
-  }
-
-  static {
-    FMLLog.log.info("[HMage CORE]Registering Hook injector");
-    registerHookInjector(new DrawBackgroundHook());
-    registerHookInjector(new GetCapeTextureLocationHook());
-    registerHookInjector(new ParticleHandleHook());
-    registerHookInjector(new RenderCharHook());
-    registerHookInjector(new LoadFontTextureHook());
-    registerHookInjector(new GetCharWidthHook());
-    registerHookInjector(new GetCharWidthFloatHook());
-  }
 
   @Override
   public byte[] transform(String name, String transformedName, byte[] bytes) {
     if (FMLLaunchHandler.side().equals(Side.CLIENT) && transformedName.startsWith("net.minecraft.")) {
-      if (hookInjectorMap.containsKey(transformedName)) {
+      if (HookInjectorManager.hasInjectorFor(transformedName)) {
         try {
 
           ClassNode classNode = new ClassNode();
@@ -58,19 +28,23 @@ public class HMageClassTransformer implements IClassTransformer {
 
           classReader.accept(classNode, ClassReader.SKIP_FRAMES);
 
-          List<HookInjector> injectorList = hookInjectorMap.get(transformedName);
+          List<HookInjector> injectorList = HookInjectorManager.getInjectorsFor(transformedName);
 
           for (Iterator<MethodNode> i = classNode.methods.iterator(); i.hasNext();) {
             MethodNode methodNode = i.next();
 
-            List<HookInjector> injectorsForMethod = injectorList.stream()
-                .filter(h -> h.methodNames.contains(methodNode.name) && h.methodDesc.equals(methodNode.desc))
-                .collect(Collectors.toList());
-
-            for (HookInjector injector : injectorsForMethod) {
-              injector.injectHook(methodNode.instructions);
-              FMLLog.log.info(String.format("[HMage CORE] Hook was injected into %s", injector.owner));
+            for (HookInjector injector : injectorList) {
+              callInjector(methodNode, injector);
             }
+
+            //            List<HookInjector> injectorsForMethod = injectorList.stream()
+            //                .filter(h -> h.methodNames.contains(methodNode.name) && h.methodDesc.equals(methodNode.desc))
+            //                .collect(Collectors.toList());
+            //            for (HookInjector injector : injectorsForMethod) {
+            //
+            //              injector.injectHook(methodNode.instructions, null);
+            //              FMLLog.log.info(String.format("[HMage CORE] Hook was injected into %s", injector.owner));
+            //            }
           }
 
           ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
@@ -85,4 +59,20 @@ public class HMageClassTransformer implements IClassTransformer {
     return bytes;
   }
 
+  private void callInjector(MethodNode methodNode, HookInjector injector) {
+    for (ObfuscateType type : ObfuscateType.values()) {
+      MethodIdentifier entry = injector.getEntry(type);
+      if (entry == null)
+        continue;
+
+      if (!methodNode.name.equals(entry.methodName))
+        continue;
+
+      if (!methodNode.desc.equals(entry.methodDesc))
+        continue;
+
+      boolean ok = injector.injectHook(methodNode.instructions, type);
+      FMLLog.log.info(String.format("[HMage CORE] Hook inject into %s: %s", injector.owner, ok ? "SUCCESS" : "FAILED"));
+    }
+  }
 }

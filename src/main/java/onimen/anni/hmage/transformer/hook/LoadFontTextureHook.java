@@ -8,6 +8,9 @@ import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
+import onimen.anni.hmage.transformer.HookInjector;
+import onimen.anni.hmage.transformer.HookInjectorManager.ObfuscateType;
+
 //  private ResourceLocation getUnicodePageLocation(int page) {
 //    if (UNICODE_PAGE_LOCATIONS[page] == null) {
 //      UNICODE_PAGE_LOCATIONS[page] = HMageooks.onGetUnicodePageLocation(page,
@@ -17,17 +20,21 @@ import org.objectweb.asm.tree.VarInsnNode;
 //  }
 public class LoadFontTextureHook extends HookInjector {
 
-  private static final String RESOURCE_LOCATION = "Lnf;";//"Lnet/minecraft/util/ResourceLocation;";
+  private static final String RESOURCE_LOCATION = "Lnet/minecraft/util/ResourceLocation;";
 
   public LoadFontTextureHook() {
-    super("net.minecraft.client.gui.FontRenderer", "(I)" + RESOURCE_LOCATION,
-        "getUnicodePageLocation", "func_111271_a", "a");
+    super("net.minecraft.client.gui.FontRenderer");
+    this.registerEntry(ObfuscateType.DEOBF, "getUnicodePageLocation", "(I)Lnet/minecraft/util/ResourceLocation;");
+    this.registerEntry(ObfuscateType.OBF, "a", "(I)Lnf;");
+    this.registerEntry(ObfuscateType.SRG, "func_111271_a", "(I)Lnet/minecraft/util/ResourceLocation;");
   }
 
   @Override
-  public void injectHook(InsnList list) {
+  public boolean injectHook(InsnList list, ObfuscateType type) {
+    String resourceLocation = type == ObfuscateType.DEOBF ? RESOURCE_LOCATION : "Lnf;";
+
     VarInsnNode iload_1 = new VarInsnNode(Opcodes.ILOAD, 1);
-    String descriptor = String.format("(I%s)%s", RESOURCE_LOCATION, RESOURCE_LOCATION);
+    String descriptor = String.format("(I%s)%s", resourceLocation, resourceLocation);
     MethodInsnNode onLoadFontTexture = new MethodInsnNode(Opcodes.INVOKESTATIC, "onimen/anni/hmage/HMageHooks",
         "onLoadFontTexture", descriptor, false);
 
@@ -44,12 +51,13 @@ public class LoadFontTextureHook extends HookInjector {
       } else if (cur.getOpcode() == Opcodes.INVOKESPECIAL) {
         if ((cur instanceof MethodInsnNode) && ((MethodInsnNode) cur).name.equals("<init>")) {
           list.insert(cur, onLoadFontTexture);
-          break;
+          return true;
         }
       }
       cur = next;
       next = itr.next();
     }
+    return false;
   }
 
 }

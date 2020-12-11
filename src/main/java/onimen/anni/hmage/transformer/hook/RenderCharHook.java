@@ -12,11 +12,20 @@ import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
+import onimen.anni.hmage.transformer.HookInjector;
+import onimen.anni.hmage.transformer.HookInjectorManager.ObfuscateType;
+
 public class RenderCharHook extends HookInjector {
+
+  private static final String FIELD_POSX = "field_78295_j";
+  private static final String FIELD_POSY = "field_78296_k";
 
   //net.minecraft.client.gui.FontRenderer is "bip.class" in obfuscated
   public RenderCharHook() {
-    super("net.minecraft.client.gui.FontRenderer", "(CZ)F", "renderChar", "func_181559_a", "a");
+    super("net.minecraft.client.gui.FontRenderer");
+    this.registerEntry(ObfuscateType.DEOBF, "renderChar", "(CZ)F");
+    this.registerEntry(ObfuscateType.OBF, "a", "(CZ)F");
+    this.registerEntry(ObfuscateType.SRG, "func_181559_a", "(CZ)F");
   }
 
   //  private float renderChar(char ch, boolean italic)
@@ -39,7 +48,10 @@ public class RenderCharHook extends HookInjector {
   //  }
 
   @Override
-  public void injectHook(InsnList list) {
+  public boolean injectHook(InsnList list, ObfuscateType type) {
+    String fieldPosX = type == ObfuscateType.DEOBF ? "posX" : FIELD_POSX;
+    String fieldPosY = type == ObfuscateType.DEOBF ? "posY" : FIELD_POSY;
+
     InsnList injectings = new InsnList();
 
     String descriptor = "(CZFF)Lonimen/anni/hmage/event/RenderFontEvent;";
@@ -57,9 +69,9 @@ public class RenderCharHook extends HookInjector {
     injectings.add(new VarInsnNode(Opcodes.ILOAD, 1));
     injectings.add(new VarInsnNode(Opcodes.ILOAD, 2));
     injectings.add(new VarInsnNode(Opcodes.ALOAD, 0));
-    injectings.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/gui/FontRenderer", "field_78295_j", "F"));
+    injectings.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/gui/FontRenderer", fieldPosX, "F"));
     injectings.add(new VarInsnNode(Opcodes.ALOAD, 0));
-    injectings.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/gui/FontRenderer", "field_78296_k", "F"));
+    injectings.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/gui/FontRenderer", fieldPosY, "F"));
     injectings.add(onRenderFont);
     injectings.add(new VarInsnNode(Opcodes.ASTORE, 4));
     injectings.add(new VarInsnNode(Opcodes.ALOAD, 4));
@@ -84,9 +96,10 @@ public class RenderCharHook extends HookInjector {
 
       if (varInsnNode.var == 3) {
         list.insert(next, injectings);
-        break;
+        return true;
       }
     }
+    return false;
   }
 
 }

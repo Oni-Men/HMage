@@ -8,6 +8,9 @@ import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
+import onimen.anni.hmage.transformer.HookInjector;
+import onimen.anni.hmage.transformer.HookInjectorManager.ObfuscateType;
+
 public class ParticleHandleHook extends HookInjector {
 
   /*
@@ -16,12 +19,13 @@ public class ParticleHandleHook extends HookInjector {
    * d_
    */
   public ParticleHandleHook() {
-    super("net.minecraft.client.network.NetHandlerPlayClient",
-        "(Ljg;)V", "handleParticles", "a");
+    super("net.minecraft.client.network.NetHandlerPlayClient");
+    this.registerEntry(ObfuscateType.DEOBF, "handleParticles", "(Ljg;)V");
+    this.registerEntry(ObfuscateType.DEOBF, "a", "(Ljg;)V");
   }
 
   @Override
-  public void injectHook(InsnList list) {
+  public boolean injectHook(InsnList list, ObfuscateType type) {
     InsnList injectings = new InsnList();
 
     MethodInsnNode hook = new MethodInsnNode(Opcodes.INVOKESTATIC, "onimen/anni/hmage/HMageHooks",
@@ -40,6 +44,7 @@ public class ParticleHandleHook extends HookInjector {
     injectings.add(gotoNode);
     list.insert(injectings);
 
+    return true;
   }
 
 }

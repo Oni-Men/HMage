@@ -11,14 +11,20 @@ import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
+import onimen.anni.hmage.transformer.HookInjector;
+import onimen.anni.hmage.transformer.HookInjectorManager.ObfuscateType;
+
 public class GetCharWidthHook extends HookInjector {
 
   public GetCharWidthHook() {
-    super("net.minecraft.client.gui.FontRenderer", "(C)I", "getCharWidth", "func_78263_a", "a");
+    super("net.minecraft.client.gui.FontRenderer");
+    this.registerEntry(ObfuscateType.DEOBF, "getCharWidth", "(C)I");
+    this.registerEntry(ObfuscateType.OBF, "a", "(C)I");
+    this.registerEntry(ObfuscateType.SRG, "func_78263_a", "(C)I");
   }
 
   @Override
-  public void injectHook(InsnList list) {
+  public boolean injectHook(InsnList list, ObfuscateType type) {
     InsnList injectings = new InsnList();
 
     String descriptor = "(C)Lonimen/anni/hmage/event/GetCharWidthEvent;";
@@ -57,9 +63,10 @@ public class GetCharWidthHook extends HookInjector {
 
       if (((VarInsnNode) next).var == 2) {
         list.insert(next, injectings);
-        break;
+        return true;
       }
     }
+    return false;
   }
 
 }
