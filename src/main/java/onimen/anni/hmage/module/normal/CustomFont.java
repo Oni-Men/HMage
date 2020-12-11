@@ -10,6 +10,8 @@ import org.lwjgl.util.vector.Vector2f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import onimen.anni.hmage.event.GetCharWidthEvent;
 import onimen.anni.hmage.event.LoadFontTextureEvent;
@@ -67,10 +69,9 @@ public class CustomFont extends AbstractModule {
     Vector2f uv = data.getUVCoord(ch);
 
     GlStateManager.bindTexture(data.getGlTextureId());
-    //    GlStateManager.enableAlpha();
-    //    GlStateManager.alphaFunc(516, 0.1F);
     GlStateManager.enableBlend();
-    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+    GlStateManager.tryBlendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE,
+        DestFactor.ZERO);
     GlStateManager.glBegin(5);
     //LEFT TOP
     GlStateManager.glTexCoord2f(uv.x, uv.y);

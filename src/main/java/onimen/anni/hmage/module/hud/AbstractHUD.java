@@ -6,6 +6,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.DestFactor;
+import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import onimen.anni.hmage.Preferences;
@@ -162,13 +164,17 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
 
     GlStateManager.disableTexture2D();
     GlStateManager.enableBlend();
+    GlStateManager.disableAlpha();
+
+    GlStateManager.tryBlendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE,
+        DestFactor.ZERO);
 
     GlStateManager.color(r, g, b, a);
     GlStateManager.glBegin(GL11.GL_QUADS);
-    GlStateManager.glVertex3f(x, y + height, 0);
-    GlStateManager.glVertex3f(x + width, y + height, 0);
-    GlStateManager.glVertex3f(x + width, y, 0);
-    GlStateManager.glVertex3f(x, y, 0);
+    GlStateManager.glVertex3f(x, y + height, zLevel);
+    GlStateManager.glVertex3f(x + width, y + height, zLevel);
+    GlStateManager.glVertex3f(x + width, y, zLevel);
+    GlStateManager.glVertex3f(x, y, zLevel);
     GlStateManager.glEnd();
 
     GlStateManager.disableBlend();
