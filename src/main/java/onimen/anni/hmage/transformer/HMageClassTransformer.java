@@ -37,14 +37,6 @@ public class HMageClassTransformer implements IClassTransformer {
               callInjector(methodNode, injector);
             }
 
-            //            List<HookInjector> injectorsForMethod = injectorList.stream()
-            //                .filter(h -> h.methodNames.contains(methodNode.name) && h.methodDesc.equals(methodNode.desc))
-            //                .collect(Collectors.toList());
-            //            for (HookInjector injector : injectorsForMethod) {
-            //
-            //              injector.injectHook(methodNode.instructions, null);
-            //              FMLLog.log.info(String.format("[HMage CORE] Hook was injected into %s", injector.owner));
-            //            }
           }
 
           ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
