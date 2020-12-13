@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.lwjgl.util.vector.Vector2f;
 
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureUtil;
 
 public class FontTextureData {
@@ -27,10 +26,9 @@ public class FontTextureData {
     this.scale = scale;
     this.glyphWidth = new int[256];
     this.uvCoords = new Vector2f[256];
-    this.glTextureId = GlStateManager.generateTexture();
     FontGenerateWorker.addGenerateTask(() -> {
       BufferedImage generated = this.generate(fonts, page, scale);
-      return new FontGenerateData(this, generated, glTextureId);
+      return new FontGenerateData(this, generated);
     });
   }
 
@@ -95,6 +93,10 @@ public class FontTextureData {
         return next;
     }
     return fonts.isEmpty() ? null : fonts.get(0);
+  }
+
+  public void setGlTextureId(int glTextureId) {
+    this.glTextureId = glTextureId;
   }
 
   public int getGlTextureId() {

@@ -267,7 +267,9 @@ public class HMage {
     FontGenerateData result;
     while ((result = FontGenerateWorker.getNextResult()) != null) {
       try {
-        TextureUtil.uploadTextureImage(result.glTextureId, result.image);
+        int glTextureId = GlStateManager.generateTexture();
+        TextureUtil.uploadTextureImage(glTextureId, result.image);
+        result.data.setGlTextureId(glTextureId);
         result.data.complete();
       } catch (Exception e) {
         e.printStackTrace();

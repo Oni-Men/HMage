@@ -5,11 +5,9 @@ import java.awt.image.BufferedImage;
 public class FontGenerateData {
   public FontTextureData data;
   public BufferedImage image;
-  public int glTextureId;
 
-  public FontGenerateData(FontTextureData data, BufferedImage image, int glTextureId) {
+  public FontGenerateData(FontTextureData data, BufferedImage image) {
     this.data = data;
     this.image = image;
-    this.glTextureId = glTextureId;
   }
 }
