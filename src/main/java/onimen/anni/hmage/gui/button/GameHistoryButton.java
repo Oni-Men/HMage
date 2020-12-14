@@ -5,11 +5,15 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import onimen.anni.hmage.gui.AnniHistoryList;
 
 public class GameHistoryButton implements ButtonObject {
 
-  public GameHistoryButton() {
+  private final GuiScreen screen;
+
+  public GameHistoryButton(GuiScreen screen) {
+    this.screen = screen;
   }
 
   @Override
@@ -24,7 +28,7 @@ public class GameHistoryButton implements ButtonObject {
 
   @Override
   public void actionPerformed(GuiButton button) {
-    Minecraft.getMinecraft().displayGuiScreen(new AnniHistoryList());
+    Minecraft.getMinecraft().displayGuiScreen(new AnniHistoryList(screen));
   }
 
   @Override

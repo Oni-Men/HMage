@@ -19,7 +19,7 @@ public class GuiSettings extends HMageGui {
     super(null);
     //mod 有効/無効の設定
     buttonObjects.add(new ModEnabledButtonObject());
-    buttonObjects.add(new GameHistoryButton());
+    buttonObjects.add(new GameHistoryButton(this));
 
     buttonObjects.add(new HUDLayoutButton(this));
 

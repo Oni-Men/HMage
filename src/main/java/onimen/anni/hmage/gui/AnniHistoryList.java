@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import org.lwjgl.input.Mouse;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
@@ -42,10 +44,12 @@ public class AnniHistoryList extends GuiScreen {
   private int listWidth;
   private List<GameInfo> gameInfos;
 
+  private final GuiScreen parent;
   /**
    * @param mainMenu
    */
-  public AnniHistoryList() {
+  public AnniHistoryList(@Nullable GuiScreen parent) {
+    this.parent = parent;
     gameInfos = AnniObserverMap.getInstance().getGameInfoList();
     gameInfos.sort((g1, g2) -> (int) (g2.getGameTimestamp() - g1.getGameTimestamp()));
 
@@ -81,8 +85,7 @@ public class AnniHistoryList extends GuiScreen {
   protected void actionPerformed(GuiButton button) throws IOException {
     switch (button.id) {
     case 6: {
-      this.mc.displayGuiScreen((GuiScreen) null);
-      this.mc.setIngameFocus();
+      this.mc.displayGuiScreen(this.parent);
       return;
     }
     case 17: {
