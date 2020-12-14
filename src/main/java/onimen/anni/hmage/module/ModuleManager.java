@@ -11,6 +11,7 @@ import onimen.anni.hmage.module.normal.InterfaceModule;
 public class ModuleManager {
 
   private static Map<String, InterfaceModule> moduleMap = Maps.newLinkedHashMap();
+  private static Map<String, InterfaceModule> normalMap = Maps.newLinkedHashMap();
   private static Map<String, InterfaceHUD> hudMap = Maps.newLinkedHashMap();
 
   public static void registerModule(InterfaceModule module) {
@@ -18,9 +19,11 @@ public class ModuleManager {
 
     MinecraftForge.EVENT_BUS.register(module);
 
-    moduleMap.put(module.getName(), module);
+    moduleMap.put(module.getId(), module);
     if (module instanceof InterfaceHUD) {
-      hudMap.put(module.getName(), (InterfaceHUD) module);
+      hudMap.put(module.getId(), (InterfaceHUD) module);
+    } else {
+      normalMap.put(module.getId(), module);
     }
   }
 
@@ -30,5 +33,9 @@ public class ModuleManager {
 
   public static Map<String, InterfaceHUD> getHUDMap() {
     return hudMap;
+  }
+
+  public static Map<String, InterfaceModule> getNormalMap() {
+    return normalMap;
   }
 }
