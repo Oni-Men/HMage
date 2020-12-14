@@ -21,7 +21,7 @@ public class ParticleHandleHook extends HookInjector {
   public ParticleHandleHook() {
     super("net.minecraft.client.network.NetHandlerPlayClient");
     this.registerEntry(ObfuscateType.DEOBF, "handleParticles", "(Ljg;)V");
-    this.registerEntry(ObfuscateType.DEOBF, "a", "(Ljg;)V");
+    this.registerEntry(ObfuscateType.OBF, "a", "(Ljg;)V");
   }
 
   @Override
