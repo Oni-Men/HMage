@@ -30,7 +30,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -55,13 +54,13 @@ import onimen.anni.hmage.module.hud.NexusDamageHUD;
 import onimen.anni.hmage.module.hud.PingHUD;
 import onimen.anni.hmage.module.hud.StatusEffectHUD;
 import onimen.anni.hmage.module.normal.AutoText;
+import onimen.anni.hmage.module.normal.BodyArrowRemover;
 import onimen.anni.hmage.module.normal.CustomFont;
 import onimen.anni.hmage.module.normal.CustomGuiBackground;
 import onimen.anni.hmage.module.normal.FixedFOV;
 import onimen.anni.hmage.module.normal.OldGUI;
 import onimen.anni.hmage.module.normal.RecipeBookRemover;
 import onimen.anni.hmage.module.normal.SSClipboard;
-import onimen.anni.hmage.module.normal.BodyArrowRemover;
 import onimen.anni.hmage.observer.AnniChatReciveExecutor;
 import onimen.anni.hmage.observer.AnniObserver;
 import onimen.anni.hmage.observer.AnniObserverMap;
@@ -161,11 +160,28 @@ public class HMage {
     HMageDiscordHandler.INSTANCE.updatePresenceWithNormal();
   }
 
+  @SideOnly(Side.CLIENT)
   @SubscribeEvent
-  public void onPlayerTick(ClientTickEvent event) {
+  public void onClientTick(ClientTickEvent event) {
     if (anniObserverMap.getAnniObserver() != null) {
       anniObserverMap.getAnniObserver().onClientTick(event);
     }
+    Runnable nextTask;
+    while ((nextTask = SyncTaskQueue.getNextTask()) != null) {
+      nextTask.run();
+    }
+    FontGenerateData result;
+    while ((result = FontGenerateWorker.getNextResult()) != null) {
+      try {
+        int glTextureId = GlStateManager.generateTexture();
+        TextureUtil.uploadTextureImage(glTextureId, result.image);
+        result.data.setGlTextureId(glTextureId);
+        result.data.complete();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    SyncScheduledTaskQueue.tick();
   }
 
   @SubscribeEvent
@@ -214,7 +230,6 @@ public class HMage {
     if (anniObserver == null)
       return;
 
-
     GameInfo gameInfo = anniObserver.getGameInfo();
 
     List<AnniPlayerData> killRanking = gameInfo.getTotalKillRanking(10);
@@ -258,27 +273,6 @@ public class HMage {
     if (anniObserverMap.getAnniObserver() != null) {
       anniObserverMap.getAnniObserver().onRecieveChat(event);
     }
-  }
-
-  @SideOnly(Side.CLIENT)
-  @SubscribeEvent
-  public void onClientTickEvent(TickEvent.ClientTickEvent event) {
-    Runnable nextTask;
-    while ((nextTask = SyncTaskQueue.getNextTask()) != null) {
-      nextTask.run();
-    }
-    FontGenerateData result;
-    while ((result = FontGenerateWorker.getNextResult()) != null) {
-      try {
-        int glTextureId = GlStateManager.generateTexture();
-        TextureUtil.uploadTextureImage(glTextureId, result.image);
-        result.data.setGlTextureId(glTextureId);
-        result.data.complete();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
-    SyncScheduledTaskQueue.tick();
   }
 
   @SideOnly(Side.CLIENT)
