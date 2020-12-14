@@ -61,6 +61,7 @@ import onimen.anni.hmage.module.normal.FixedFOV;
 import onimen.anni.hmage.module.normal.OldGUI;
 import onimen.anni.hmage.module.normal.RecipeBookRemover;
 import onimen.anni.hmage.module.normal.SSClipboard;
+import onimen.anni.hmage.module.normal.BodyArrowRemover;
 import onimen.anni.hmage.observer.AnniChatReciveExecutor;
 import onimen.anni.hmage.observer.AnniObserver;
 import onimen.anni.hmage.observer.AnniObserverMap;
@@ -73,6 +74,7 @@ import onimen.anni.hmage.util.HMageLogger;
 import onimen.anni.hmage.util.ShotbowUtils;
 import onimen.anni.hmage.util.font.FontGenerateData;
 import onimen.anni.hmage.util.font.FontGenerateWorker;
+import onimen.anni.hmage.util.scheduler.SyncScheduledTaskQueue;
 import onimen.anni.hmage.util.scheduler.SyncTaskQueue;
 
 @Mod(modid = HMage.MODID, name = HMage.NAME, version = HMage.VERSION)
@@ -127,6 +129,7 @@ public class HMage {
     ModuleManager.registerModule(new OldGUI());
     ModuleManager.registerModule(new SSClipboard());
     ModuleManager.registerModule(new CustomFont());
+    ModuleManager.registerModule(new BodyArrowRemover());
     //ModuleManager.registerModule(autoText);
 
     //HUD
@@ -275,6 +278,7 @@ public class HMage {
         e.printStackTrace();
       }
     }
+    SyncScheduledTaskQueue.tick();
   }
 
   @SideOnly(Side.CLIENT)

@@ -53,3 +53,5 @@ hmage.module.ss-clipboard.name=SS Clipboard
 hmage.module.ss-clipboard.description=Copy screenshot to clipboard
 hmage.module.custom-font.name=Custom Font
 hmage.module.custom-font.description=You can use your chosen font for drawing
+hmage.module.body-arrow-remover.name=Remove Body Arrow
+hmage.module.body-arrow-remover.description=Remove arrows stuck in body by elapse time

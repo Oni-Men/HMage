@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 
 import net.minecraftforge.fml.common.FMLLog;
 import onimen.anni.hmage.transformer.hook.DrawBackgroundHook;
+import onimen.anni.hmage.transformer.hook.EntityMetadataHandleHook;
 import onimen.anni.hmage.transformer.hook.GetCapeTextureLocationHook;
 import onimen.anni.hmage.transformer.hook.GetCharWidthFloatHook;
 import onimen.anni.hmage.transformer.hook.GetCharWidthHook;
@@ -50,6 +51,7 @@ public class HookInjectorManager {
     registerHookInjector(new GetCharWidthHook());
     registerHookInjector(new GetCharWidthFloatHook());
     registerHookInjector(new RenderScoreBoardHook());
+    registerHookInjector(new EntityMetadataHandleHook());
   }
 
 }

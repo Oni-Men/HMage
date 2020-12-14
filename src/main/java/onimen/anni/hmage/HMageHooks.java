@@ -1,12 +1,14 @@
 package onimen.anni.hmage;
 
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.network.play.server.SPacketEntityMetadata;
 import net.minecraft.network.play.server.SPacketParticles;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import onimen.anni.hmage.event.DrawWorldBackgroundEvent;
 import onimen.anni.hmage.event.GetCharWidthEvent;
 import onimen.anni.hmage.event.GetLocationCapeEvent;
+import onimen.anni.hmage.event.HandleEntityMetadataEvent;
 import onimen.anni.hmage.event.LoadFontTextureEvent;
 import onimen.anni.hmage.event.PlayParticleEvent;
 import onimen.anni.hmage.event.RenderFontEvent;
@@ -45,5 +47,9 @@ public class HMageHooks {
     GetCharWidthEvent event = new GetCharWidthEvent(ch, 0);
     MinecraftForge.EVENT_BUS.post(event);
     return event;
+  }
+
+  public static void onHandleEntityMetadata(SPacketEntityMetadata packet) {
+    MinecraftForge.EVENT_BUS.post(new HandleEntityMetadataEvent(packet));
   }
 }
