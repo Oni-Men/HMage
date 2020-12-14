@@ -71,7 +71,6 @@ public class GuiHUDLayout extends GuiScreen {
       }
       Preferences.save();
       mc.displayGuiScreen(this.parent);
-      mc.setIngameFocus();
     }
   }
 
