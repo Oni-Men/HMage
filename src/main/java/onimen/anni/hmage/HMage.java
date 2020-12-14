@@ -1,7 +1,6 @@
 package onimen.anni.hmage;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,7 +52,6 @@ import onimen.anni.hmage.module.hud.KillCounterHUD;
 import onimen.anni.hmage.module.hud.NexusDamageHUD;
 import onimen.anni.hmage.module.hud.PingHUD;
 import onimen.anni.hmage.module.hud.StatusEffectHUD;
-import onimen.anni.hmage.module.normal.AutoText;
 import onimen.anni.hmage.module.normal.BodyArrowRemover;
 import onimen.anni.hmage.module.normal.CustomFont;
 import onimen.anni.hmage.module.normal.CustomGuiBackground;
@@ -91,7 +89,6 @@ public class HMage {
   public static AnniObserverMap anniObserverMap;
   public static File modConfigurationDirectory;
 
-  public static AutoText autoText;
 
   public HMage() {
     INSTANCE = this;
@@ -106,8 +103,6 @@ public class HMage {
     modConfigurationDirectory = event.getModConfigurationDirectory();
     anniObserverMap = AnniObserverMap.getInstance();
 
-    AutoText.saveData = Paths.get(modConfigurationDirectory.getAbsolutePath(), "auto-text.txt");
-
     //明るさの設定を変更
     Options options = GameSettings.Options.GAMMA;
     options.setValueMax(15);
@@ -119,8 +114,6 @@ public class HMage {
 
     this.mc = Minecraft.getMinecraft();
 
-    autoText = new AutoText();
-
     //Register Modules
     ModuleManager.registerModule(new RecipeBookRemover());
     ModuleManager.registerModule(new FixedFOV());
@@ -129,7 +122,6 @@ public class HMage {
     ModuleManager.registerModule(new SSClipboard());
     ModuleManager.registerModule(new CustomFont());
     ModuleManager.registerModule(new BodyArrowRemover());
-    //ModuleManager.registerModule(autoText);
 
     //HUD
     ModuleManager.registerModule(new ArrowCounterHUD());
