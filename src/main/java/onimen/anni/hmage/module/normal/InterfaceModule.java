@@ -9,7 +9,7 @@ public interface InterfaceModule {
 
   public boolean isEnable();
 
-  default boolean isShowMenu() {
+  default boolean doesShowMenu() {
     return true;
   }
 
