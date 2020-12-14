@@ -165,6 +165,8 @@ public class HMage {
   public void onClientTick(ClientTickEvent event) {
     if (anniObserverMap.getAnniObserver() != null) {
       anniObserverMap.getAnniObserver().onClientTick(event);
+    } else {
+      HMageDiscordHandler.INSTANCE.updatePresenceWithNormal();
     }
     Runnable nextTask;
     while ((nextTask = SyncTaskQueue.getNextTask()) != null) {

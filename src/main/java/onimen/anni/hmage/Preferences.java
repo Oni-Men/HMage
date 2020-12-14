@@ -28,6 +28,11 @@ public class Preferences {
 
   public static boolean showGameStatsInInventory = true;
 
+  public static boolean enableDiscordRPC = true;
+  public static boolean showServerAddressOnDiscordRPC = true;
+  public static boolean showUserNameOnDiscordRPC = true;
+  public static boolean showAnniGameInfoOnDiscordRPC = true;
+
   public static KeyBinding openSettingsKey = new KeyBinding("hmage.key.settings", Keyboard.KEY_P,
       "key.categories.hmage");
 
@@ -50,7 +55,12 @@ public class Preferences {
     hurtingArmor = getBoolean("hurtingArmor.enabled", true);
     hurtingArmorColor = getInt("hurtingArmor.color", 0xFFFF0000);
 
-    getBoolean("hmage.game-stats-on-inv", false);
+    showGameStatsInInventory = getBoolean("hmage.game-stats-on-inv", false);
+
+    enableDiscordRPC = getBoolean("hmage.discord.enabled", true);
+    showUserNameOnDiscordRPC = getBoolean("hmage.discord.username", true);
+    showServerAddressOnDiscordRPC = getBoolean("hmage.discord.server-address", true);
+    showAnniGameInfoOnDiscordRPC = getBoolean("hmage.discord.game-info", true);
 
     String[] fontNames = getString("hmage.module.custom-font.font-names", "").split(",");
     List<Font> fonts = Stream.of(fontNames).map(n -> new Font(n, Font.PLAIN, 12)).collect(Collectors.toList());
@@ -67,6 +77,11 @@ public class Preferences {
     setInt("hurtingArmor.color", hurtingArmorColor);
 
     setBoolean("hmage.game-stats-on-inv", showGameStatsInInventory);
+
+    setBoolean("hmage.discord.enabled", enableDiscordRPC);
+    setBoolean("hmage.discord.username", showUserNameOnDiscordRPC);
+    setBoolean("hmage.discord.server-address", showServerAddressOnDiscordRPC);
+    setBoolean("hmage.discord.game-info", showAnniGameInfoOnDiscordRPC);
 
     setString("hmage.module.custom-font.font-names", String.join(",", CustomFont.getFontNameList()));
     new Thread(() ->{
