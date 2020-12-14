@@ -4,11 +4,18 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import onimen.anni.hmage.gui.GuiHUDLayout;
 import onimen.anni.hmage.module.ModuleManager;
 
 public class HUDLayoutButton implements ButtonObject {
+
+  private GuiScreen screen;
+
+  public HUDLayoutButton(GuiScreen screen) {
+    this.screen = screen;
+  }
 
   @Override
   public String getTitle() {
@@ -22,7 +29,7 @@ public class HUDLayoutButton implements ButtonObject {
 
   @Override
   public void actionPerformed(GuiButton button) {
-    Minecraft.getMinecraft().displayGuiScreen(new GuiHUDLayout(ModuleManager.getHUDMap()));
+    Minecraft.getMinecraft().displayGuiScreen(new GuiHUDLayout(ModuleManager.getHUDMap(), screen));
   }
 
   @Override

@@ -29,7 +29,7 @@ public class GuiSettings extends GuiScroll {
     buttonObjects.add(new ModEnabledButtonObject());
     buttonObjects.add(new GameHistoryButton());
 
-    buttonObjects.add(new HUDLayoutButton());
+    buttonObjects.add(new HUDLayoutButton(this));
 
     //各モジュールの有効/無効の設定
     for (InterfaceModule module : moduleMap.values()) {

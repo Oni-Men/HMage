@@ -35,7 +35,10 @@ public class GuiHUDLayout extends GuiScreen {
 
   private int prevMouseX, prevMouseY;
 
-  public GuiHUDLayout(Map<String, InterfaceHUD> hudList) {
+  private final GuiScreen parent;
+
+  public GuiHUDLayout(Map<String, InterfaceHUD> hudList, GuiScreen parent) {
+    this.parent = parent;
     this.hudMap = hudList;
     this.xAxisGuides = new HashSet<Integer>();
     this.yAxisGuides = new HashSet<Integer>();
@@ -67,7 +70,7 @@ public class GuiHUDLayout extends GuiScreen {
         AbstractModule.savePreferences(module);
       }
       Preferences.save();
-      mc.displayGuiScreen((GuiScreen) null);
+      mc.displayGuiScreen(this.parent);
       mc.setIngameFocus();
     }
   }
