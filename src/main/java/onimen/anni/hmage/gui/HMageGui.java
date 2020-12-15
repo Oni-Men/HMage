@@ -18,6 +18,7 @@ public abstract class HMageGui extends GuiScreen {
 
   protected String title = "HMage GUI";
   protected int rows = 2;
+  protected boolean buttonTitleVisible = false;
 
   public HMageGui(@Nullable GuiScreen parent) {
     this.parent = parent;
@@ -33,7 +34,6 @@ public abstract class HMageGui extends GuiScreen {
     int x = width / 2 - (buttonWidth * rows / 2);
     int y = 64;
 
-
     for (int i = 0; i < rows; i++) {
       y = 64;
       int fromIndex = i * length;
@@ -41,7 +41,9 @@ public abstract class HMageGui extends GuiScreen {
       List<ButtonObject> sub = this.buttonObjects.subList(fromIndex, toIndex);
 
       for (ButtonObject obj : sub) {
-        GuiButton button = new GuiButton(obj.hashCode(), x, y, buttonWidth, buttonHeight, obj.getButtonText());
+        int buttonX = buttonTitleVisible ? x + buttonWidth / 2 : x;
+        int buttonW = buttonTitleVisible ? buttonWidth / 2 : buttonWidth;
+        GuiButton button = new GuiButton(obj.hashCode(), buttonX, y, buttonW, buttonHeight, obj.getButtonText());
         this.addButton(button);
         y += 24;
       }
@@ -62,11 +64,17 @@ public abstract class HMageGui extends GuiScreen {
     for (int i = 0; i < this.buttonList.size(); ++i) {
       //ボタンの描画
       GuiButton button = this.buttonList.get(i);
+      ButtonObject object = this.getObjectFromGuiButton(button);
       button.drawButton(this.mc, mouseX, mouseY, partialTicks);
+
+      if (object != null && this.buttonTitleVisible) {
+        this.drawString(fontRenderer, object.getTitle(), button.x - button.width, (button.y + button.height / 2 - 4),
+            0xFFFFFF);
+      }
 
       //マウスでかぶさっているボタンを取得
       if (button.isMouseOver()) {
-        mouseOveredObject = buttonObjects.stream().filter(b -> b.hashCode() == button.id).findFirst().orElse(null);
+        mouseOveredObject = object;
       }
     }
 
@@ -85,12 +93,18 @@ public abstract class HMageGui extends GuiScreen {
       mc.displayGuiScreen(this.parent);
       return;
     }
-    ButtonObject mouseOveredObject = buttonObjects
+    ButtonObject mouseOveredObject = getObjectFromGuiButton(button);
+    if (mouseOveredObject != null)
+      mouseOveredObject.actionPerformed(button);
+  }
+
+  @Nullable
+  private ButtonObject getObjectFromGuiButton(GuiButton button) {
+    return buttonObjects
         .stream()
         .filter(b -> b.hashCode() == button.id)
         .findFirst()
         .orElse(null);
-    mouseOveredObject.actionPerformed(button);
   }
 
   @Override

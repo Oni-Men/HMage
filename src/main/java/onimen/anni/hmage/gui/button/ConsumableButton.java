@@ -42,4 +42,12 @@ public class ConsumableButton implements ButtonObject {
     this.description = description;
   }
 
+  public void setButtonText(String buttonText) {
+    this.buttonText = buttonText;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
 }

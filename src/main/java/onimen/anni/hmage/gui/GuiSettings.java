@@ -28,6 +28,10 @@ public class GuiSettings extends HMageGui {
     buttonObjects.add(new CapeSelectButtonObject());
     buttonObjects.add(new HurtingArmorColorButton(this));
 
+    buttonObjects.add(new ConsumableButton("Discord Settings", "Discord Settings", button -> {
+      mc.displayGuiScreen(new GuiDiscordSetting(this));
+    }));
+
     buttonObjects.add(new ConsumableButton("HUD Settings", "HUD Setting", button -> {
       mc.displayGuiScreen(new GuiHUDSettings(this));
     }));

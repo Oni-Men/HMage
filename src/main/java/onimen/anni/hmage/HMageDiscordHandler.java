@@ -41,7 +41,7 @@ public class HMageDiscordHandler {
     if (!Preferences.enableDiscordRPC)
       return;
 
-    if (!Preferences.showAnniGameInfoOnDiscordRPC)
+    if (!Preferences.showAnniGameInfoOnDiscord)
       return;
 
     DiscordRichPresence presence = new DiscordRichPresence();
@@ -75,13 +75,13 @@ public class HMageDiscordHandler {
 
     boolean singleplayer = minecraft.world == null ? false : !minecraft.world.isRemote;
 
-    String serverAddress = Preferences.showServerAddressOnDiscordRPC
+    String serverAddress = Preferences.showServerIPonDiscord
         ? (server != null ? server.serverIP.toLowerCase() : "")
         : "";
 
     presence.startTimestamp = HMage.startMilliTime / 1000;
     presence.details = singleplayer ? "Singleplayer" : serverAddress;
-    presence.state = session == null || !Preferences.showUserNameOnDiscordRPC ? "" : session.getUsername();
+    presence.state = session == null || !Preferences.showUserNameOnDiscord ? "" : session.getUsername();
 
     client.Discord_UpdatePresence(presence);
   }

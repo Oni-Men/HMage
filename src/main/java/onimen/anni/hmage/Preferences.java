@@ -29,9 +29,9 @@ public class Preferences {
   public static boolean showGameStatsInInventory = true;
 
   public static boolean enableDiscordRPC = true;
-  public static boolean showServerAddressOnDiscordRPC = true;
-  public static boolean showUserNameOnDiscordRPC = true;
-  public static boolean showAnniGameInfoOnDiscordRPC = true;
+  public static boolean showServerIPonDiscord = true;
+  public static boolean showUserNameOnDiscord = true;
+  public static boolean showAnniGameInfoOnDiscord = true;
 
   public static KeyBinding openSettingsKey = new KeyBinding("hmage.key.settings", Keyboard.KEY_P,
       "key.categories.hmage");
@@ -58,9 +58,9 @@ public class Preferences {
     showGameStatsInInventory = getBoolean("hmage.game-stats-on-inv", false);
 
     enableDiscordRPC = getBoolean("hmage.discord.enabled", true);
-    showUserNameOnDiscordRPC = getBoolean("hmage.discord.username", true);
-    showServerAddressOnDiscordRPC = getBoolean("hmage.discord.server-address", true);
-    showAnniGameInfoOnDiscordRPC = getBoolean("hmage.discord.game-info", true);
+    showUserNameOnDiscord = getBoolean("hmage.discord.username", true);
+    showServerIPonDiscord = getBoolean("hmage.discord.server-address", true);
+    showAnniGameInfoOnDiscord = getBoolean("hmage.discord.game-info", true);
 
     String[] fontNames = getString("hmage.module.custom-font.font-names", "").split(",");
     List<Font> fonts = Stream.of(fontNames).map(n -> new Font(n, Font.PLAIN, 12)).collect(Collectors.toList());
@@ -79,9 +79,9 @@ public class Preferences {
     setBoolean("hmage.game-stats-on-inv", showGameStatsInInventory);
 
     setBoolean("hmage.discord.enabled", enableDiscordRPC);
-    setBoolean("hmage.discord.username", showUserNameOnDiscordRPC);
-    setBoolean("hmage.discord.server-address", showServerAddressOnDiscordRPC);
-    setBoolean("hmage.discord.game-info", showAnniGameInfoOnDiscordRPC);
+    setBoolean("hmage.discord.username", showUserNameOnDiscord);
+    setBoolean("hmage.discord.server-address", showServerIPonDiscord);
+    setBoolean("hmage.discord.game-info", showAnniGameInfoOnDiscord);
 
     setString("hmage.module.custom-font.font-names", String.join(",", CustomFont.getFontNameList()));
     new Thread(() ->{
