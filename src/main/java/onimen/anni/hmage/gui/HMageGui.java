@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.I18n;
 import onimen.anni.hmage.gui.button.ButtonObject;
 
@@ -18,6 +17,7 @@ public abstract class HMageGui extends GuiScreen {
   protected final GuiScreen parent;
 
   protected String title = "HMage GUI";
+  protected int rows = 2;
 
   public HMageGui(@Nullable GuiScreen parent) {
     this.parent = parent;
@@ -27,29 +27,25 @@ public abstract class HMageGui extends GuiScreen {
   public void initGui() {
     this.buttonList.clear();
 
-    ScaledResolution sr = new ScaledResolution(mc);
-
     int buttonWidth = 150;
     int buttonHeight = 20;
-    int x = sr.getScaledWidth() / 2 - 160;
+    int length = this.buttonObjects.size() / rows;
+    int x = width / 2 - (buttonWidth * rows / 2);
     int y = 64;
 
-    int splitIndex = this.buttonObjects.size() / 2;
-    List<ButtonObject> left = this.buttonObjects.subList(0, splitIndex);
-    List<ButtonObject> right = this.buttonObjects.subList(splitIndex, this.buttonObjects.size());
 
-    for (ButtonObject obj : left) {
-      GuiButton button = new GuiButton(obj.hashCode(), x, y, buttonWidth, buttonHeight, obj.getButtonText());
-      this.addButton(button);
-      y += 24;
-    }
+    for (int i = 0; i < rows; i++) {
+      y = 64;
+      int fromIndex = i * length;
+      int toIndex = Math.min((i + 1) * length, this.buttonObjects.size());
+      List<ButtonObject> sub = this.buttonObjects.subList(fromIndex, toIndex);
 
-    x = sr.getScaledWidth() / 2 + 10;
-    y = 64;
-    for (ButtonObject obj : right) {
-      GuiButton button = new GuiButton(obj.hashCode(), x, y, buttonWidth, buttonHeight, obj.getButtonText());
-      this.addButton(button);
-      y += 24;
+      for (ButtonObject obj : sub) {
+        GuiButton button = new GuiButton(obj.hashCode(), x, y, buttonWidth, buttonHeight, obj.getButtonText());
+        this.addButton(button);
+        y += 24;
+      }
+      x += buttonWidth + 5;
     }
 
     this.addButton(new GuiButton(-1, width / 2 - 100, y + 24, I18n.format("gui.done")));
