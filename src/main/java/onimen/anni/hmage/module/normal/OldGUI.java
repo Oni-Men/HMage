@@ -15,6 +15,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.inventory.SlotCrafting;
 import net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import onimen.anni.hmage.module.AbstractModule;
 
 public class OldGUI extends AbstractModule {
 

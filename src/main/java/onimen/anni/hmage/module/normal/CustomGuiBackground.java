@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import onimen.anni.hmage.event.DrawWorldBackgroundEvent;
+import onimen.anni.hmage.module.AbstractModule;
 import onimen.anni.hmage.module.annotation.ColorOption;
 
 public class CustomGuiBackground extends AbstractModule {

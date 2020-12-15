@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import onimen.anni.hmage.event.GetCharWidthEvent;
 import onimen.anni.hmage.event.LoadFontTextureEvent;
 import onimen.anni.hmage.event.RenderFontEvent;
+import onimen.anni.hmage.module.AbstractModule;
 import onimen.anni.hmage.util.font.FontTextureData;
 
 public class CustomFont extends AbstractModule {

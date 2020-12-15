@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import net.minecraftforge.client.event.ScreenshotEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import onimen.anni.hmage.module.AbstractModule;
 
 public class SSClipboard extends AbstractModule {
 

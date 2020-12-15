@@ -11,11 +11,11 @@ import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import onimen.anni.hmage.Preferences;
+import onimen.anni.hmage.module.AbstractModule;
 import onimen.anni.hmage.module.annotation.FloatOption;
 import onimen.anni.hmage.module.annotation.IntegerOption;
 import onimen.anni.hmage.module.hud.layout.Layout;
 import onimen.anni.hmage.module.hud.layout.Layout.LayoutType;
-import onimen.anni.hmage.module.normal.AbstractModule;
 
 public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD {
 

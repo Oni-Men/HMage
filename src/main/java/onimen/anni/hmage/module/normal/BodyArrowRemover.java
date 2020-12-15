@@ -6,6 +6,7 @@ import net.minecraft.network.datasync.EntityDataManager.DataEntry;
 import net.minecraft.network.play.server.SPacketEntityMetadata;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import onimen.anni.hmage.event.HandleEntityMetadataEvent;
+import onimen.anni.hmage.module.AbstractModule;
 import onimen.anni.hmage.util.ShotbowUtils;
 import onimen.anni.hmage.util.scheduler.SyncScheduledTaskQueue;
 

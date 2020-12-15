@@ -8,6 +8,7 @@ import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import onimen.anni.hmage.module.AbstractModule;
 
 public class RecipeBookRemover extends AbstractModule {
 
