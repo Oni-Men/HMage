@@ -8,12 +8,12 @@ import java.util.Set;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import onimen.anni.hmage.Preferences;
+import onimen.anni.hmage.annotation.BooleanOption;
+import onimen.anni.hmage.annotation.ColorOption;
+import onimen.anni.hmage.annotation.FloatOption;
+import onimen.anni.hmage.annotation.IntegerOption;
 import onimen.anni.hmage.gui.button.ButtonObject;
 import onimen.anni.hmage.gui.button.ModuleSettingButtonObject;
-import onimen.anni.hmage.module.annotation.BooleanOption;
-import onimen.anni.hmage.module.annotation.ColorOption;
-import onimen.anni.hmage.module.annotation.FloatOption;
-import onimen.anni.hmage.module.annotation.IntegerOption;
 import onimen.anni.hmage.util.JavaUtil;
 
 public abstract class AbstractModule implements InterfaceModule {

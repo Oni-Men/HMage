@@ -1,4 +1,4 @@
-package onimen.anni.hmage.module.annotation;
+package onimen.anni.hmage.annotation;
 
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;

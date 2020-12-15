@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import onimen.anni.hmage.module.annotation.BooleanOption;
+import onimen.anni.hmage.annotation.BooleanOption;
 import onimen.anni.hmage.module.hud.layout.Layout;
 
 public class ArrowCounterHUD extends AbstractHUD {

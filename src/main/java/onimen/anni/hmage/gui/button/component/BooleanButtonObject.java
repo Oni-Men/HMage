@@ -6,8 +6,8 @@ import java.util.function.Consumer;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
+import onimen.anni.hmage.annotation.BooleanOption;
 import onimen.anni.hmage.gui.button.ButtonObject;
-import onimen.anni.hmage.module.annotation.BooleanOption;
 
 public class BooleanButtonObject implements ButtonObject {
 
