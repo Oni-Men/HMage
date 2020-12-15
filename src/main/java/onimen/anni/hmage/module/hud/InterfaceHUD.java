@@ -2,8 +2,8 @@ package onimen.anni.hmage.module.hud;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import onimen.anni.hmage.module.InterfaceModule;
 import onimen.anni.hmage.module.hud.layout.Layout;
-import onimen.anni.hmage.module.normal.InterfaceModule;
 
 public interface InterfaceHUD extends InterfaceModule {
 

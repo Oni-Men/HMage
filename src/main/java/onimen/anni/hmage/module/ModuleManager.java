@@ -6,7 +6,6 @@ import com.google.common.collect.Maps;
 
 import net.minecraftforge.common.MinecraftForge;
 import onimen.anni.hmage.module.hud.InterfaceHUD;
-import onimen.anni.hmage.module.normal.InterfaceModule;
 
 public class ModuleManager {
 

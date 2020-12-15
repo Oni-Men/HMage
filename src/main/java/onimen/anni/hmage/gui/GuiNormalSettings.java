@@ -1,8 +1,8 @@
 package onimen.anni.hmage.gui;
 
 import net.minecraft.client.gui.GuiScreen;
+import onimen.anni.hmage.module.InterfaceModule;
 import onimen.anni.hmage.module.ModuleManager;
-import onimen.anni.hmage.module.normal.InterfaceModule;
 
 public class GuiNormalSettings extends HMageGui {
 

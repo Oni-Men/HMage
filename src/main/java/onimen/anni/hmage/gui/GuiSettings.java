@@ -11,7 +11,7 @@ import onimen.anni.hmage.gui.button.GameHistoryButton;
 import onimen.anni.hmage.gui.button.HUDLayoutButton;
 import onimen.anni.hmage.gui.button.HurtingArmorColorButton;
 import onimen.anni.hmage.gui.button.ModEnabledButtonObject;
-import onimen.anni.hmage.module.normal.InterfaceModule;
+import onimen.anni.hmage.module.InterfaceModule;
 
 public class GuiSettings extends HMageGui {
 

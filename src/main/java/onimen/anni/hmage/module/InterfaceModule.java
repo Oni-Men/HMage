@@ -1,4 +1,4 @@
-package onimen.anni.hmage.module.normal;
+package onimen.anni.hmage.module;
 
 import java.util.List;
 
