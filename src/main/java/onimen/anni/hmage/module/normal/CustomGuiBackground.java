@@ -24,8 +24,7 @@ public class CustomGuiBackground extends AbstractModule {
   }
 
   public CustomGuiBackground() {
-    super();
-    super.loadPreferences(this);
+    loadPreferences();
   }
 
   @SubscribeEvent

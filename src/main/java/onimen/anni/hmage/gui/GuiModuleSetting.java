@@ -18,7 +18,7 @@ import onimen.anni.hmage.gui.button.component.BooleanButtonObject;
 import onimen.anni.hmage.gui.button.component.ColorButtonObject;
 import onimen.anni.hmage.gui.button.component.HMageGuiSlider;
 import onimen.anni.hmage.gui.button.component.NumberButtonObject;
-import onimen.anni.hmage.module.AbstractModule;
+import onimen.anni.hmage.module.ModuleManager;
 import onimen.anni.hmage.module.annotation.BooleanOption;
 import onimen.anni.hmage.module.annotation.ColorOption;
 import onimen.anni.hmage.module.annotation.FloatOption;
@@ -112,7 +112,7 @@ public class GuiModuleSetting extends GuiScreen {
   @Override
   public void onGuiClosed() {
     super.onGuiClosed();
-    AbstractModule.savePreferences(module);
+    ModuleManager.saveAll();
     Preferences.save();
   }
 

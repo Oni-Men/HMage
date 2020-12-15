@@ -19,12 +19,12 @@ public abstract class LabelHUD extends AbstractHUD {
   protected int paddingX, paddingY = 0;
 
   public LabelHUD() {
-    super.loadPreferences(this);
+    loadPreferences();
   }
 
   public LabelHUD(String text) {
     this.text = text;
-    super.loadPreferences(this);
+    loadPreferences();
   }
 
   @Override

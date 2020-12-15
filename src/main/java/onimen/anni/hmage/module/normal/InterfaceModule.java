@@ -24,4 +24,8 @@ public interface InterfaceModule {
   public List<String> getDescription();
 
   public ButtonObject getSettingButton(GuiScreen parent);
+
+  public void loadPreferences();
+
+  public void savePreferences();
 }

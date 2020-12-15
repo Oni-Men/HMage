@@ -24,57 +24,53 @@ public abstract class AbstractModule implements InterfaceModule {
   @BooleanOption(id = "enabled")
   private boolean enabled = true;
 
-  public AbstractModule() {
-    loadPreferences(this);
-  }
-
-  public static void loadPreferences(InterfaceModule module) {
-    Set<Field> fields = JavaUtil.getAllDeclaredField(module.getClass());
+  public void loadPreferences() {
+    Set<Field> fields = JavaUtil.getAllDeclaredField(this.getClass());
 
     JavaUtil.tryLoopOptionEntrySet(JavaUtil.getAnnotatedFields(fields, BooleanOption.class).entrySet(),
         (field, option) -> {
           field.setAccessible(true);
-          field.setBoolean(module,
-              Preferences.getBoolean(module.getId() + "." + option.id(), field.getBoolean(module)));
+          field.setBoolean(this,
+              Preferences.getBoolean(this.getId() + "." + option.id(), field.getBoolean(this)));
         });
     JavaUtil.tryLoopOptionEntrySet(JavaUtil.getAnnotatedFields(fields, IntegerOption.class).entrySet(),
         (field, option) -> {
           field.setAccessible(true);
-          field.setInt(module, Preferences.getInt(module.getId() + "." + option.id(), field.getInt(module)));
+          field.setInt(this, Preferences.getInt(this.getId() + "." + option.id(), field.getInt(this)));
         });
     JavaUtil.tryLoopOptionEntrySet(JavaUtil.getAnnotatedFields(fields, ColorOption.class).entrySet(),
         (field, option) -> {
           field.setAccessible(true);
-          field.setInt(module, Preferences.getInt(module.getId() + "." + option.id(), field.getInt(module)));
+          field.setInt(this, Preferences.getInt(this.getId() + "." + option.id(), field.getInt(this)));
         });
     JavaUtil.tryLoopOptionEntrySet(JavaUtil.getAnnotatedFields(fields, FloatOption.class).entrySet(),
         (field, option) -> {
           field.setAccessible(true);
-          field.setFloat(module, Preferences.getFloat(module.getId() + "." + option.id(), field.getFloat(module)));
+          field.setFloat(this, Preferences.getFloat(this.getId() + "." + option.id(), field.getFloat(this)));
         });
   }
 
-  public static void savePreferences(InterfaceModule module) {
-    Set<Field> fields = JavaUtil.getAllDeclaredField(module.getClass());
+  public void savePreferences() {
+    Set<Field> fields = JavaUtil.getAllDeclaredField(this.getClass());
     JavaUtil.tryLoopOptionEntrySet(JavaUtil.getAnnotatedFields(fields, BooleanOption.class).entrySet(),
         (field, option) -> {
           field.setAccessible(true);
-          Preferences.setBoolean(module.getId() + "." + option.id(), field.getBoolean(module));
+          Preferences.setBoolean(this.getId() + "." + option.id(), field.getBoolean(this));
         });
     JavaUtil.tryLoopOptionEntrySet(JavaUtil.getAnnotatedFields(fields, IntegerOption.class).entrySet(),
         (field, option) -> {
           field.setAccessible(true);
-          Preferences.setInt(module.getId() + "." + option.id(), field.getInt(module));
+          Preferences.setInt(this.getId() + "." + option.id(), field.getInt(this));
         });
     JavaUtil.tryLoopOptionEntrySet(JavaUtil.getAnnotatedFields(fields, ColorOption.class).entrySet(),
         (field, option) -> {
           field.setAccessible(true);
-          Preferences.setInt(module.getId() + "." + option.id(), field.getInt(module));
+          Preferences.setInt(this.getId() + "." + option.id(), field.getInt(this));
         });
     JavaUtil.tryLoopOptionEntrySet(JavaUtil.getAnnotatedFields(fields, FloatOption.class).entrySet(),
         (field, option) -> {
           field.setAccessible(true);
-          Preferences.setFloat(module.getId() + "." + option.id(), field.getFloat(module));
+          Preferences.setFloat(this.getId() + "." + option.id(), field.getFloat(this));
         });
   }
 

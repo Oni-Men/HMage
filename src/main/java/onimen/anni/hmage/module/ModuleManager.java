@@ -38,4 +38,10 @@ public class ModuleManager {
   public static Map<String, InterfaceModule> getNormalMap() {
     return normalMap;
   }
+
+  public static void saveAll() {
+    for (InterfaceModule module : moduleMap.values()) {
+      module.savePreferences();
+    }
+  }
 }

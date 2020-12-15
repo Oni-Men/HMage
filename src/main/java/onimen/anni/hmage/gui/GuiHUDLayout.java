@@ -18,7 +18,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import onimen.anni.hmage.Preferences;
-import onimen.anni.hmage.module.AbstractModule;
 import onimen.anni.hmage.module.hud.InterfaceHUD;
 import onimen.anni.hmage.module.hud.layout.Layout;
 
@@ -67,7 +66,7 @@ public class GuiHUDLayout extends GuiScreen {
       break;
     case 2:
       for (InterfaceHUD module : hudMap.values()) {
-        AbstractModule.savePreferences(module);
+        module.savePreferences();
       }
       Preferences.save();
       mc.displayGuiScreen(this.parent);

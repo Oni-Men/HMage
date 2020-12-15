@@ -25,7 +25,7 @@ public abstract class AbstractHUD extends AbstractModule implements InterfaceHUD
   protected int cachedWidth, cachedHeight;
 
   public AbstractHUD() {
-    super.loadPreferences(this);
+    loadPreferences();
   }
 
   @IntegerOption(id = "x")
