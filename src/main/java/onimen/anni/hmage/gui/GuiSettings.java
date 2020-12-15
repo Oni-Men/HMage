@@ -26,7 +26,7 @@ public class GuiSettings extends HMageGui {
 
     //capeの設定
     buttonObjects.add(new CapeSelectButtonObject());
-    buttonObjects.add(new HurtingArmorColorButton());
+    buttonObjects.add(new HurtingArmorColorButton(this));
 
     buttonObjects.add(new ConsumableButton("HUD Settings", "HUD Setting", button -> {
       mc.displayGuiScreen(new GuiHUDSettings(this));

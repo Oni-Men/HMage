@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.gui.GuiColorPicker;
 
@@ -15,6 +16,13 @@ public class HurtingArmorColorButton implements ButtonObject {
     Preferences.hurtingArmorColor = i;
     Preferences.save();
   };
+
+  private GuiScreen screen;
+
+  public HurtingArmorColorButton(GuiScreen screen) {
+    this.screen = screen;
+  }
+
 
   @Override
   public String getTitle() {
@@ -29,7 +37,7 @@ public class HurtingArmorColorButton implements ButtonObject {
   @Override
   public void actionPerformed(GuiButton button) {
     Minecraft.getMinecraft()
-        .displayGuiScreen(new GuiColorPicker(null, callback, Preferences.hurtingArmorColor));
+        .displayGuiScreen(new GuiColorPicker(screen, callback, Preferences.hurtingArmorColor));
   }
 
   @Override
