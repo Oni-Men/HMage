@@ -17,6 +17,7 @@ public class GuiSettings extends HMageGui {
 
   public GuiSettings(Map<String, InterfaceModule> moduleMap) {
     super(null);
+    this.title = "HMage Settings";
     //mod 有効/無効の設定
     buttonObjects.add(new ModEnabledButtonObject());
     buttonObjects.add(new GameHistoryButton(this));

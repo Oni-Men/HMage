@@ -17,6 +17,8 @@ public abstract class HMageGui extends GuiScreen {
   protected List<ButtonObject> buttonObjects = new ArrayList<ButtonObject>();
   protected final GuiScreen parent;
 
+  protected String title = "HMage GUI";
+
   public HMageGui(@Nullable GuiScreen parent) {
     this.parent = parent;
   }
@@ -57,7 +59,7 @@ public abstract class HMageGui extends GuiScreen {
   public void drawScreen(int mouseX, int mouseY, float partialTicks) {
     super.drawScreen(mouseX, mouseY, partialTicks);
     this.drawDefaultBackground();
-    this.drawCenteredString(this.fontRenderer, "- HMage Settings -", this.width / 2, 16, 0xffffff);
+    this.drawCenteredString(this.fontRenderer, "- " + title + " -", this.width / 2, 16, 0xffffff);
 
     ButtonObject mouseOveredObject = null;
 

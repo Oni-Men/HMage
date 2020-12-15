@@ -8,7 +8,7 @@ public class GuiHUDSettings extends HMageGui {
 
   public GuiHUDSettings(GuiScreen parent) {
     super(parent);
-
+    this.title = "HUD Module Settings";
     for (InterfaceHUD module : ModuleManager.getHUDMap().values()) {
       if (module.doesShowMenu()) {
         buttonObjects.add(module.getSettingButton(this));
