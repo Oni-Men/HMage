@@ -28,6 +28,10 @@ public class BodyArrowRemover extends AbstractModule {
       return;
 
     SPacketEntityMetadata metadata = event.getMetadata();
+
+    if (mc.world == null)
+      return;
+
     Entity entity = mc.world.getEntityByID(metadata.getEntityId());
 
     if (entity == null || metadata.getDataManagerEntries() == null)
