@@ -69,6 +69,21 @@ public class CustomFont extends AbstractModule {
     float texCharHeight = data.getCharHeight() * data.getScale() / h;
     Vector2f uv = data.getUVCoord(ch);
 
+    int width = 0;
+    switch (ch) {
+    case 160:
+      width = 4;
+      break;
+    case 167:
+      width = -1;
+      break;
+    case ' ':
+      width = 4;
+      break;
+    default:
+      width = (int) (charWidth / 2F);
+    }
+
     GlStateManager.bindTexture(data.getGlTextureId());
     GlStateManager.enableBlend();
     GlStateManager.tryBlendFuncSeparate(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE,
@@ -88,7 +103,7 @@ public class CustomFont extends AbstractModule {
     GlStateManager.glVertex3f(posX + charWidth / 2F - k, posY + 8F, 0.0F);
     GlStateManager.glEnd();
 
-    event.setWidth((float) charWidth / 2F);
+    event.setWidth((float) width);
   }
 
   @SubscribeEvent
@@ -108,7 +123,22 @@ public class CustomFont extends AbstractModule {
       if (!data.isInitialized()) {
         event.setWidth(4);
       }
-      event.setWidth((int) (data.getCharWidth(event.getChar()) / 2F));
+      int width = 0;
+      int ch = event.getChar();
+      switch (ch) {
+      case 160:
+        width = 4;
+        break;
+      case 167:
+        width = -1;
+        break;
+      case ' ':
+        width = 4;
+        break;
+      default:
+        width = (int) (data.getCharWidth(event.getChar()) / 2F);
+      }
+      event.setWidth(width);
     }
   }
 
