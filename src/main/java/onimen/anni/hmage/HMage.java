@@ -134,6 +134,9 @@ public class HMage {
     ModuleManager.registerModule(new FpsHUD());
     ModuleManager.registerModule(new PingHUD());
 
+    //モジュールの設定をファイルから読み込む
+    ModuleManager.loadPreferenceAll();
+
     ClientCommandHandler.instance.registerCommand(new DebugCommand());
     ClientCommandHandler.instance.registerCommand(new NameCommand());
     ClientCommandHandler.instance.registerCommand(new TestAnniCommand());

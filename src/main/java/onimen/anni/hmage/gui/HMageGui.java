@@ -9,7 +9,9 @@ import javax.annotation.Nullable;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
+import onimen.anni.hmage.Preferences;
 import onimen.anni.hmage.gui.button.ButtonObject;
+import onimen.anni.hmage.module.ModuleManager;
 
 public abstract class HMageGui extends GuiScreen {
 
@@ -96,6 +98,13 @@ public abstract class HMageGui extends GuiScreen {
     ButtonObject mouseOveredObject = getObjectFromGuiButton(button);
     if (mouseOveredObject != null)
       mouseOveredObject.actionPerformed(button);
+  }
+
+  @Override
+  public void onGuiClosed() {
+    super.onGuiClosed();
+    ModuleManager.savePreferenceAll();
+    Preferences.save();
   }
 
   @Nullable

@@ -112,7 +112,7 @@ public class GuiModuleSetting extends GuiScreen {
   @Override
   public void onGuiClosed() {
     super.onGuiClosed();
-    ModuleManager.saveAll();
+    ModuleManager.savePreferenceAll();
     Preferences.save();
   }
 

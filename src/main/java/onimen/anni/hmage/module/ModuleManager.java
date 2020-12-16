@@ -38,7 +38,13 @@ public class ModuleManager {
     return normalMap;
   }
 
-  public static void saveAll() {
+  public static void loadPreferenceAll() {
+    for (InterfaceModule module : moduleMap.values()) {
+      module.loadPreferences();
+    }
+  }
+
+  public static void savePreferenceAll() {
     for (InterfaceModule module : moduleMap.values()) {
       module.savePreferences();
     }
