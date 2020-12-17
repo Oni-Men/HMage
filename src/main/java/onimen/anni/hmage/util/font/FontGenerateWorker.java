@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 
 public class FontGenerateWorker {
 
-  private static ExecutorService executor = Executors.newSingleThreadExecutor();
+  private static ExecutorService executor = Executors.newFixedThreadPool(5);
   private static List<FontGenerateData> serviceResultList = Collections.synchronizedList(new LinkedList<>());
 
   public static void addGenerateTask(Callable<FontGenerateData> callable) {
