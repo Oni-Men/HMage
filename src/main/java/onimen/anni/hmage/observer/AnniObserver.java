@@ -13,7 +13,6 @@ import javax.annotation.Nonnull;
 
 import com.google.common.io.Files;
 import com.google.gson.Gson;
-import com.mojang.realmsclient.gui.ChatFormatting;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.BossInfoClient;
@@ -22,6 +21,7 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.BossInfo.Color;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -30,15 +30,15 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import onimen.anni.hmage.HMage;
 import onimen.anni.hmage.HMageDiscordHandler;
+import onimen.anni.hmage.observer.config.AnniConfigKey;
+import onimen.anni.hmage.observer.config.AnniConfiguration;
 import onimen.anni.hmage.observer.data.AnniTeamColor;
 import onimen.anni.hmage.observer.data.GameInfo;
 import onimen.anni.hmage.util.ShotbowUtils;
 
 public class AnniObserver {
 
-  private static final String MAP_PREFIX = ChatFormatting.GOLD.toString() + ChatFormatting.BOLD.toString() + "Map: ";
-
-  private static final String VOTING_TEXT = ChatFormatting.GREEN + "/vote [map name] to vote";
+  private static final String MAP_PREFIX = TextFormatting.GOLD.toString() + TextFormatting.BOLD.toString() + "Map: ";
 
   private Minecraft mc;
   private Map<UUID, BossInfoClient> bossInfoMap = null;
@@ -187,11 +187,8 @@ public class AnniObserver {
     if (scoreobjective == null) { return false; }
     String displayName = scoreobjective.getDisplayName();
 
-    //Voteの場合
-    if (displayName.contentEquals(VOTING_TEXT)) { return true; }
-
-    //試合中の場合
-    if (displayName.contains(MAP_PREFIX)) { return true; }
+    //試合中かどうかを判定
+    if (displayName.equals(AnniConfiguration.getConfig(AnniConfigKey.ANNI_SCOREBOARD))) { return true; }
 
     return false;
   }
@@ -200,16 +197,15 @@ public class AnniObserver {
     ScoreObjective scoreobjective = scoreboard.getObjectiveInDisplaySlot(1);
 
     if (scoreobjective == null) { return null; }
-    String displayName = scoreobjective.getDisplayName();
 
-    if (displayName.equals(VOTING_TEXT)) {
-      gameInfo.setGamePhase(GamePhase.STARTING);
-      return null;
+    for(String teamName : scoreboard.getTeamNames()) {
+      if (!teamName.contains(MAP_PREFIX)) { 
+        continue;
+      }
+      
+      return teamName.replace(MAP_PREFIX, "");
     }
-
-    if (!displayName.contains(MAP_PREFIX)) { return null; }
-
-    return displayName.replace(MAP_PREFIX, "");
+    return null;
   }
 
   @SuppressWarnings("unchecked")

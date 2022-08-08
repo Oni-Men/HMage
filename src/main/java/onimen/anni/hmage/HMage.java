@@ -62,6 +62,7 @@ import onimen.anni.hmage.module.normal.SSClipboard;
 import onimen.anni.hmage.observer.AnniChatReciveExecutor;
 import onimen.anni.hmage.observer.AnniObserver;
 import onimen.anni.hmage.observer.AnniObserverMap;
+import onimen.anni.hmage.observer.config.AnniConfiguration;
 import onimen.anni.hmage.observer.data.AnniPlayerData;
 import onimen.anni.hmage.observer.data.GameInfo;
 import onimen.anni.hmage.observer.killeffect.AnniKillEffectManager;
@@ -148,6 +149,9 @@ public class HMage {
     HurtingArmorInjector.replaceSkinMap(renderManager);
     //Capeをロード
     GlobalPlayerUseCapeManager.loadCape();
+    
+    //Anni関係のパラメータをGithubからロード
+    AnniConfiguration.load();
 
     //Anni用スレッド開始
     AnniChatReciveExecutor.startThread();
