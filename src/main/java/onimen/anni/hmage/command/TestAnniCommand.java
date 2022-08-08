@@ -1,8 +1,11 @@
 package onimen.anni.hmage.command;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.ITextComponent;
@@ -42,6 +45,13 @@ public class TestAnniCommand extends CommandBase implements IClientCommand {
     sender.sendMessage(new TextComponentString("[hmage debug] コマンド実行後、60秒の間にキルログが流れていることを確認してください。"));
     sender.sendMessage(new TextComponentString("[hmage debug] その後開発者へminecraftのログ(latest.log)を提出してください。"));
 
+    Minecraft minecraft = Minecraft.getMinecraft();
+
+    sender.sendMessage(new TextComponentString("===debug情報==="));
+    String scorebordName = getScorebordName(minecraft);
+    sender.sendMessage(new TextComponentString("スコアボード名:" + (scorebordName == null ? "none" : scorebordName)));
+    sender.sendMessage(new TextComponentString("===debug情報==="));
+
     limitedTime = System.currentTimeMillis() + (1000 * 60);
 
     //observer情報
@@ -55,6 +65,15 @@ public class TestAnniCommand extends CommandBase implements IClientCommand {
         + (target == null ? "null" : (System.currentTimeMillis() - target.getLastExecuteTime()) + " ms ago"));
     HMage.logger.info("===HMage Mod Debug Information===");
 
+  }
+
+  public String getScorebordName(Minecraft minecraft) {
+    Scoreboard scoreboard = minecraft.world.getScoreboard();
+    if (scoreboard == null) { return null; }
+
+    ScoreObjective scoreobjective = scoreboard.getObjectiveInDisplaySlot(1);
+    if (scoreobjective == null) { return null; }
+    return scoreobjective.getDisplayName();
   }
 
   public static void debugPrint(ClientChatReceivedEvent event) {

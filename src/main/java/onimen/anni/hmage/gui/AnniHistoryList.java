@@ -45,13 +45,14 @@ public class AnniHistoryList extends GuiScreen {
   private List<GameInfo> gameInfos;
 
   private final GuiScreen parent;
+
   /**
    * @param mainMenu
    */
   public AnniHistoryList(@Nullable GuiScreen parent) {
     this.parent = parent;
     gameInfos = AnniObserverMap.getInstance().getGameInfoList();
-    gameInfos.sort((g1, g2) -> (int) (g2.getGameTimestamp() - g1.getGameTimestamp()));
+    gameInfos.sort((g1, g2) -> Long.compare(g2.getGameTimestamp(), g1.getGameTimestamp()));
 
     //一番新しいものを選択する
     if (!gameInfos.isEmpty()) {
@@ -271,7 +272,8 @@ public class AnniHistoryList extends GuiScreen {
 
       Instant instant = Instant.ofEpochMilli(gameInfo.getGameTimestamp());
       LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-      fr.drawStringWithShadow(datePattern.format(matchDateTime), left, top, 0xCCCCCC);
+      fr.drawStringWithShadow(datePattern.format(matchDateTime),
+          left, top, 0xCCCCCC);
       top += 20;
 
       fr.drawStringWithShadow("Team Ranking", left, top, color);
@@ -285,7 +287,7 @@ public class AnniHistoryList extends GuiScreen {
       List<AnniTeamColor> teamRanking = gameInfo.getTeamRanking().stream().collect(Collectors.toList());
       for (int i = 0; i < teamRanking.size(); i++) {
         AnniTeamColor team = teamRanking.get(i);
-        fr.drawStringWithShadow(String.format("%d. %s", i+ 1, team.getColoredName()), left, top, color);
+        fr.drawStringWithShadow(String.format("%d. %s", i + 1, team.getColoredName()), left, top, color);
         top += 10;
       }
 

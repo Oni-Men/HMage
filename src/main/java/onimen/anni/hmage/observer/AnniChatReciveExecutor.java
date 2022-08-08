@@ -17,7 +17,8 @@ public class AnniChatReciveExecutor {
 
   /** キルログのパターン */
   private static Pattern killChatPattern = Pattern
-      .compile("§(.)(.+)§(.)\\((.+)\\) (shot|killed) §(.)(.+)§(.)\\((.+)\\).*");
+      .compile(
+          "§(?<killerColor>.)(?<killer>.+)§(.)\\((.+)\\) (?<type>shot|killed) §(?<deadColor>.)(?<dead>.+)§(.)\\((.+)\\).*");
 
   /** ネクサスダメージのパターン */
   private static Pattern nexusChatPattern = Pattern
@@ -85,12 +86,12 @@ public class AnniChatReciveExecutor {
             Matcher matcher = killChatPattern.matcher(message);
             if (matcher.matches()) {
               //キル数を加算
-              AnniTeamColor killerTeam = AnniTeamColor.findByColorCode(matcher.group(1));
-              AnniTeamColor deadTeam = AnniTeamColor.findByColorCode(matcher.group(6));
-              AnniKillType killType = matcher.group(5).equalsIgnoreCase("shot") ? AnniKillType.SHOT
+              AnniTeamColor killerTeam = AnniTeamColor.findByColorCode(matcher.group("killerColor"));
+              AnniTeamColor deadTeam = AnniTeamColor.findByColorCode(matcher.group("deadColor"));
+              AnniKillType killType = matcher.group("type").equalsIgnoreCase("shot") ? AnniKillType.SHOT
                   : AnniKillType.MELEE;
-              anniObserver.getGameInfo().addKillCount(matcher.group(2), killerTeam, matcher.group(7), deadTeam,
-                  killType);
+              anniObserver.getGameInfo().addKillCount(matcher.group("killer"), killerTeam, matcher.group("dead"),
+                  deadTeam, killType);
               continue;
             }
 
