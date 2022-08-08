@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
@@ -21,7 +22,6 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.BossInfo.Color;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -38,7 +38,7 @@ import onimen.anni.hmage.util.ShotbowUtils;
 
 public class AnniObserver {
 
-  private static final String MAP_PREFIX = TextFormatting.GOLD.toString() + TextFormatting.BOLD.toString() + "Map: ";
+  private static final String MAP_PREFIX = "Map: ";
 
   private Minecraft mc;
   private Map<UUID, BossInfoClient> bossInfoMap = null;
@@ -88,7 +88,6 @@ public class AnniObserver {
   public void updatePresence() {
     HMageDiscordHandler.INSTANCE.updatePresenceWithGameInfo(gameInfo);
   }
-
 
   @SideOnly(Side.CLIENT)
   public void onClientTick(ClientTickEvent event) {
@@ -198,13 +197,15 @@ public class AnniObserver {
 
     if (scoreobjective == null) { return null; }
 
-    for(String teamName : scoreboard.getTeamNames()) {
-      if (!teamName.contains(MAP_PREFIX)) { 
-        continue;
-      }
-      
-      return teamName.replace(MAP_PREFIX, "");
+    Collection<String> collection = scoreboard.getObjectiveNames();
+    for (String name : collection) {
+      ScorePlayerTeam playersTeam = scoreboard.getPlayersTeam(name);
+      String line = playersTeam.getPrefix() + playersTeam.getSuffix();//§6Map: §lCherok§6§lee
+      line = line.replaceAll("§.", ""); //Map: Cherokee
+
+      if (line.startsWith(MAP_PREFIX)) { return line.substring(MAP_PREFIX.length()); } //Cherokee
     }
+
     return null;
   }
 
