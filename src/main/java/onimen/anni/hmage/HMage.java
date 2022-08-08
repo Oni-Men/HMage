@@ -79,7 +79,7 @@ import onimen.anni.hmage.util.scheduler.SyncTaskQueue;
 public class HMage {
   public static final String MODID = "hmage";
   public static final String NAME = "HMage";
-  public static final String VERSION = "1.2.4";
+  public static final String VERSION = "1.2.5";
   public static HMageLogger logger;
 
   public static final long startMilliTime = System.currentTimeMillis();
@@ -89,7 +89,6 @@ public class HMage {
 
   public static AnniObserverMap anniObserverMap;
   public static File modConfigurationDirectory;
-
 
   public HMage() {
     INSTANCE = this;
@@ -149,7 +148,7 @@ public class HMage {
     HurtingArmorInjector.replaceSkinMap(renderManager);
     //Capeをロード
     GlobalPlayerUseCapeManager.loadCape();
-    
+
     //Anni関係のパラメータをGithubからロード
     AnniConfiguration.load();
 
